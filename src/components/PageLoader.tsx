@@ -1,4 +1,4 @@
-import logoAsset from "@/assets/zapiboo-logo.webp";
+import logoAsset from "@/assets/zapiboo-kids-logo.webp";
 const logo = logoAsset.src;
 import { cn } from "@/lib/utils";
 

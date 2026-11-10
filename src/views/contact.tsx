@@ -77,8 +77,8 @@ export default function Contact() {
     <>
       <PageHeader
         eyebrow="Contact"
-        title={<>Let's <span className="text-gradient">talk vehicles</span></>}
-        subtitle="Whether you need a vehicle valuation, pickup help, or buying support, we would love to help."
+        title={<>Let&apos;s <span className="text-gradient">connect</span></>}
+        subtitle="Whether you need help listing items, pickup support, or have a question about our service, we would love to help."
       />
 
       <section className="bg-background py-16 md:py-24">
@@ -106,8 +106,8 @@ export default function Contact() {
               </div>
             ))}
             <aside className="rounded-3xl border border-primary/20 bg-primary/5 p-6 sm:p-8">
-              <h2 className="text-xl font-bold">Serving Nagawara and Bangalore</h2>
-              <p className="mt-3 leading-relaxed text-muted-foreground">Zapiboo is located on Nagawara Main Road and helps vehicle owners across Bangalore begin their selling journey with a free doorstep inspection. Contact us to check availability for your area.</p>
+              <h2 className="text-xl font-bold">Serving Nagawara and all of Bangalore</h2>
+              <p className="mt-3 leading-relaxed text-muted-foreground">Zapiboo is located on Nagawara Main Road and helps parents across Bangalore sell pre-loved kids items with selling support and doorstep pickup. Contact us to check availability in your area.</p>
             </aside>
           </div>
 
@@ -138,7 +138,7 @@ export default function Contact() {
               </div>
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="cmsg">Message</Label>
-                <Textarea id="cmsg" name="message" required rows={5} placeholder="Tell us about your vehicle or question..." />
+                <Textarea id="cmsg" name="message" required rows={5} placeholder="Tell us about what you'd like to sell..." />
               </div>
             </div>
             <Button type="submit" variant="hero" size="xl" className="mt-8 w-full" disabled={sending}>

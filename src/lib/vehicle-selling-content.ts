@@ -1,6 +1,5 @@
 import type { SellingVehicle } from "./vehicle-selling-links";
 
-type Topic = { title: string; text: string };
 export type SellingContent = {
   title: string;
   description: string;
@@ -8,495 +7,262 @@ export type SellingContent = {
   intro: string;
   kicker: string;
   imageAlt: string;
-  booking: "car" | "bike" | "scooter" | "commercial";
+  booking: string;
   cta: string;
   bookingHint: string;
-  overview: Topic;
+  overview: { title: string; text: string };
   factorsTitle: string;
-  factors: Topic[];
+  factors: { title: string; text: string }[];
   preparationTitle: string;
   preparation: string[];
-  documents: Topic;
-  local: Topic;
-  steps: Topic[];
+  documents: { title: string; text: string };
+  local: { title: string; text: string };
+  steps: { title: string; text: string }[];
   faqs: { question: string; answer: string }[];
 };
 
 export const vehicleSellingContent: Record<SellingVehicle, SellingContent> = {
-  car: {
-    title: "Sell Used Car in Bangalore | Doorstep Inspection | Zapiboo",
-    description:
-      "Selling a hatchback or sedan in Bangalore? Understand your car's value, prepare service records and book a free doorstep inspection with Zapiboo.",
-    heading: "Sell your used car in Bangalore",
-    kicker: "Your next chapter starts here",
-    intro:
-      "An upgrade, a move, or a car that spends more time parked than driven: whatever brings you here, start with a clear assessment. Share your hatchback or sedan's details, arrange a free doorstep inspection and review an offer based on the vehicle you actually own.",
-    imageAlt: "Red hatchback illustrating the used car selling service",
-    booking: "car",
-    cta: "Book my car inspection",
-    bookingHint:
-      "Choose your car's body style and brand in the booking flow. An inspection request does not generate an instant price.",
+  toys: {
+    title: "Sell Used Kids Toys in Bangalore | Zapiboo",
+    description: "Sell pre-loved kids toys in Bangalore. List action figures, board games, building blocks and more on Zapiboo — the trusted kids marketplace.",
+    heading: "Sell Pre-Loved Kids Toys",
+    intro: "Give your children's outgrown toys a second life. List them on Zapiboo and connect with parents looking for quality toys at great prices.",
+    kicker: "Toys & Games · Bangalore",
+    imageAlt: "Pre-loved kids toys for sale on Zapiboo",
+    booking: "toys",
+    cta: "List your toys for free",
+    bookingHint: "Free listing. No commission on your first items. Doorstep pickup available.",
     overview: {
-      title: "A useful car valuation starts with the exact variant",
-      text: "A model name alone leaves out much of the story. An automatic petrol hatchback and a manual version of the same model can have different equipment, maintenance needs and buyer appeal. Bring the variant, registration year, odometer reading and service history into the conversation. Your original purchase price or a similar car's advertised asking price is context, rather than a promise of what your car will sell for.",
+      title: "Why sell toys on Zapiboo?",
+      text: "Kids grow out of toys quickly, but those toys still have plenty of play left in them. Zapiboo connects you with local parents who are looking for quality, pre-loved toys at affordable prices. List in seconds, set your own price, and we handle the rest.",
     },
-    factorsTitle: "What helps explain your hatchback or sedan's value?",
+    factorsTitle: "What affects the resale value of kids toys?",
     factors: [
-      {
-        title: "How the car has been driven",
-        text: "Describe regular commuting, occasional family trips or long periods of storage. Kilometres matter alongside the kind of use and maintenance. If the car has stood unused, mention starting trouble, a weak battery or overdue servicing before the visit.",
-      },
-      {
-        title: "Transmission and everyday features",
-        text: "Tell the team whether the car is manual, AMT, CVT or another automatic type, if you know. Note warning lights, unusual gear changes and air-conditioning faults. Working features and a clear account of problems make the inspection discussion more productive.",
-      },
-      {
-        title: "Bodywork and repair history",
-        text: "Separate minor parking scratches from larger repairs when describing the car. Share invoices for replaced panels or mechanical work where available. Do not guess about previous-owner repairs; explain which parts of the history you can actually document.",
-      },
-      {
-        title: "Ownership and maintenance records",
-        text: "Keep service dates, tyre replacements and major repair bills in order. If the registered owner is a family member, say so before planning handover. An incomplete service book does not tell the whole story, so bring any individual invoices you still have.",
-      },
+      { title: "Condition & completeness", text: "Toys in good condition with all pieces and original packaging command higher prices. Clean, well-maintained items sell faster." },
+      { title: "Brand & popularity", text: "Popular brands like Lego, Hot Wheels, Barbie and Fisher-Price tend to hold their value better. Limited edition items can fetch premium prices." },
+      { title: "Age appropriateness", text: "Toys suitable for the 2-6 age group are in highest demand as kids outgrow them quickly. Educational toys and STEM kits also sell well." },
+      { title: "Safety & quality", text: "Items that meet safety standards and show no wear or damage are preferred by parents. Include any safety certifications or age recommendations." },
     ],
-    preparationTitle: "Prepare your car without spending on a makeover",
+    preparationTitle: "Get your toys ready to sell",
     preparation: [
-      "Clear the boot and cabin so storage areas and interior condition can be seen.",
-      "Keep the main key, spare key and service folder together.",
-      "Write down warning lights, fluid leaks or intermittent issues you want to explain.",
-      "Choose an accessible parking space and share apartment entry instructions.",
-      "Discuss major repair plans before paying for work solely to improve the sale price.",
+      "Clean all toys thoroughly — wipe surfaces, wash fabric items",
+      "Check that all pieces, batteries and accessories are included",
+      "Take clear, well-lit photos from multiple angles",
+      "Note any missing parts or wear in your listing description",
+      "Keep original packaging if available — it adds value",
     ],
     documents: {
-      title: "Put the vehicle's history in one folder",
-      text: "Have the registration certificate, insurance information and available service records ready for discussion. Mention an active loan, a missing original or a mismatch in owner details early. Ask the team for the checklist that applies to your transaction and confirm finance-related requirements with your lender. Keep copies of the agreed offer, payment confirmation and handover record.",
+      title: "What to include in your listing",
+      text: "Add the toy name, brand, age recommendation, condition details and any missing parts. Include clear photos. For electronic toys, mention if batteries are included and whether everything works.",
     },
     local: {
-      title: "Plan an inspection around your Bangalore routine",
-      text: "For an office visit in Whitefield or an apartment visit in HSR Layout, the practical details matter: where the car is parked, who can provide access and when you will have the keys. Enter the actual inspection address and pincode when booking. Check available slots for your location, and mention basement parking or visitor-entry requirements before the appointment.",
+      title: "Selling kids toys in Bangalore",
+      text: "Zapiboo serves parents across Bangalore — from Whitefield and HSR Layout to Koramangala, Indiranagar and beyond. List your toys and reach thousands of local parents looking for great deals on quality items.",
     },
     steps: [
-      {
-        title: "Identify your car",
-        text: "Choose the body style and brand, then add the model and year. Describe your car accurately so the team can prepare.",
-      },
-      {
-        title: "Arrange a free inspection",
-        text: "Provide your Bangalore address and choose an available slot. Have the car, keys and records accessible for the visit.",
-      },
-      {
-        title: "Review the complete sale arrangement",
-        text: "Ask about the offer, payment, handover and RC transfer support. Proceed when you understand and accept the arrangements.",
-      },
+      { title: "List your toy", text: "Snap a photo, add a description and set your price. Your listing goes live after a quick review." },
+      { title: "Connect with buyers", text: "Interested parents can message you through the platform. Agree on the deal with secure in-app payments." },
+      { title: "Doorstep pickup", text: "Our partner picks up the item from your home and delivers it to the buyer. Safe, easy and contactless." },
     ],
     faqs: [
-      {
-        question: "Does entering my car details give me an instant price?",
-        answer:
-          "No. Booking starts an inspection request. The team needs to review the car and its condition before discussing an offer; a registration number alone is not an automatic valuation.",
-      },
-      {
-        question: "Should I repaint parking scratches before selling?",
-        answer:
-          "Describe the scratches and let the team assess the car first. Cosmetic work costs money and may not add the same amount to an offer. Keep any existing repair invoices available.",
-      },
-      {
-        question: "Can I start if my car is registered outside Karnataka?",
-        answer:
-          "Contact the team with the registration state, age and current location before arranging the visit. Acceptance and any additional paperwork need to be confirmed for the particular car.",
-      },
-      {
-        question: "What if I am selling because I am leaving Bangalore?",
-        answer:
-          "Share your departure date early and ask what can realistically be completed before then. An inspection slot is not a guaranteed sale completion date. Allow time for the offer discussion, documents and handover.",
-      },
-      {
-        question: "Where should I start for an SUV?",
-        answer:
-          "Use the SUV selling guide for advice on drivetrain, seating, tyre condition and larger-vehicle inspection access. The booking flow places SUVs under the Car category.",
-      },
+      { question: "Is it free to list toys on Zapiboo?", answer: "Yes, listing is completely free. We may charge a small service fee on completed transactions to cover pickup and delivery costs." },
+      { question: "What condition should the toys be in?", answer: "Toys should be clean, safe and in working condition. Minor cosmetic wear is fine — just mention it in your listing." },
+      { question: "How do I get paid?", answer: "Payments are processed securely through the platform. Once the buyer confirms receipt, the payment is transferred to your bank account." },
+      { question: "Do you pick up from my home?", answer: "Yes! We offer doorstep pickup across 40+ Bangalore areas. Schedule a convenient time and our partner will collect the items." },
     ],
   },
-  bike: {
-    title: "Sell Used Bike in Bangalore | Motorcycle Valuation | Zapiboo",
-    description:
-      "Sell your used bike in Bangalore with a free inspection. Prepare motorcycle service history, explain modifications and understand what shapes your offer.",
-    heading: "Sell your used bike in Bangalore",
-    kicker: "From daily commute to the next ride",
-    intro:
-      "Moving on from a commuter motorcycle, a weekend cruiser or a sports bike? Give the next conversation more substance than a model name and an asking price. Zapiboo helps you start with bike details, a free doorstep inspection and an offer you can review before deciding.",
-    imageAlt: "Motorcycle illustrating the used bike selling service",
-    booking: "bike",
-    cta: "Book my bike inspection",
-    bookingHint:
-      "Select Bike, then the matching bike type and brand. Share the model and year to prepare for the visit.",
+  books: {
+    title: "Sell Used Kids Books in Bangalore | Zapiboo",
+    description: "Sell pre-loved kids books in Bangalore. List picture books, story books, educational books and more on Zapiboo.",
+    heading: "Sell Pre-Loved Kids Books",
+    intro: "Pass on the joy of reading. Sell your children's outgrown books to families who will love them just as much.",
+    kicker: "Kids Books · Bangalore",
+    imageAlt: "Pre-loved kids books for sale on Zapiboo",
+    booking: "books",
+    cta: "List your books for free",
+    bookingHint: "Free listing. Books are always in demand — most sell within days.",
     overview: {
-      title: "Your motorcycle's upkeep deserves a closer look",
-      text: "Two bikes of the same age can have very different stories. One may have covered a regular commute with scheduled maintenance; another may have spent months between rides. Explain how yours has been used, how often it has been serviced and what has been replaced. For a modified bike, distinguish the original specification from the parts currently fitted.",
+      title: "Why sell kids books on Zapiboo?",
+      text: "Children's books are read, loved and outgrown quickly. Zapiboo helps you find new readers for books your kids have finished. From picture books to chapter books, educational to activity — every book deserves a second reader.",
     },
-    factorsTitle: "Bike-specific details that make the assessment clearer",
+    factorsTitle: "What affects the resale value of kids books?",
     factors: [
-      {
-        title: "Starting, engine and gearbox behaviour",
-        text: "Mention difficult starts, stalling, unusual smoke, oil leaks or awkward gear changes. Describe when a symptom happens instead of trying to diagnose it yourself. Recent workshop invoices help explain completed work and any issues still unresolved.",
-      },
-      {
-        title: "Chain, sprockets and clutch",
-        text: "If you know when the chain set or clutch was last replaced, bring that record. Tell the team about noises, slipping or adjustments that do not last. These parts give useful context about maintenance beyond the odometer reading.",
-      },
-      {
-        title: "Tyres, brakes and suspension",
-        text: "Note tyre replacements, brake work, fork leaks or damage from a fall. A low-speed drop and a major accident are different histories; describe yours honestly and share repair bills. Avoid covering damaged parts before the inspection.",
-      },
-      {
-        title: "Accessories and modifications",
-        text: "List aftermarket exhausts, lights, handlebars, luggage racks or engine changes. Say whether original parts are included. Accessories do not automatically add their purchase cost to the offer, and the team needs to review the bike as it is configured.",
-      },
+      { title: "Condition", text: "Books in good condition with intact pages and spines sell best. Minor creases are fine but water damage or torn pages reduce value." },
+      { title: "Author & series", text: "Popular authors and well-known series (Roald Dahl, Harry Potter, Diary of a Wimpy Kid) command better prices." },
+      { title: "Age group", text: "Board books for toddlers and picture books for preschoolers are always in demand. Activity books should be unused." },
+      { title: "Bundle deals", text: "Selling books in sets or bundles often attracts more buyers and allows for better per-book pricing." },
     ],
-    preparationTitle: "A short checklist before the motorcycle visit",
+    preparationTitle: "Prepare your books for listing",
     preparation: [
-      "Park where both sides of the bike can be inspected with room to move around it.",
-      "Have the key, spare key and service invoices ready.",
-      "Tell the inspector if the bike has not been started or ridden recently.",
-      "List fitted accessories and decide which removable items are included in the sale.",
-      "Explain known riding or braking problems before anyone moves the motorcycle.",
+      "Check all pages are intact and readable",
+      "Wipe covers clean and remove any stickers",
+      "Photograph the front cover and any notable wear",
+      "Group books by age range or series for bundle deals",
+      "Note if any pages have been written on or coloured in",
     ],
     documents: {
-      title: "Keep the bike's records connected to its identity",
-      text: "Gather registration and insurance information with maintenance receipts, especially for substantial engine work or replacement parts. Explain any owner-name discrepancy or active finance before agreeing to a sale. Confirm the required documents with the team rather than relying on another rider's checklist. At handover, record the bike, keys and accessories being passed on.",
+      title: "What to include in your listing",
+      text: "Add the book title, author, publisher, condition and recommended age group. For bundles, list all titles. Mention if it is a hardcover or paperback.",
     },
     local: {
-      title: "Make room for an inspection, even in a busy parking area",
-      text: "A motorcycle parked tightly between two-wheelers can be hard to assess. At your home or workplace in Bangalore, arrange permission to move it into an accessible space and share the gate or parking landmark. Use the address where the bike will actually be available, whether that is in Koramangala, Marathahalli or another locality. Appointment availability is checked during booking.",
+      title: "Selling kids books in Bangalore",
+      text: "Bangalore parents love reading! List your pre-loved books on Zapiboo and connect with book-loving families in HSR, Koramangala, Whitefield, Indiranagar and all major areas.",
     },
     steps: [
-      {
-        title: "Describe the motorcycle",
-        text: "Choose the bike type and brand, enter the model and year, and be ready to explain its use and modifications.",
-      },
-      {
-        title: "Show its condition",
-        text: "Arrange an available doorstep visit with access to the bike and records. Point out repairs and unresolved issues.",
-      },
-      {
-        title: "Agree what is included",
-        text: "Review the offer and specify accessories, keys, payment and transfer arrangements before the bike changes hands.",
-      },
+      { title: "List your books", text: "Photograph the covers, add titles and set your price. Bundle deals are easy to create." },
+      { title: "Find a reader", text: "Parents browse by age group and genre. Accept offers and confirm through secure payments." },
+      { title: "Doorstep handover", text: "We pick up the books from your home and deliver them to the buyer — no trips needed." },
     ],
     faqs: [
-      {
-        question: "Can I enquire about a sports bike or cruiser?",
-        answer:
-          "Yes. Start with the Bike category and share the exact model. Confirm eligibility and inspection arrangements with the team for specialist or less common motorcycles.",
-      },
-      {
-        question: "Will an aftermarket exhaust increase my offer?",
-        answer:
-          "There is no automatic increase. Share the exhaust details and whether the original is available. The assessment considers the whole motorcycle, including its condition and modifications.",
-      },
-      {
-        question: "My bike has been unused for months. What should I say?",
-        answer:
-          "Tell the team how long it has been parked and whether it starts. Mention battery, fuel or maintenance issues you know about so the visit can be planned appropriately. Do not present it as regularly running if it is not.",
-      },
-      {
-        question: "Do I need to include my helmet and riding gear?",
-        answer:
-          "Discuss removable items separately. List exactly what is included in the agreed sale; personal riding gear should not be assumed to be part of the motorcycle offer.",
-      },
-      {
-        question: "Can a bike with previous accident repairs be assessed?",
-        answer:
-          "Disclose the repairs and provide available invoices or photographs when speaking with the team. They will need to confirm whether the particular bike can be accepted and inspected.",
-      },
+      { question: "Can I sell activity books that have been partially used?", answer: "Only if most pages are unused. Please mention the percentage of completed pages in your listing." },
+      { question: "Is there a minimum number of books to list?", answer: "No minimum — you can list a single book or a bundle of fifty. Bundles tend to sell faster." },
+      { question: "How quickly do books sell?", answer: "Kids books are among our fastest-selling categories. Most listings receive interest within 24-48 hours." },
+      { question: "Do you offer doorstep pickup?", answer: "Yes, across 40+ Bangalore areas. Schedule a pickup at your convenience." },
     ],
   },
-  scooter: {
-    title: "Sell Used Scooter in Bangalore | Petrol & Electric | Zapiboo",
-    description:
-      "Selling a petrol or electric scooter in Bangalore? Prepare service records, keys and charger details, then request a free doorstep inspection with Zapiboo.",
-    heading: "Sell your used scooter in Bangalore",
-    kicker: "A simpler handover for your everyday ride",
-    intro:
-      "Your scooter may have handled office runs, college trips and everyday errands. When it is time to sell, its condition and maintenance tell a more useful story than age alone. Start a free inspection request for your petrol or electric scooter and discuss an offer after the team reviews it.",
-    imageAlt: "Scooter illustrating the used scooter selling service",
-    booking: "scooter",
-    cta: "Book my scooter inspection",
-    bookingHint:
-      "Choose the scooter type and brand in booking. For an electric model, have battery and charger information ready.",
+  clothing: {
+    title: "Sell Used Kids Clothing in Bangalore | Zapiboo",
+    description: "Sell pre-loved kids clothing, shoes and accessories in Bangalore on Zapiboo — the trusted kids marketplace.",
+    heading: "Sell Pre-Loved Kids Clothing",
+    intro: "Kids grow fast but their clothes still have life. Sell gently used children's clothing, shoes and accessories to families who need them.",
+    kicker: "Kids Clothing · Bangalore",
+    imageAlt: "Pre-loved kids clothing for sale on Zapiboo",
+    booking: "clothing",
+    cta: "List your clothing for free",
+    bookingHint: "Free listing. Gently used kids clothing is always in demand.",
     overview: {
-      title: "Petrol and electric scooters need different conversations",
-      text: "For a petrol scooter, describe starting behaviour, servicing and how it feels when pulling away. For an electric scooter, explain charging, the battery arrangement and the range you experience in normal use. Keep the exact variant handy: scooters with similar names can have different batteries or equipment. Tell the team which version you own rather than selecting the nearest familiar name.",
+      title: "Why sell kids clothing on Zapiboo?",
+      text: "Children outgrow clothes before they wear them out. Zapiboo makes it easy to sell gently used clothing, shoes and accessories to local parents. Good for your wallet, great for the planet.",
     },
-    factorsTitle: "What to share about your scooter",
+    factorsTitle: "What affects resale value of kids clothing?",
     factors: [
-      {
-        title: "Petrol engine and automatic drive",
-        text: "Mention starting difficulty, vibration, unusual sounds or hesitation when moving off. Keep records of belt, clutch or other transmission work if available. Explain whether problems happen from cold, after a longer ride or only occasionally.",
-      },
-      {
-        title: "Electric battery and charging",
-        text: "Gather available battery-health reports, replacement invoices and warranty information. Describe the range you observe and the conditions in which you ride, without presenting it as a guaranteed range. Note charging faults, missing equipment or a battery subscription arrangement.",
-      },
-      {
-        title: "Panels, storage and daily-use parts",
-        text: "Show cracked panels, seat tears, damaged mirrors and problems with the under-seat lock. Check that you can open the storage area and fuel or charging access. Small everyday faults are easier to discuss when they are listed together.",
-      },
-      {
-        title: "Usage and consumables",
-        text: "Explain whether the scooter served short household trips, a daily commute or delivery work. Share recent tyre, brake and battery replacements. The pattern of use gives context to the odometer and helps avoid assumptions based only on appearance.",
-      },
+      { title: "Condition & quality", text: "Stain-free, well-maintained clothing in good condition sells best. Premium brands and designer items command higher prices." },
+      { title: "Brand recognition", text: "Well-known kids brands fetch better prices. Include the brand name in your listing for better visibility." },
+      { title: "Size & season", text: "Common sizes (2-8 years) sell fastest. Seasonal items sell best when listed at the right time." },
+      { title: "Bundling", text: "Clothing sold in curated bundles (by size, season or type) attracts more buyers than individual items." },
     ],
-    preparationTitle: "Have the keys, storage and charging kit ready",
+    preparationTitle: "Prepare clothing for sale",
     preparation: [
-      "Empty the under-seat compartment and front storage pockets.",
-      "Keep all keys or key fobs together and mention any missing spare.",
-      "For an electric scooter, make the charger and relevant account information available for discussion.",
-      "List faults in the display, lights, seat lock or charging access.",
-      "Share the scooter's actual location and whether it can currently be moved.",
+      "Wash and iron all items before listing",
+      "Check for stains, tears or missing buttons",
+      "Photograph items clearly — flat-lay or on hangers",
+      "Group by size and type for bundle deals",
+      "Include size labels in photos for buyer confidence",
     ],
     documents: {
-      title: "Prepare for more than a key handover",
-      text: "Bring registration, insurance and service information, plus battery or charger purchase records for an electric model where available. Tell the team if equipment is financed, leased or provided through a subscription. Ask how any manufacturer-app association or connected account should be handled after the sale is agreed; avoid sharing account passwords. Confirm the transaction-specific paperwork before handover.",
+      title: "What to include in your listing",
+      text: "Add the brand, size, age range, material and condition. For bundles, list the number and types of items included. Note any wear or imperfections.",
     },
     local: {
-      title: "Selling a family scooter while keeping the day moving",
-      text: "If several people at home use the scooter, choose a Bangalore inspection slot when it will be parked and the keys will be available. For apartment complexes in Bellandur or JP Nagar, share visitor access instructions and the correct block. For a scooter kept at work, check that an inspection is permitted there. Enter your pincode to review appointment availability.",
+      title: "Selling kids clothing in Bangalore",
+      text: "Bangalore's growing community of conscious parents actively shops for pre-loved kids clothing. List on Zapiboo and reach families across the city.",
     },
     steps: [
-      {
-        title: "Identify the scooter version",
-        text: "Add the type, brand, model and year. Make clear whether it is petrol or electric and describe the battery arrangement where relevant.",
-      },
-      {
-        title: "Prepare an accessible visit",
-        text: "Choose an available inspection slot and gather keys, records and charging equipment so the scooter can be reviewed.",
-      },
-      {
-        title: "Settle the handover details",
-        text: "Review the offer, included equipment and payment arrangements. Ask about RC transfer support and any connected-account steps.",
-      },
+      { title: "List your items", text: "Photo, description, price — that is all it takes. Create bundles for faster sales." },
+      { title: "Connect with buyers", text: "Parents filter by size, brand and age. Secure payments through the platform." },
+      { title: "Easy handover", text: "Doorstep pickup from your home. We handle the logistics." },
     ],
     faqs: [
-      {
-        question: "Can I enquire about selling an electric scooter?",
-        answer:
-          "Yes. Share the brand, exact model, battery details and current condition. The team must confirm eligibility and how your model can be assessed; a booking request does not guarantee acceptance.",
-      },
-      {
-        question: "What if the charger or spare key is missing?",
-        answer:
-          "Mention the missing item before the inspection. The team needs to know what equipment is available and what would be included in a sale. Do not buy a replacement solely for the sale without discussing it first.",
-      },
-      {
-        question: "Should I quote the advertised range of my electric scooter?",
-        answer:
-          "Share the exact variant and describe the range you personally observe, with context such as riding pattern and load. Manufacturer figures and your actual experience are different pieces of information; neither replaces a battery assessment.",
-      },
-      {
-        question: "Can I sell a scooter used for deliveries?",
-        answer:
-          "Tell the team about delivery use, distance covered, servicing and any changes to the scooter. They can confirm eligibility after reviewing those details. An accurate usage history is more useful than describing every scooter as privately commuted.",
-      },
-      {
-        question: "Is a scooter inspection an obligation to sell?",
-        answer:
-          "No. You can review the offer and ask about the assessment before deciding. Agree on payment, paperwork and included keys or charging equipment only when you are ready to proceed.",
-      },
+      { question: "What condition should clothes be in?", answer: "Clean, stain-free and in wearable condition. Minor pilling is fine but significant wear or damage should be disclosed." },
+      { question: "Can I sell shoes and accessories too?", answer: "Absolutely! Kids shoes, hats, bags and accessories are all welcome on Zapiboo." },
+      { question: "Is doorstep pickup available?", answer: "Yes, across 40+ Bangalore areas." },
     ],
   },
-  suv: {
-    title: "Sell Used SUV in Bangalore | SUV Inspection | Zapiboo",
-    description:
-      "Sell your used SUV in Bangalore. Explain its drivetrain, seating, maintenance and usage, and book a free doorstep inspection to discuss a market-linked offer.",
-    heading: "Sell your used SUV in Bangalore",
-    kicker: "The details behind the bigger picture",
-    intro:
-      "A compact crossover, a seven-seat family SUV and a four-wheel-drive tourer need different assessments. Share the specification and history of yours, book a free doorstep inspection and discuss an offer with the details in view.",
-    imageAlt: "SUV illustrating the sport utility vehicle selling service",
-    booking: "car",
-    cta: "Book my SUV inspection",
-    bookingHint:
-      "SUVs are listed under Car in our booking flow. Choose SUV as the body style on the next step.",
+  gear: {
+    title: "Sell Used Baby Gear in Bangalore | Zapiboo",
+    description: "Sell pre-loved baby gear — strollers, car seats, high chairs, cribs and more — in Bangalore on Zapiboo.",
+    heading: "Sell Pre-Loved Baby Gear",
+    intro: "Strollers, car seats, high chairs and cribs are expensive new. Help other parents save by selling your gently used baby gear on Zapiboo.",
+    kicker: "Baby Gear · Bangalore",
+    imageAlt: "Pre-loved baby gear for sale on Zapiboo",
+    booking: "gear",
+    cta: "List your gear for free",
+    bookingHint: "Free listing. Baby gear sells fast — most items get interest within 24 hours.",
     overview: {
-      title: "An SUV badge does not describe the whole vehicle",
-      text: "The same model may come with different seating layouts, engines, gearboxes and drive systems. Identify your exact variant and whether it is two-wheel drive, all-wheel drive or four-wheel drive, if known. Describe school runs, highway journeys, towing or off-road use honestly. Those details help the team understand what to review instead of treating every SUV as the same kind of family car.",
+      title: "Why sell baby gear on Zapiboo?",
+      text: "Baby gear is used for a short period and then sits in storage. Zapiboo connects you with new parents who need quality gear at affordable prices. Sell your stroller, crib or car seat and make space at home.",
     },
-    factorsTitle: "SUV details worth bringing into the valuation",
+    factorsTitle: "What affects the resale value of baby gear?",
     factors: [
-      {
-        title: "Drivetrain and transmission history",
-        text: "Bring records of gearbox or drive-system servicing and mention warning lights or unusual sounds. If your SUV has selectable drive modes or four-wheel-drive controls, point out any known faults. Do not assume a higher-spec badge proves which system is fitted.",
-      },
-      {
-        title: "Suspension, tyres and underbody",
-        text: "Explain suspension repairs, uneven tyre wear, underbody impacts or damage from rough roads. Tell the team about changed wheel sizes or lift kits. Larger tyres and accessories can be expensive, but their retail cost is not automatically recovered in the sale offer.",
-      },
-      {
-        title: "Seating and cabin equipment",
-        text: "Confirm the seating configuration and whether folding seats, rear air-conditioning, sunroof and powered features work. For a family SUV, show wear across all rows rather than only the front seats. Include missing headrests, trim or parcel shelves in your description.",
-      },
-      {
-        title: "Long journeys and maintenance",
-        text: "Use service invoices to explain major work and the maintenance schedule actually followed. For a diesel SUV, mention any emissions-system warning or related workshop visit. For a hybrid or electric SUV, gather available battery and warranty records.",
-      },
+      { title: "Brand & model", text: "Premium brands like Chicco, Graco, Joie and Babyhug hold their value well. Popular models sell faster." },
+      { title: "Age & condition", text: "Gear that is less than 3 years old and in excellent condition commands the best prices. Include the purchase date." },
+      { title: "Safety standards", text: "Items that meet current safety standards are preferred. Mention certifications and safety features in your listing." },
+      { title: "Completeness", text: "Include all original accessories, manuals and packaging for the best resale value." },
     ],
-    preparationTitle: "Leave space to see the whole SUV",
+    preparationTitle: "Prepare your gear for sale",
     preparation: [
-      "Park where doors and the tailgate can open without blocking neighbouring vehicles.",
-      "Make all seating rows and the boot accessible by removing personal luggage.",
-      "Locate spare keys and any removable accessories included in the sale.",
-      "Collect invoices for tyres, suspension, transmission and significant repairs.",
-      "Share parking-height restrictions or tight access before the inspector arrives.",
+      "Clean thoroughly — wipe all surfaces, wash fabric covers",
+      "Check all mechanisms, locks and safety features work properly",
+      "Gather all accessories, manuals and original parts",
+      "Take photos from multiple angles showing condition",
+      "Note the brand, model, purchase date and original price",
     ],
     documents: {
-      title: "Explain the specification as well as the paperwork",
-      text: "Keep the registration certificate, insurance information and service history with any invoices that identify the exact variant or installed equipment. Mention finance and ownership details early. List roof racks, additional wheels or other removable items separately so the agreed offer has a clear scope. Confirm payment, transfer support and the handover record before releasing the vehicle.",
+      title: "What to include in your listing",
+      text: "Add the brand, model, age of the item, condition, original purchase price and any accessories included. For safety items like car seats, include the manufacture date and expiry date if applicable.",
     },
     local: {
-      title: "A Bangalore visit with enough room for a larger vehicle",
-      text: "Basement bays and narrow apartment driveways can make an SUV harder to inspect. When booking in Hebbal, Yelahanka, Sarjapur Road or elsewhere in Bangalore, identify an accessible parking location and provide entry instructions. If the vehicle is usually away on family or work trips, choose a slot when it will be back at that address. The team confirms availability for your location.",
+      title: "Selling baby gear in Bangalore",
+      text: "New parents in Bangalore are always looking for quality baby gear at reasonable prices. List on Zapiboo and reach families across Whitefield, HSR, Koramangala, Indiranagar and all major areas.",
     },
     steps: [
-      {
-        title: "Choose Car, then SUV",
-        text: "Start in the Car booking category and select the SUV body style. Add your brand, model and year.",
-      },
-      {
-        title: "Share the specification and history",
-        text: "Prepare drivetrain, seating and maintenance details for the doorstep inspection. Explain modifications and known damage.",
-      },
-      {
-        title: "Review the offer and included equipment",
-        text: "Clarify which accessories stay with the SUV, then agree on payment, handover and ownership-transfer arrangements.",
-      },
+      { title: "List your gear", text: "Add photos, details and your price. Highlight brand, model and condition." },
+      { title: "Connect with parents", text: "New parents browse gear by category. Secure payments protect both buyer and seller." },
+      { title: "Doorstep pickup", text: "We arrange pickup from your home. Large items are handled with care." },
     ],
     faqs: [
-      {
-        question: "Why does the SUV booking button open the Car category?",
-        answer:
-          "The booking catalogue groups SUVs under Car. Choose SUV on the body-style step, then continue with the brand and vehicle details.",
-      },
-      {
-        question: "Does four-wheel drive always mean a higher sale price?",
-        answer:
-          "No fixed premium can be promised. The exact variant, working condition, service history and demand all matter. Tell the team which drive system is fitted and share relevant maintenance records.",
-      },
-      {
-        question: "Should I disclose off-road use?",
-        answer:
-          "Yes. Describe how the SUV was used and any underbody, suspension or body repairs. Clear history helps the team assess the vehicle and avoids surprises during the inspection.",
-      },
-      {
-        question: "Can you assess a seven-seat family SUV?",
-        answer:
-          "Share the model and seating configuration when enquiring. Prepare access to every row and mention faults with seats or rear cabin equipment. Eligibility is confirmed for your particular vehicle.",
-      },
-      {
-        question: "Are roof racks and extra wheels part of the offer?",
-        answer:
-          "Only include them if that is what you agree with the team. Make a written list of removable equipment that stays with the vehicle and discuss its treatment before accepting the offer.",
-      },
+      { question: "Can I sell large items like cribs?", answer: "Yes! We handle large item pickup. Our partners are equipped to safely transport cribs, strollers and other bulky items." },
+      { question: "Are there any safety restrictions?", answer: "We do not accept car seats that are older than 6 years or have been in accidents. All items must meet basic safety standards." },
+      { question: "Do you offer doorstep pickup for large items?", answer: "Yes, doorstep pickup is available across 40+ Bangalore areas, including for large and bulky items." },
     ],
   },
-  commercial: {
-    title: "Sell Commercial Vehicle in Bangalore | Inspection | Zapiboo",
-    description:
-      "Sell a commercial vehicle in Bangalore with a clearer plan. Share its working history, body configuration and records, then request a doorstep inspection.",
-    heading: "Sell your commercial vehicle in Bangalore",
-    kicker: "Plan the sale around your business",
-    intro:
-      "Replacing a delivery vehicle, retiring an auto or reducing a working fleet takes more planning than handing over the keys. Tell Zapiboo what the vehicle carries, how it has worked and when it can be inspected. Start a free inspection request and confirm eligibility for your specific vehicle with the team.",
-    imageAlt: "Commercial vehicle illustrating the business vehicle selling service",
-    booking: "commercial",
-    cta: "Request a commercial vehicle inspection",
-    bookingHint:
-      "Choose Commercial, then the available vehicle type. For a fleet or unusual body configuration, speak to the team before scheduling.",
+  cycles: {
+    title: "Sell Used Kids Cycles & Ride-ons in Bangalore | Zapiboo",
+    description: "Sell pre-loved kids cycles, tricycles, scooters and ride-on toys in Bangalore on Zapiboo.",
+    heading: "Sell Pre-Loved Kids Cycles & Ride-ons",
+    intro: "Outgrown the training wheels? Sell your kids' bicycles, tricycles, scooters and ride-on toys to families who will love them.",
+    kicker: "Cycles & Ride-ons · Bangalore",
+    imageAlt: "Pre-loved kids cycles and ride-on toys on Zapiboo",
+    booking: "cycles",
+    cta: "List your cycle for free",
+    bookingHint: "Free listing. Kids cycles are among our most popular categories.",
     overview: {
-      title: "Value the working vehicle, not just the chassis badge",
-      text: "A cargo auto, delivery van, pickup and truck have different uses and inspection needs. Describe the vehicle's body, capacity as recorded in its documents, route pattern and typical work. Include fitted equipment and say whether it will stay with the vehicle. A clear description lets the team confirm suitability before you take a vehicle out of service for a visit.",
+      title: "Why sell kids cycles on Zapiboo?",
+      text: "Kids cycles, scooters and ride-on toys are expensive new and quickly outgrown. Zapiboo helps you sell them to the next family while they are still in great shape. Easy listing, secure payments and doorstep pickup.",
     },
-    factorsTitle: "The commercial details that shape the discussion",
+    factorsTitle: "What affects resale value?",
     factors: [
-      {
-        title: "Duty cycle and operating history",
-        text: "Explain city deliveries, longer-distance trips, frequent stops or extended idle periods. Bring odometer readings and available operating or maintenance logs. If a vehicle has changed jobs during your ownership, describe both periods rather than only its most recent route.",
-      },
-      {
-        title: "Load body and fitted equipment",
-        text: "Identify an open body, enclosed box, passenger layout or specialist installation. Note damage, corrosion, repairs and alterations. List equipment such as a refrigeration unit separately and confirm whether it is owned, financed or excluded from the sale.",
-      },
-      {
-        title: "Mechanical upkeep and downtime",
-        text: "Gather records of major engine, clutch, gearbox, brake and suspension work. Explain recurring faults and any current limitation on driving or loading. Maintenance history helps distinguish completed repairs from work a new operator may still need to arrange.",
-      },
-      {
-        title: "Business ownership and vehicle records",
-        text: "Tell the team whether the registered owner is an individual or a business, and who can authorise a sale. Share available permit, fitness, tax, insurance and finance information for review. The applicable requirements need confirmation for the vehicle and proposed transaction.",
-      },
+      { title: "Size & age suitability", text: "Cycles for ages 3-8 are in highest demand. Make sure to mention the wheel size and recommended age range." },
+      { title: "Condition", text: "Working brakes, inflated tyres and no rust command better prices. A quick service before listing helps." },
+      { title: "Brand", text: "Recognised brands like Hero, BSA, Firefox and Decathlon hold value better than unbranded options." },
+      { title: "Accessories", text: "Training wheels, helmets and knee guards sold together increase the perceived value." },
     ],
-    preparationTitle: "Prepare a visit without disrupting a working route",
+    preparationTitle: "Prepare your cycle for listing",
     preparation: [
-      "Choose a time when the vehicle is back from duty and can be made available.",
-      "Unload goods and remove customer property before inspection.",
-      "Arrange yard or premises access with space around the body and cab.",
-      "Have the responsible owner or authorised representative available for questions.",
-      "Separate included equipment from tools, stock and removable business assets.",
-      "Explain any non-running condition before planning movement or collection.",
+      "Clean the cycle thoroughly — remove dirt and dust",
+      "Check brakes, tyres and chain are in working order",
+      "Tighten any loose bolts or screws",
+      "Take photos in good lighting — show all angles",
+      "Include any accessories like training wheels or helmets",
     ],
     documents: {
-      title: "Review the transaction before taking the vehicle off duty",
-      text: "Start with registration, insurance and service records, plus available operating documents relevant to the vehicle. If it belongs to a company, clarify who will approve the transaction and provide the ownership records. For an active loan or leased equipment, confirm the process with the relevant lender or owner. Ask the team to agree a vehicle-specific checklist, payment terms and handover responsibilities before scheduling your final working day.",
+      title: "What to include in your listing",
+      text: "Add the brand, wheel size, suitable age range, condition and any accessories included. Mention if it needs any repairs.",
     },
     local: {
-      title: "Coordinate a Bangalore yard, depot or workplace inspection",
-      text: "For a vehicle based in Peenya, Bommasandra or another working area, share the actual yard address, gate contact and access restrictions. A business mailing address may not be where the vehicle is parked. If the vehicle runs outside Bangalore, identify when it will return and check slot availability before changing its schedule. Discuss fleet enquiries individually so each vehicle's records and condition are reviewed.",
+      title: "Selling kids cycles in Bangalore",
+      text: "With Bangalore's growing cycling-friendly infrastructure, kids cycles are always in demand. List on Zapiboo and connect with active families across the city.",
     },
     steps: [
-      {
-        title: "Describe the vehicle and its work",
-        text: "Select the commercial category, add the model and year, and explain the body configuration and current operating condition.",
-      },
-      {
-        title: "Confirm eligibility and inspection access",
-        text: "Check the specific vehicle with the team and arrange a visit when it is available, unloaded and accessible.",
-      },
-      {
-        title: "Agree a business-ready handover",
-        text: "Review the offer, included equipment, ownership documents and payment arrangements. Coordinate the handover with your operating schedule.",
-      },
+      { title: "List your cycle", text: "Photos, details and price — your listing is live in under a minute." },
+      { title: "Find a buyer", text: "Parents search by size and brand. Secure payments through the platform." },
+      { title: "Doorstep pickup", text: "We pick up the cycle from your doorstep and deliver it to the buyer." },
     ],
     faqs: [
-      {
-        question: "Which commercial vehicles can I enquire about?",
-        answer:
-          "The booking flow includes a Commercial category for enquiries such as autos, pickups, tempos and trucks. Share the exact type, model, body and condition; the team must confirm acceptance for each vehicle.",
-      },
-      {
-        question: "Can I sell more than one business vehicle?",
-        answer:
-          "Contact the team with a separate list of models, registration details, locations and conditions. Ask how the inspections and paperwork should be organised. A fleet enquiry does not imply one shared valuation for every vehicle.",
-      },
-      {
-        question: "What if the vehicle is financed or company-owned?",
-        answer:
-          "Explain the ownership and finance arrangement before accepting an offer. Confirm authorisation and lender-related steps with the relevant parties, and agree the transaction-specific document checklist with the team.",
-      },
-      {
-        question: "Can I keep the vehicle working until the sale?",
-        answer:
-          "Discuss your operating schedule and proposed handover date with the team. Any change in condition or mileage after inspection should be disclosed. Do not assume an inspection appointment fixes the final collection or payment date.",
-      },
-      {
-        question: "Can I enquire about a non-running commercial vehicle?",
-        answer:
-          "Yes, but clearly describe the fault and whether the vehicle can be moved. Eligibility, inspection access and any movement arrangements need to be confirmed before a visit is scheduled.",
-      },
-      {
-        question: "Should I remove branding or specialist equipment first?",
-        answer:
-          "Discuss what is included before altering the vehicle. Identify business branding, installed equipment and leased items so removal, inclusion and handover responsibilities can be agreed explicitly.",
-      },
+      { question: "Can I sell battery-powered ride-on toys?", answer: "Yes! Battery-powered cars, bikes and ride-ons are welcome. Mention battery condition and charging details." },
+      { question: "Do cycles need to be in perfect condition?", answer: "No, but they should be safe and rideable. Disclose any issues in your listing and price accordingly." },
+      { question: "How are large items like cycles picked up?", answer: "Our partners are equipped for large item pickup. We arrange a convenient slot for collection from your home." },
+      { question: "What sizes sell best?", answer: "12-inch and 16-inch wheels (ages 3-7) are the fastest sellers as kids outgrow them quickly." },
     ],
   },
 };

@@ -1,353 +1,68 @@
-﻿import Link from "next/link";
-import { HomeHero } from "@/components/HomeHero";
-import { VehicleSelectionLink } from "@/components/VehicleSelectionLink";
-import {
-  ArrowRight,
-  CheckCircle2,
-  MapPin,
-  Quote,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Reveal } from "@/components/Reveal";
-import { WhatsAppIcon } from "@/components/WhatsAppIcon";
-import { steps, features, testimonials, materials } from "@/lib/site-data";
+import { HomePickupGuide } from '@/components/HomePickupGuide';
+import { HomeMoments, HomePreparation, HomeCollectionSupport, HomeFinalCta, HomeQuickStart } from '@/components/HomeSections';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowRight, ArrowUpRight, Check, ChevronDown, Heart, MapPin, Recycle, Sparkles } from 'lucide-react';
+import { HomeHero } from '@/components/HomeHero';
+import { steps } from '@/lib/site-data';
+import { featuredServiceAreas, serviceAreas } from '@/lib/seo';
+import { servicesPaused } from '@/lib/launch-status';
+import pickupImage from '@/assets/kids-doorstep-pickup.webp';
 
-import {
-  absoluteUrl,
-  breadcrumbSchema,
-  businessContact,
-  featuredServiceAreas,
-  organizationSchema,
-  serviceAreas,
-  serviceSchema,
-  websiteSchema,
-} from "@/lib/seo";
-import heroImgAsset from "@/assets/hero-vehicles.webp";
-const heroImg = heroImgAsset.src;
-import pickupImgAsset from "@/assets/doorstep-inspection.webp";
-const pickupImg = pickupImgAsset.src;
-import bikeImgAsset from "@/assets/vehicle-bike.webp";
-const bikeImg = bikeImgAsset.src;
-import carImgAsset from "@/assets/vehicle-car.webp";
-const carImg = carImgAsset.src;
-import commercialImgAsset from "@/assets/vehicle-commercial.webp";
-const commercialImg = commercialImgAsset.src;
-import electricImgAsset from "@/assets/vehicle-electric.webp";
-const electricImg = electricImgAsset.src;
-import scooterImgAsset from "@/assets/vehicle-scooter.webp";
-const scooterImg = scooterImgAsset.src;
-import suvImgAsset from "@/assets/vehicle-suv.webp";
-const suvImg = suvImgAsset.src;
-
-const homepageTitle = "Sell & Buy Used Cars, Bikes & Scooters in Bangalore | Zapiboo";
-const homepageDescription =
-  "Sell your used car, bike or scooter in Bangalore at the best price. Free doorstep inspection, instant payment, free RC transfer â€” and verified second-hand vehicles to buy.";
-
-const vehicleSelectionCards = [
-  {
-    title: "Sell your car",
-    text: "Hatchback, sedan or SUV â€” petrol, diesel, CNG.",
-    image: carImg,
-    vehicle: "car",
-  },
-  {
-    title: "Sell your bike",
-    text: "Commuter, sports and cruiser motorcycles.",
-    image: bikeImg,
-    vehicle: "bike",
-  },
-  {
-    title: "Sell your scooter",
-    text: "Activa, Access, Jupiter and city scooters.",
-    image: scooterImg,
-    vehicle: "scooter",
-  },
-  {
-    title: "Sell an SUV",
-    text: "Compact SUVs, MUVs and 7-seaters.",
-    image: suvImg,
-    vehicle: "car",
-  },
-  {
-    title: "Electric vehicles",
-    text: "EV cars and electric two-wheelers.",
-    image: electricImg,
-    vehicle: "car",
-  },
-  {
-    title: "Commercial vehicles",
-    text: "Autos, mini trucks, tempos and fleet cars.",
-    image: commercialImg,
-    vehicle: "commercial",
-  },
+const categories = [
+  { id: 'toys', name: 'Toys & games', note: 'A whole new playtime', color: '#fff0cf' },
+  { id: 'books', name: 'Kids books', note: 'Stories worth sharing', color: '#e3efff' },
+  { id: 'clothing', name: 'Kids clothing', note: 'Outgrown, not out of style', color: '#ffe7ed' },
+  { id: 'gear', name: 'Baby gear', note: 'Big help for little ones', color: '#e0f6ef' },
+  { id: 'cycles', name: 'Cycles & ride-ons', note: 'Ready for the next adventure', color: '#e3f4ff' },
+  { id: 'electronics', name: 'Kids electronics', note: 'Little minds, big discoveries', color: '#fff0cf' },
+];
+const faqs = [
+  ['What can I sell?', 'Toys, books, kids clothing, baby gear, cycles, ride-ons and kids electronics. Items should be clean, safe to use and honestly described.'],
+  ['Can I sell a bundle?', 'Yes. Choose the closest category and use Anything else to describe what is included.'],
+  ['What happens after I share my details?', 'When bookings are available, our team reviews your items and confirms pickup availability, sale details and payment arrangements before handover.'],
+  ['Are pickups available now?', servicesPaused ? 'We are preparing our pickup service. You can explore categories and create an account; an opening-soon message will appear while bookings are paused.' : 'Choose a preferred date and time in the pickup form. Our team will confirm availability for your address.'],
 ];
 
-
 export default function Home() {
-  const featuredAreas = serviceAreas.filter((area) => featuredServiceAreas.includes(area.slug));
+  const areas = serviceAreas.filter(area => featuredServiceAreas.includes(area.slug));
+  return <div className="modern-home">
+    <HomeHero />
+    <section id="sell-categories" className="home-section home-shell">
+      <div className="home-section-heading"><div><span className="home-eyebrow">MAKE ROOM FOR WHAT’S NEXT</span><h2>Little things.<br className="sm:hidden" /> Lots of potential.</h2></div><p>What have they outgrown?<br />Pick a category. We’ll take it from here.</p></div>
+      <div className="home-category-grid">{categories.map((category, i) => <Link key={category.id} href={`/pickup?category=${category.id}`} className="home-category-card" style={{ backgroundColor: category.color }}>
+        <div className="home-category-top"><span>0{i + 1}</span><span className="home-category-arrow"><ArrowUpRight size={20} /></span></div>
+        <div className="home-category-image"><Image src={`/sell-categories/${category.id}.webp`} alt="" fill sizes="(min-width: 1024px) 350px, (min-width: 640px) 45vw, 46vw" /></div>
+        <div className="home-category-caption"><h3>Sell {category.name.toLowerCase()}</h3><p>{category.note}</p></div>
+      </Link>)}</div>
+      <div className="home-category-foot"><Heart size={16} /><p>A little used. A lot left to give.</p><span>Clean, safe, and ready for a new home.</span></div>
+    </section>
 
-  return (
-    <>
-      <HomeHero />
+    <HomePickupGuide />
 
-      <section className="border-b border-border bg-background py-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-                What are you selling?
-              </p>
-              <h2 className="mt-2 text-3xl font-bold sm:text-4xl">Start with your vehicle</h2>
-            </div>
-            <p className="max-w-md text-sm text-muted-foreground">
-              Choose a category and the valuation flow opens with your vehicle type already selected.
-            </p>
-          </div>
+    <HomeMoments />
 
-          <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-            {vehicleSelectionCards.map((card) => (
-              <VehicleSelectionLink
-                key={card.title}
-                href={`/pickup?vehicle=${card.vehicle}`}
-                image={card.image}
-                title={card.title}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+    <HomeQuickStart />
 
-      <section className="border-b border-border bg-background">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-4 gap-y-8 overflow-hidden px-4 py-10 sm:px-6 md:py-12 lg:grid-cols-4 lg:px-8">
-          {[
-            { value: "60 min", label: "Free inspection" },
-            { value: "40+", label: "Bangalore areas" },
-            { value: "Free", label: "RC transfer" },
-            { value: "4.9/5", label: "Seller rating" },
-          ].map((s, i) => (
-            <Reveal key={s.label} delay={i * 0.06} className="px-4 text-center">
-              <div className="text-3xl font-extrabold text-foreground md:text-4xl">
-                <span className="text-gradient">{s.value}</span>
-              </div>
-              <div className="mt-1 text-sm text-muted-foreground">{s.label}</div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
+    <section id="how-it-works" className="home-process"><div className="home-shell home-section">
+      <div className="home-section-heading"><div><span className="home-eyebrow">LESS TO DO. MORE TO LOOK FORWARD TO.</span><h2>Small steps.<br />A fresh start.</h2></div><Link href="/pickup" className="home-text-link">Let’s get started <ArrowUpRight size={20} /></Link></div>
+      <div className="home-step-grid">{steps.map((step, i) => <article key={step.title} className="home-step"><div className="home-step-top"><span className="home-step-number">0{i + 1}</span><step.icon size={25} strokeWidth={1.5} /></div><h3>{step.title}</h3><p>{step.text}</p></article>)}</div>
+    </div></section>
 
-      <section className="bg-background py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-              How it works
-            </p>
-            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              Selling your vehicle, finally made simple
-            </h2>
-            <p className="mt-4 text-muted-foreground">
-              Three steps from listing to payment, with no haggling and no hidden charges.
-            </p>
-          </Reveal>
+    <section className="home-shell home-section"><div className="home-pickup-grid">
+      <div className="home-pickup-photo"><Image src={pickupImage} alt="Zapiboo doorstep pickup of pre-loved kids items" fill sizes="(min-width: 1024px) 550px, 90vw" className="object-cover" /><span className="home-photo-label"><MapPin size={15} /> From your home. To a new story.</span></div>
+      <div className="home-pickup-copy"><span className="home-eyebrow">YOUR SOFA IS A GREAT STARTING POINT</span><h2>You stay home.<br />We’ll come over.</h2><p>No packing the car. No running around. Share what you’d like to sell, and our team will help arrange the next steps.</p><ul>{['Pickup slots confirmed with you', 'A little guidance on getting items ready', 'Sale & payment details agreed before handover'].map(text => <li key={text}><Check size={17} />{text}</li>)}</ul><Link href="/pickup" className="home-button">Arrange a pickup <ArrowUpRight size={19} /></Link></div>
+    </div></section>
 
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
-            {steps.map((step, i) => (
-              <Reveal key={step.title} delay={i * 0.1}>
-                <div className="group relative h-full rounded-2xl border border-border bg-card p-8 shadow-soft transition-all hover:-translate-y-1 hover:shadow-elevated">
-                  <div className="flex size-14 items-center justify-center rounded-xl bg-gradient-brand text-primary-foreground shadow-green">
-                    <step.icon className="size-7" />
-                  </div>
-                  <div className="mt-6 text-sm font-semibold text-primary">Step {i + 1}</div>
-                  <h3 className="mt-1 text-xl font-bold">{step.title}</h3>
-                  <p className="mt-3 text-muted-foreground">{step.text}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+    <HomePreparation />
 
-      <section className="bg-secondary/50 py-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
-          <Reveal>
-            <div className="relative overflow-hidden rounded-3xl shadow-elevated">
-              <img
-                src={pickupImg}
-                alt="Zapiboo evaluator inspecting a used car at a Bangalore home"
-                width={1200}
-                height={1000}
-                loading="lazy"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </Reveal>
+    <section className="home-shell"><div className="home-purpose"><div className="home-purpose-icon"><Recycle size={38} strokeWidth={1.4} /></div><div><span className="home-eyebrow">GROWING UP SHOULDN’T MEAN THROWING AWAY</span><h2>Good things deserve<br />a second childhood.</h2><p>More room in your home. More life in their favourite things.<br />That’s a little change worth making.</p><Link href="/pickup" className="home-text-link home-purpose-cta">Give your items a second chapter<ArrowUpRight size={18} /></Link></div><Sparkles className="home-purpose-sparkle" size={62} strokeWidth={1} /></div></section>
 
-          <Reveal delay={0.1}>
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-              Doorstep inspection
-            </p>
-            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              We buy your used vehicle right at your doorstep
-            </h2>
-            <p className="mt-4 text-muted-foreground">
-              Whether it is a 12-year-old hatchback or a two-year-old scooter, a trained Zapiboo
-              evaluator comes to you. See the inspection report, understand how the price was
-              arrived at, and approve your payout on the spot.
-            </p>
-            <ul className="mt-8 space-y-4">
-              {[
-                "Same-day and next-day inspection slots",
-                "140-point inspection with a shared report",
-                "Instant bank transfer once you accept",
-                "Free RC transfer, NOC and insurance handover",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" />
-                  <span className="text-foreground">{item}</span>
-                </li>
-              ))}
-            </ul>
-            <Button asChild variant="hero" size="lg" className="mt-9">
-              <Link href="/pickup">
-                Book my free inspection
-                <ArrowRight />
-              </Link>
-            </Button>
-          </Reveal>
-        </div>
-      </section>
+    <section className="home-shell home-section"><div className="home-section-heading"><div><span className="home-eyebrow"><MapPin size={14} /> IN YOUR NEIGHBOURHOOD</span><h2>Hey, Bangalore.</h2></div><p>We’re keeping it local.<br />Contact us to confirm pickup in your area.</p></div><div className="home-area-list">{areas.map(area => <Link key={area.slug} href={`/areas/${area.slug}`}>{area.name}<ArrowUpRight size={15} /></Link>)}</div><Link href="/areas" className="home-text-link home-all-areas">Explore all service areas <ArrowRight size={17} /></Link></section>
 
-      <section className="bg-background py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
-            <div className="max-w-xl">
-              <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-                Bangalore resale price guide
-              </p>
-              <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-                What used vehicles sell for in Bangalore
-              </h2>
-              <p className="mt-4 text-muted-foreground">
-                Indicative price bands by body type. Your final offer depends on year, kilometres, variant and condition.
-              </p>
-            </div>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/materials">
-                View full price guide
-                <ArrowRight />
-              </Link>
-            </Button>
-          </Reveal>
+    <HomeCollectionSupport />
 
-          <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {materials.map((m, i) => (
-              <Reveal key={m.name} delay={(i % 4) * 0.05}>
-                <div className="group h-full rounded-2xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-soft sm:p-6">
-                  <h3 className="whitespace-nowrap text-sm font-bold leading-tight sm:text-base">{m.name}</h3>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-xl font-extrabold text-gradient sm:text-2xl">{m.price}</span>
-                    <span className="whitespace-nowrap text-[11px] text-muted-foreground sm:text-sm">{m.unit}</span>
-                  </div>
-                  <p className="mt-3 text-sm text-muted-foreground">{m.blurb}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-accent/25 py-20">
-        <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-          <Reveal className="mx-auto max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.32em] text-primary">
-              Service area
-            </p>
-            <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
-              Serving All Areas of <span className="text-primary">Bangalore</span>
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Free doorstep vehicle inspection and pickup across every major Bangalore neighbourhood.
-            </p>
-          </Reveal>
-
-          <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
-            {featuredAreas.map((area) => (
-              <Link
-                key={area.slug}
-                href="/pickup"
-                className="group flex min-h-24 min-w-0 flex-col items-start gap-3 rounded-2xl border border-border bg-card px-3 py-4 text-left font-medium shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:text-primary sm:min-h-20 sm:flex-row sm:items-center sm:px-5"
-              >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  <MapPin className="size-4" />
-                </span>
-                <span className="min-w-0 text-sm leading-tight break-words sm:text-base">
-                  {area.name}
-                </span>
-              </Link>
-            ))}
-          </div>
-          <div className="mt-8 flex flex-col items-center gap-4">
-            <p className="text-muted-foreground">
-              From HBR Layout and Nagawara to Whitefield, HSR Layout, JP Nagar and beyond.
-            </p>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/pickup">
-                Check pickup availability
-                <ArrowRight />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-secondary/50 py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">
-              Why Zapiboo
-            </p>
-            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
-              A trusted used-vehicle partner in Bangalore
-            </h2>
-          </Reveal>
-
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((f, i) => (
-              <Reveal key={f.title} delay={(i % 3) * 0.08}>
-                <div className="h-full rounded-2xl border border-border bg-card p-7 shadow-soft">
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-accent text-primary">
-                    <f.icon className="size-6" />
-                  </div>
-                  <h3 className="mt-5 text-lg font-bold">{f.title}</h3>
-                  <p className="mt-2 text-muted-foreground">{f.text}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-background py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Reveal className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold sm:text-4xl">Trusted by Bangalore buyers and sellers</h2>
-          </Reveal>
-          <div className="mt-14 grid gap-6 lg:grid-cols-3">
-            {testimonials.map((t, i) => (
-              <Reveal key={t.name} delay={i * 0.08}>
-                <figure className="flex h-full flex-col rounded-2xl border border-border bg-card p-8 shadow-soft">
-                  <Quote className="size-8 text-primary/30" />
-                  <blockquote className="mt-4 flex-1 text-foreground">"{t.quote}"</blockquote>
-                  <figcaption className="mt-6 border-t border-border pt-5">
-                    <div className="font-semibold">{t.name}</div>
-                    <div className="text-sm text-muted-foreground">{t.role}</div>
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-    </>
-  );
+    <section className="home-faq-section"><div className="home-shell home-faq-grid"><div><span className="home-eyebrow">GOOD QUESTIONS</span><h2>A little clarity.<br />A lot less guesswork.</h2><p>Need a hand? <Link href="/contact">Let’s talk <ArrowUpRight size={14} /></Link></p></div><div className="home-faq-list">{faqs.map(([question, answer]) => <details key={question}><summary>{question}<ChevronDown size={19} /></summary><p>{answer}</p></details>)}</div></div></section>
+    <HomeFinalCta />
+  </div>;
 }
-

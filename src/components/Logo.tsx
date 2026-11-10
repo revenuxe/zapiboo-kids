@@ -1,5 +1,5 @@
 import Link from "next/link";
-import logoAsset from "@/assets/zapiboo-final-logo-transparent.png";
+import logoAsset from "@/assets/zapiboo-kids-logo.webp";
 const logo = logoAsset.src;
 import { cn } from "@/lib/utils";
 
@@ -16,7 +16,7 @@ export function Logo({
     <Link href="/" aria-label="Zapiboo home" className={cn("inline-flex items-center", className)}>
       <img
         src={logo}
-        alt="Zapiboo — buy and sell used cars, bikes and scooters in Bangalore"
+        alt="Zapiboo — Pre-Loved Kids Marketplace"
         width={1774}
         height={887}
         className={cn(

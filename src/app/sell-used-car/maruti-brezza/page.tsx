@@ -1,7 +1,5 @@
-import ModelSelling, { modelSellingMetadata } from "@/views/model-selling";
-
-export const metadata = modelSellingMetadata("maruti-brezza");
+import { permanentRedirect } from 'next/navigation';
 
 export default function Page() {
-  return <ModelSelling slug="maruti-brezza" />;
+  permanentRedirect('/sell/toys');
 }

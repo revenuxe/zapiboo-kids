@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "test:unit": "node --test tests/unit/*.test.mjs",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "supabase:login": "node scripts/connect-supabase.mjs --login",
+    "supabase:connect": "node scripts/connect-supabase.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

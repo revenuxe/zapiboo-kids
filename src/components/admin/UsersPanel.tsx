@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import useSWR from "swr";
 import { Loader2, Mail, MapPin, Phone, Search, User2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { isKidsPickup } from "@/lib/pickup-summary";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type Customer = {
@@ -21,14 +23,18 @@ type Customer = {
 export function UsersPanel() {
   const [q, setQ] = useState("");
 
-  const { data, isLoading } = useSWR(["admin", "customers"], async (): Promise<Customer[]> => {
+  const { data, isLoading, error, mutate } = useSWR(
+    ["admin", "customers"],
+    async (): Promise<Customer[]> => {
       const [profilesRes, leadsRes] = await Promise.all([
         supabase
           .from("user_profiles")
           .select("user_id, full_name, whatsapp, address, pincode, created_at"),
         supabase
           .from("leads")
-          .select("user_id, name, phone, email, address, pincode, created_at")
+          .select(
+            "user_id, name, phone, email, address, pincode, created_at, vehicle_type, items, lead_type, status",
+          )
           .not("user_id", "is", null)
           .order("created_at", { ascending: false }),
       ]);
@@ -74,14 +80,18 @@ export function UsersPanel() {
         c.email ||= l.email ?? "";
         c.address ||= l.address ?? "";
         c.pincode ||= l.pincode ?? "";
-        c.bookings += 1;
+        if (isKidsPickup(l)) {
+          c.bookings += 1;
+          if (l.status === "done") c.pickups += 1;
+        }
         touch(c, l.created_at);
       }
 
       return [...map.values()].sort((a, b) =>
         (b.lastActivity ?? "").localeCompare(a.lastActivity ?? ""),
       );
-    });
+    },
+  );
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -90,6 +100,16 @@ export function UsersPanel() {
       [c.name, c.phone, c.email, c.pincode, c.address].join(" ").toLowerCase().includes(term),
     );
   }, [data, q]);
+
+  if (error)
+    return (
+      <div role="alert" className="rounded-2xl border border-destructive/30 bg-card p-5">
+        <p>Could not load sellers. Please try again.</p>
+        <Button variant="outline" className="mt-3" onClick={() => void mutate()}>
+          Retry
+        </Button>
+      </div>
+    );
 
   if (isLoading) {
     return (
@@ -102,9 +122,9 @@ export function UsersPanel() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <Stat label="Customers" value={data?.length ?? 0} />
-        <Stat label="With bookings" value={(data ?? []).filter((c) => c.bookings > 0).length} />
-        <Stat label="With pickups" value={(data ?? []).filter((c) => c.pickups > 0).length} />
+        <Stat label="Sellers" value={data?.length ?? 0} />
+        <Stat label="With requests" value={(data ?? []).filter((c) => c.bookings > 0).length} />
+        <Stat label="Completed pickups" value={(data ?? []).filter((c) => c.pickups > 0).length} />
       </div>
 
       <div className="relative">
@@ -119,12 +139,15 @@ export function UsersPanel() {
 
       {filtered.length === 0 ? (
         <p className="rounded-2xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
-          No customers found.
+          No sellers found.
         </p>
       ) : (
         <div className="space-y-2.5">
           {filtered.map((c) => (
-            <div key={c.userId} className="rounded-2xl border border-border bg-card p-4 shadow-soft">
+            <div
+              key={c.userId}
+              className="rounded-2xl border border-border bg-card p-4 shadow-soft"
+            >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-start gap-3">
                   <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent text-primary">
@@ -157,7 +180,7 @@ export function UsersPanel() {
                 <div className="shrink-0 text-right">
                   <div className="flex gap-1.5">
                     <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-bold">
-                      {c.bookings} bookings
+                      {c.bookings} requests
                     </span>
                     <span className="rounded-full bg-secondary px-2.5 py-1 text-xs font-bold">
                       {c.pickups} pickups

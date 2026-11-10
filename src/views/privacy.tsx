@@ -4,17 +4,40 @@ import { PageHeader } from "@/components/PageHeader";
 import { businessContact } from "@/lib/seo";
 
 const sections = [
-  ["Information we collect", "When you request an inspection, valuation or contact us, we may collect your name, phone number, email address, vehicle category, brand, model, registration number, address, pincode and preferred appointment details. We may also receive messages you send and optional vehicle photographs or location information you choose to provide."],
-  ["How we use your information", "We use information to respond to your enquiry, arrange an inspection, confirm an appointment, understand the vehicle you want to sell, discuss an offer, provide payment and ownership-transfer support, and improve the service. We may contact you by phone, WhatsApp, email or message about a request you have submitted."],
-  ["Vehicle and location details", "Vehicle information helps the team prepare for an inspection and discuss your selling options. Address, pincode and optional map location details are used to check service coverage and plan a doorstep visit. Please provide accurate information and avoid sharing documents or personal details that are not requested."],
-  ["How we share information", "We share information only where it is reasonably necessary to provide the requested service, meet legal obligations, protect our rights or prevent misuse. This can include service providers that support our website, communications, hosting, appointment handling or transaction process. We do not sell personal information to third parties for their independent marketing use."],
-  ["Data retention", "We keep personal and transaction-related information for as long as needed to handle your request, provide support, maintain business records and meet legal, tax, payment or ownership-transfer obligations. The required retention period can vary according to the service and applicable law."],
-  ["Security", "We use reasonable administrative, technical and organisational measures to protect information under our control. No online service can guarantee absolute security, so please use care when sharing details and contact us promptly if you believe your information or account has been used without permission."],
-  ["Your choices", "You may ask us to update inaccurate contact details, ask questions about the information we hold, or request deletion where applicable. Some records may need to be retained when required for a completed transaction, legal compliance, fraud prevention or dispute resolution. You can choose not to provide optional information, although that may limit the service we can offer."],
-  ["Third-party links", "Our website may contain links to third-party services, such as social platforms, maps or WhatsApp. Their privacy practices are governed by their own policies. Review those policies before using a linked service or sharing information through it."],
-  ["Updates to this policy", "We may update this policy when our services, processes or legal obligations change. The current version will be available on this page. Continued use of the website after an update means that you should review the revised policy."],
+  [
+    "Information we collect",
+    "When you create an account, share items to sell or request a pickup, we may collect your name, email, phone number, item category, condition, optional notes and photographs. Address, pincode, preferred appointment details and optional map location are collected when needed for pickup."
+  ],
+  [
+    "How we use your information",
+    "We use these details to manage your account, review the items you want to sell, respond to enquiries, arrange collection and explain the next steps. We may contact you by phone, WhatsApp or email about a request you submit."
+  ],
+  [
+    "Item photos and location",
+    "Photos help our team understand the items and their condition. Avoid including children, personal documents or unrelated private details in photographs. Address and optional map location help us plan collection and check availability."
+  ],
+  [
+    "Service providers",
+    "We share information where needed to operate the website, authenticate accounts, store optional images, handle communications and arrange the service you request. We do not sell your personal information for independent third-party marketing."
+  ],
+  [
+    "Keeping your information",
+    "We retain information as needed to manage your requests, provide support, maintain business records and meet applicable obligations. You can contact us about the information associated with your account."
+  ],
+  [
+    "Your choices",
+    "Optional photographs, notes and map location can be omitted. You can ask us to correct inaccurate details or request deletion, subject to any records we need to keep for completed transactions or applicable obligations."
+  ],
+  [
+    "Security and external services",
+    "We use reasonable measures to protect information. Services such as maps, Google sign-in and WhatsApp have their own privacy policies. Please review those policies when you use them."
+  ],
+  [
+    "Updates",
+    "We may update this page as our service changes. The current policy is available here."
+  ]
 ] as const;
 
 export default function Privacy() {
-  return <main className="bg-background"><PageHeader eyebrow="Privacy" title="Privacy policy" subtitle="How Zapiboo collects, uses and protects information when you use our vehicle-selling services." /><section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16"><p className="rounded-2xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">This policy applies to Zapiboo&apos;s website, inspection requests and related communications. It explains the information we handle when you buy, sell or enquire about a used vehicle through our services.</p><div className="mt-10 space-y-10">{sections.map(([title, text]) => <article key={title}><h2 className="text-xl font-bold text-foreground sm:text-2xl">{title}</h2><p className="mt-3 leading-relaxed text-muted-foreground">{text}</p></article>)}</div><section className="mt-12 rounded-2xl border border-primary/25 bg-primary/5 p-6"><h2 className="text-xl font-bold">Contact us about privacy</h2><p className="mt-3 leading-relaxed text-muted-foreground">For privacy questions or a request about your information, contact Zapiboo at <a className="font-semibold text-primary underline underline-offset-4" href={businessContact.emailHref}>{businessContact.email}</a> or call <a className="font-semibold text-primary underline underline-offset-4" href={businessContact.phoneHref}>{businessContact.phone}</a>. You can also use our <Link href="/contact" className="font-semibold text-primary underline underline-offset-4">contact form</Link>.</p></section></section></main>;
+  return <main className="bg-background"><PageHeader eyebrow="Privacy" title="Privacy policy" subtitle="How Zapiboo collects, uses and protects information when you use our kids item selling services." /><section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16"><p className="rounded-2xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">This policy applies to Zapiboo&apos;s website, item pickup requests and related communications. It explains the information we handle when you sell or enquire about pre-loved kids items through our services.</p><div className="mt-10 space-y-10">{sections.map(([title, text]) => <article key={title}><h2 className="text-xl font-bold text-foreground sm:text-2xl">{title}</h2><p className="mt-3 leading-relaxed text-muted-foreground">{text}</p></article>)}</div><section className="mt-12 rounded-2xl border border-primary/25 bg-primary/5 p-6"><h2 className="text-xl font-bold">Contact us about privacy</h2><p className="mt-3 leading-relaxed text-muted-foreground">For privacy questions or a request about your information, contact Zapiboo at <a className="font-semibold text-primary underline underline-offset-4" href={businessContact.emailHref}>{businessContact.email}</a> or call <a className="font-semibold text-primary underline underline-offset-4" href={businessContact.phoneHref}>{businessContact.phone}</a>. You can also use our <Link href="/contact" className="font-semibold text-primary underline underline-offset-4">contact form</Link>.</p></section></section></main>;
 }

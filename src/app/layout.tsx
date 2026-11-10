@@ -14,7 +14,7 @@ const sora = Sora({ subsets: ['latin'], display: 'swap', variable: '--font-sora'
 // still opt into request-time rendering automatically.
 export const runtime = 'nodejs';
 export const metadata: Metadata = {
-  ...pageMetadata('/', 'Zapiboo | Buy & Sell Used Cars, Bikes & Scooters in Bangalore', 'Buy or sell used cars, bikes and scooters in Bangalore with free doorstep inspections, instant payment and RC transfer support.'),
+  ...pageMetadata('/', 'Zapiboo | Pre-Loved Kids Marketplace — Sell Used Kids Toys, Books & Gear', 'Sell pre-loved kids toys, books, clothing and baby gear in Bangalore. Share item details, get selling support and arrange doorstep pickup when available.'),
   metadataBase: new URL(siteUrl),
   authors: [{ name: 'Zapiboo' }],
   icons: { icon: '/favicon.ico', apple: '/favicon.png' },

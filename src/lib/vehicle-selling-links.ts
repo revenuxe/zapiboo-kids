@@ -1,13 +1,9 @@
 export const vehicleSellingLinks = [
-  { key: "car", label: "Sell used car in Bangalore", path: "/sell-used-car-bangalore" },
-  { key: "bike", label: "Sell used bike in Bangalore", path: "/sell-used-bike-bangalore" },
-  { key: "scooter", label: "Sell used scooter in Bangalore", path: "/sell-used-scooter-bangalore" },
-  { key: "suv", label: "Sell used SUV in Bangalore", path: "/sell-used-suv-bangalore" },
-  {
-    key: "commercial",
-    label: "Sell commercial vehicle in Bangalore",
-    path: "/sell-commercial-vehicle-bangalore",
-  },
+  { key: "toys", label: "Sell kids toys", path: "/sell/toys" },
+  { key: "books", label: "Sell kids books", path: "/#sell-categories" },
+  { key: "clothing", label: "Sell kids clothing", path: "/#sell-categories" },
+  { key: "gear", label: "Sell baby gear", path: "/#sell-categories" },
+  { key: "cycles", label: "Sell kids cycles", path: "/#sell-categories" },
 ] as const;
 
 export type SellingVehicle = (typeof vehicleSellingLinks)[number]["key"];

@@ -42,7 +42,7 @@ const container = "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8";
 export default function RepairHome() {
   return (
     <>
-      <HomeHero mode="repair" />
+      <HomeHero />
 
       <ServiceSelection />
 
@@ -87,10 +87,10 @@ export default function RepairHome() {
         </div>
       </section>
 
-      <section className="bg-[#121112] py-14 text-white sm:py-16">
+      <section className="bg-navy py-14 text-white sm:py-16">
         <div className={`${container} grid gap-8 lg:grid-cols-2 lg:gap-16`}>
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#e46b6b]">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-coral">
               Make the conversation count
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
@@ -112,7 +112,7 @@ export default function RepairHome() {
                 key={text}
                 className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/5 p-5"
               >
-                <Check aria-hidden="true" className="size-5 shrink-0 text-[#e46b6b]" />
+                <Check aria-hidden="true" className="size-5 shrink-0 text-brand-coral" />
                 <p className="text-sm font-medium leading-relaxed">{text}</p>
               </div>
             ))}

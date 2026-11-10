@@ -4,18 +4,48 @@ import { PageHeader } from "@/components/PageHeader";
 import { businessContact } from "@/lib/seo";
 
 const sections = [
-  ["Using our services", "Zapiboo provides information and tools that help vehicle owners in Bangalore begin a used-vehicle selling process. By using the website, booking an inspection or contacting us, you agree to provide accurate information and use the service lawfully. You must be at least 18 years old and authorised to request services for the vehicle you submit."],
-  ["Vehicle details and inspection", "Details provided online are a starting point. A vehicle may need an in-person inspection, document review and further discussion before an offer can be considered. You are responsible for describing the vehicle, its ownership, finance status, condition, accident or repair history and available documents accurately. Withholding material information may affect eligibility or an offer discussion."],
-  ["Valuations and offers", "Any estimate, valuation guidance or communication before inspection is indicative only. It is not a binding purchase commitment, guarantee of price or guarantee that Zapiboo will accept a vehicle. An offer may depend on the vehicle's condition, documentation, ownership, local demand, applicable requirements and the information confirmed during the process. You may decline an offer before accepting the final terms."],
-  ["Appointments", "Inspection availability depends on your location, service coverage and appointment slots. We may need to reschedule or cancel a visit where information is incomplete, access is unavailable, safety is a concern or circumstances outside our control affect the appointment. Please notify us promptly if your availability changes."],
-  ["Documents and ownership", "You must have the authority to sell the vehicle and provide genuine, current documents when requested. These may include the registration certificate, insurance information, identification, PUC records, service records and finance or lender documents where applicable. A financed vehicle, hypothecation, disputed ownership, missing documentation or legal restriction may require additional steps or prevent a transaction."],
-  ["Payment, handover and RC transfer", "Payment, vehicle handover and ownership-transfer arrangements are confirmed only when you accept the relevant terms for your sale. Review the details carefully before handing over keys, documents or the vehicle. RC transfer and related paperwork are subject to applicable processes, documentation and timelines; completion is not controlled solely by the website or an initial inspection request."],
-  ["Your responsibilities", "Keep your contact information current, attend or arrange authorised access for the inspection, and remove personal belongings from the vehicle before handover. Do not submit false, misleading, unlawful or third-party information without permission. You are responsible for your decisions regarding an offer, handover and any agreements you accept."],
-  ["Website content and acceptable use", "The website content is for general information and service access. You may not copy, disrupt, misuse, reverse engineer or attempt unauthorised access to the website, its forms or systems. We may restrict access where we reasonably believe that the service is being misused, fraud is suspected or these terms are breached."],
-  ["Limitation of service", "To the extent permitted by law, Zapiboo is not responsible for indirect, incidental or consequential loss arising from website use, a missed appointment, a third-party service, or a transaction you choose not to complete. Nothing in these terms limits rights or liabilities that cannot legally be limited."],
-  ["Changes and governing law", "We may update these terms as our services or legal obligations change. The current version will be posted on this page. These terms are governed by the laws applicable in India, and relevant disputes are subject to the courts with appropriate jurisdiction in Bengaluru, subject to any mandatory legal rights."],
+  [
+    "Using the service",
+    "Zapiboo helps parents in Bangalore share pre-loved kids items for sale and arrange pickup when available. You must be at least 18 and authorised to sell the items you submit. Please provide accurate contact and item details."
+  ],
+  [
+    "Items and condition",
+    "Describe your items honestly, including wear, damage, missing pieces and accessories. Only submit items you own and are authorised to sell. Items must be safe for their intended use. Do not submit recalled, expired, counterfeit or unsafe products. For safety-related gear, disclose relevant history and expiry information."
+  ],
+  [
+    "Review and acceptance",
+    "Submitting details does not guarantee acceptance, a completed sale or a particular payment. Our team may need to review photos, condition and other information before confirming the next steps. You may ask questions and decline before accepting the final sale terms."
+  ],
+  [
+    "Pickup requests",
+    "Dates and time slots are preferences until our team confirms availability. Collection depends on service coverage, item eligibility and operating capacity. Please tell us if your address, availability or item details change."
+  ],
+  [
+    "Payment and handover",
+    "Sale, payment and handover arrangements are confirmed with you before you proceed. Review those details before handing over your items. Remove personal data from electronics and personal belongings from bags, clothing and baby gear."
+  ],
+  [
+    "Your account",
+    "Keep your sign-in details private and your contact information up to date. Do not submit false information, misuse the service or access another person?s account without permission."
+  ],
+  [
+    "Availability",
+    "Some services may be paused or not yet open. An account or saved draft is not a confirmed pickup. We display an opening-soon message while collection and booking services are unavailable."
+  ],
+  [
+    "Website use",
+    "Use the website lawfully. Do not disrupt its operation, submit malicious content or attempt unauthorised access to its systems. We may restrict access where the service is being misused."
+  ],
+  [
+    "Service limitations",
+    "To the extent permitted by law, Zapiboo is not responsible for indirect, incidental or consequential loss arising from website use, missed appointments or third-party services. These terms do not limit rights or liabilities that cannot legally be limited."
+  ],
+  [
+    "Updates and governing law",
+    "We may update these terms as the service changes. These terms are governed by the laws applicable in India, subject to mandatory legal rights and the jurisdiction of the appropriate courts."
+  ]
 ] as const;
 
 export default function Terms() {
-  return <main className="bg-background"><PageHeader eyebrow="Legal" title="Terms of service" subtitle="The terms that apply when you use Zapiboo&apos;s used-vehicle selling services." /><section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16"><p className="rounded-2xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">Please read these terms before booking an inspection or proceeding with a sale. They explain how the service works and the responsibilities of both the vehicle owner and Zapiboo.</p><div className="mt-10 space-y-10">{sections.map(([title, text]) => <article key={title}><h2 className="text-xl font-bold text-foreground sm:text-2xl">{title}</h2><p className="mt-3 leading-relaxed text-muted-foreground">{text}</p></article>)}</div><section className="mt-12 rounded-2xl border border-primary/25 bg-primary/5 p-6"><h2 className="text-xl font-bold">Questions about these terms?</h2><p className="mt-3 leading-relaxed text-muted-foreground">Contact Zapiboo at <a className="font-semibold text-primary underline underline-offset-4" href={businessContact.emailHref}>{businessContact.email}</a> or <a className="font-semibold text-primary underline underline-offset-4" href={businessContact.phoneHref}>{businessContact.phone}</a>. For a vehicle-specific question, use our <Link href="/contact" className="font-semibold text-primary underline underline-offset-4">contact page</Link>.</p></section></section></main>;
+  return <main className="bg-background"><PageHeader eyebrow="Legal" title="Terms of service" subtitle="The terms that apply when you use Zapiboo&apos;s pre-loved kids item selling service." /><section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16"><p className="rounded-2xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">Please read these terms before requesting a pickup or proceeding with a sale. They explain how the service works and the responsibilities of both the seller and Zapiboo.</p><div className="mt-10 space-y-10">{sections.map(([title, text]) => <article key={title}><h2 className="text-xl font-bold text-foreground sm:text-2xl">{title}</h2><p className="mt-3 leading-relaxed text-muted-foreground">{text}</p></article>)}</div><section className="mt-12 rounded-2xl border border-primary/25 bg-primary/5 p-6"><h2 className="text-xl font-bold">Questions about these terms?</h2><p className="mt-3 leading-relaxed text-muted-foreground">Contact Zapiboo at <a className="font-semibold text-primary underline underline-offset-4" href={businessContact.emailHref}>{businessContact.email}</a> or <a className="font-semibold text-primary underline underline-offset-4" href={businessContact.phoneHref}>{businessContact.phone}</a>. For a item-specific question, use our <Link href="/contact" className="font-semibold text-primary underline underline-offset-4">contact page</Link>.</p></section></section></main>;
 }

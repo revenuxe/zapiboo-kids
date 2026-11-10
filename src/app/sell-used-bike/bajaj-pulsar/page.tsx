@@ -1,7 +1,5 @@
-import ModelSelling, { modelSellingMetadata } from "@/views/model-selling";
-
-export const metadata = modelSellingMetadata("bajaj-pulsar");
+import { permanentRedirect } from 'next/navigation';
 
 export default function Page() {
-  return <ModelSelling slug="bajaj-pulsar" />;
+  permanentRedirect('/sell/books');
 }

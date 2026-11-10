@@ -1,7 +1,5 @@
-import VehicleSelling, { sellingMetadata } from "@/views/vehicle-selling";
-
-export const metadata = sellingMetadata("scooter");
+import { permanentRedirect } from 'next/navigation';
 
 export default function Page() {
-  return <VehicleSelling vehicle="scooter" />;
+  permanentRedirect('/sell/clothing');
 }

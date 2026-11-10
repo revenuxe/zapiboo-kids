@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/Logo";
 
-
 async function isCurrentUserAdmin() {
   const { data } = await supabase.auth.getUser();
   if (!data.user) return false;
@@ -72,7 +71,9 @@ export default function AdminLogin({ initialMode }: { initialMode: "signin" | "s
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
-        options: { emailRedirectTo: window.location.origin + "/auth/callback?next=%2Fadmin%2Flogin" },
+        options: {
+          emailRedirectTo: window.location.origin + "/auth/callback?next=%2Fadmin%2Flogin",
+        },
       });
       if (signUpError) throw signUpError;
 
@@ -126,7 +127,7 @@ export default function AdminLogin({ initialMode }: { initialMode: "signin" | "s
           <p className="mt-1 text-sm text-navy-foreground/70">
             {mode === "setup"
               ? "First time here - set up your admin login."
-              : "Manage vehicle bookings and customer enquiries."}
+              : "Manage kids-item pickups, seller details and enquiries."}
           </p>
         </div>
 

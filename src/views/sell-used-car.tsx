@@ -215,7 +215,7 @@ export default function SellUsedCar() {
           url: `${siteUrl}/sell-used-car`,
         }}
       />
-      <section className="relative overflow-hidden bg-[#121112] pb-24 pt-12 text-white sm:pt-16 lg:pb-28">
+      <section className="relative overflow-hidden bg-navy pb-24 pt-12 text-white sm:pt-16 lg:pb-28">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_75%_35%,rgba(31,89,104,0.35),transparent_65%)]"
@@ -226,7 +226,7 @@ export default function SellUsedCar() {
               A Simpler Way to Sell · Bangalore
             </p>
             <h1 className="mt-5 max-w-xl text-balance text-4xl font-extrabold leading-[1.1] tracking-tight sm:text-5xl xl:text-6xl">
-              Sell Your Used Car <span className="text-[#e54b4b]">With Confidence.</span>
+              Sell Your Used Car <span className="text-brand-sunshine">With Confidence.</span>
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-white/75 sm:text-lg">
               Get a fair, market-linked offer with a free doorstep inspection in Bangalore. Share
@@ -244,7 +244,7 @@ export default function SellUsedCar() {
                     key={String(title)}
                     className="rounded-xl border border-white/10 bg-white/5 p-3 sm:p-4"
                   >
-                    <BenefitIcon aria-hidden="true" className="mb-3 size-6 text-[#e54b4b]" />
+                    <BenefitIcon aria-hidden="true" className="mb-3 size-6 text-brand-sunshine" />
                     <p className="text-xs font-bold leading-relaxed sm:text-sm">{String(title)}</p>
                   </div>
                 );
@@ -253,7 +253,7 @@ export default function SellUsedCar() {
             <div className="mt-8 flex flex-col items-stretch gap-3 lg:flex-row lg:flex-wrap lg:items-center">
               <a
                 href="#car-valuation"
-                className="inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-lg bg-[#c72b2e] px-6 text-sm font-bold transition-colors hover:bg-[#ac2326] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white lg:w-auto"
+                className="inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-lg bg-primary px-6 text-sm font-bold transition-colors hover:bg-brand-green-deep focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white lg:w-auto"
               >
                 Get free valuation <ArrowRight className="size-4" />
               </a>
@@ -286,7 +286,7 @@ export default function SellUsedCar() {
             <ol className="mt-4 grid grid-cols-3 gap-3">
               {["Share Details", "Get Inspected", "Review Your Offer"].map((label, index) => (
                 <li key={label} className="text-xs leading-relaxed text-white/75">
-                  <span className="mb-1 block text-sm font-extrabold text-[#e54b4b]">
+                  <span className="mb-1 block text-sm font-extrabold text-brand-sunshine">
                     0{index + 1}
                   </span>
                   {label}
@@ -374,7 +374,7 @@ export default function SellUsedCar() {
             <caption className="sr-only">
               Private selling compared with Zapiboo's inspection-led process
             </caption>
-            <thead className="bg-[#121112] text-white">
+            <thead className="bg-navy text-white">
               <tr>
                 <th scope="col" className="p-4 sm:p-5">
                   Selling on Your Own
@@ -601,9 +601,9 @@ export default function SellUsedCar() {
           ))}
         </div>
       </Section>
-      <section className="bg-[#121112] py-14 text-white sm:py-20">
+      <section className="bg-navy py-14 text-white sm:py-20">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-[#e54b4b]">
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-sunshine">
             Take the First Step
           </p>
           <h2 className="mt-4 text-3xl font-extrabold sm:text-4xl">Ready to Sell Your Car?</h2>

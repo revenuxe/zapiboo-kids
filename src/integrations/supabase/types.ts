@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_lead_notes: {
+        Row: { lead_id: string; notes: string; updated_at: string }
+        Insert: { lead_id: string; notes?: string; updated_at?: string }
+        Update: { lead_id?: string; notes?: string; updated_at?: string }
+        Relationships: []
+      }
       leads: {
         Row: {
           address: string | null
@@ -509,6 +515,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_update_lead: { Args: { p_lead_id: string; p_status: string; p_notes: string }; Returns: undefined }
       admin_exists: { Args: never; Returns: boolean }
       claim_first_admin: { Args: never; Returns: boolean }
       has_role: {

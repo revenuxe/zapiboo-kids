@@ -75,7 +75,7 @@ export default function ModelSelling({ slug }: { slug: ModelSlug }) {
           faqSchema(content.faqs),
         ]}
       />
-      <section className="relative overflow-hidden bg-[#121112] py-10 text-white sm:py-16">
+      <section className="relative overflow-hidden bg-navy py-10 text-white sm:py-16">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_85%_20%,rgba(31,89,104,0.4),transparent_65%)]"
@@ -100,7 +100,7 @@ export default function ModelSelling({ slug }: { slug: ModelSlug }) {
           </nav>
           <div className="grid items-center gap-10 lg:grid-cols-[1.25fr_0.85fr] lg:gap-14">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#ff9292]">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-sky">
                 A closer look at your {categoryName}
               </p>
               <h1 className="mt-4 text-balance text-4xl font-extrabold leading-[1.12] tracking-tight sm:text-5xl xl:text-6xl">
@@ -135,7 +135,7 @@ export default function ModelSelling({ slug }: { slug: ModelSlug }) {
               className="rounded-3xl border border-white/15 bg-white/5 p-6 sm:p-8"
             >
               <div className="flex items-center justify-between gap-4">
-                <Icon aria-hidden="true" className="size-12 text-[#ff9292]" />
+                <Icon aria-hidden="true" className="size-12 text-brand-sky" />
                 <span className="rounded-full border border-white/20 px-3 py-1.5 text-xs font-semibold">
                   Bangalore
                 </span>
@@ -150,7 +150,7 @@ export default function ModelSelling({ slug }: { slug: ModelSlug }) {
                   "You decide whether to proceed",
                 ].map((text) => (
                   <li key={text} className="flex gap-3 text-sm leading-relaxed">
-                    <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[#ff9292]" />
+                    <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-brand-sky" />
                     {text}
                   </li>
                 ))}
@@ -297,7 +297,7 @@ export default function ModelSelling({ slug }: { slug: ModelSlug }) {
         </div>
       </section>
       <section className={`${container} py-14 sm:py-20`}>
-        <div className="rounded-3xl bg-[#121112] px-6 py-10 text-center text-white sm:p-12">
+        <div className="rounded-3xl bg-navy px-6 py-10 text-center text-white sm:p-12">
           <h2 className="text-balance text-3xl font-bold">Ready to take the next step?</h2>
           <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-white/75">
             Share your {model.shortName}'s details, arrange a free inspection and make your decision

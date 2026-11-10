@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, ArrowRight, User as UserIcon, LogOut, Car, LayoutDashboard, ClipboardList } from "lucide-react";
+import { Menu, ArrowRight, User as UserIcon, LogOut, ClipboardList } from "lucide-react";
 import { useDataCache } from "@/hooks/use-data-cache";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -35,9 +35,12 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-xl">
+    <header className={cn(
+      "sticky top-0 z-50 w-full border-b backdrop-blur-xl",
+      pathname !== "/pickup" ? "border-transparent bg-[#edf5ff]" : "border-border/60 bg-background/85",
+    )}>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Logo imageClassName="h-12 md:h-14" />
+        <Logo imageClassName="h-10 md:h-14" />
 
         <nav className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => {
@@ -49,7 +52,7 @@ export function SiteHeader() {
                 className={cn(
                   "rounded-full px-4 py-2 text-sm font-medium transition-colors",
                   active
-                    ? "bg-secondary text-foreground"
+                    ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
                 )}
               >
@@ -62,10 +65,10 @@ export function SiteHeader() {
               href="/orders"
               className={cn(
                 "rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                pathname === "/orders" ? "bg-secondary text-foreground" : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
+                pathname === "/orders" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
               )}
             >
-              Pickup orders
+              My orders
             </Link>
           )}
         </nav>
@@ -94,7 +97,7 @@ export function SiteHeader() {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/orders">
-                    <ClipboardList className="size-4" /> Pickup orders
+                    <ClipboardList className="size-4" /> My orders
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -108,14 +111,9 @@ export function SiteHeader() {
               <Link href="/auth">Sign in</Link>
             </Button>
           )}
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/sell-used-car-bangalore">
-              Sell car
-            </Link>
-          </Button>
           <Button asChild variant="hero" size="sm">
-                  <Link href="/sell-used-car-bangalore">
-              Book pickup
+            <Link href="/pickup">
+              Sell an item
               <ArrowRight />
             </Link>
           </Button>
@@ -162,7 +160,7 @@ export function SiteHeader() {
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-2 rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-secondary"
                 >
-                  <ClipboardList className="size-4" /> Pickup orders
+                  <ClipboardList className="size-4" /> My orders
                 </Link>
               )}
             </nav>
@@ -170,7 +168,7 @@ export function SiteHeader() {
             <div className="mt-6 flex flex-col gap-3">
               <Button asChild variant="hero" size="lg" onClick={() => setOpen(false)}>
                 <Link href="/pickup">
-                  Book pickup
+                  Sell an item
                   <ArrowRight />
                 </Link>
               </Button>

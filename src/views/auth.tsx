@@ -8,12 +8,13 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { getSupabaseConfig } from "@/integrations/supabase/config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GoogleIcon } from "@/components/GoogleIcon";
-import logoAsset from "@/assets/zapiboo-final-logo-transparent.png";
+import logoAsset from "@/assets/zapiboo-kids-logo.webp";
 const logo = logoAsset.src;
 
 
@@ -33,6 +34,7 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
   const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}` : undefined;
 
   useEffect(() => {
+    if (!getSupabaseConfig()) return;
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) router.push(redirectPath);
     });
@@ -40,6 +42,7 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!getSupabaseConfig()) return toast.error("Sign-in is temporarily unavailable. Please try again later.");
     const em = emailSchema.safeParse(email);
     if (!em.success) return toast.error(em.error.issues[0].message);
     if (!password) return toast.error("Enter your password.");
@@ -75,6 +78,7 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
   };
 
   const signInWithGoogle = async () => {
+    if (!getSupabaseConfig()) return toast.error("Sign-in is temporarily unavailable. Please try again later.");
     if (!redirectTo) return toast.error("Couldn't prepare the Google sign-in redirect. Please refresh and try again.");
     setBusy(true);
     const { error } = await supabase.auth.signInWithOAuth({
@@ -94,10 +98,10 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-md flex-col">
         <div className="mb-4 flex items-center justify-between gap-4">
           <Link href="/" className="flex min-w-0 items-center gap-3">
-            <img src={logo} alt="Zapiboo" width={1774} height={887} className="h-10 w-20 shrink-0 object-contain object-left" />
+            <img src={logo} alt="Zapiboo" width={1774} height={887} className="h-10 w-24 shrink-0 rounded-lg bg-background p-1 object-contain" />
             <div className="min-w-0">
               <p className="text-sm font-extrabold leading-tight">Zapiboo</p>
-              <p className="truncate text-xs text-navy-foreground/65">Bengaluru used vehicles</p>
+              <p className="truncate text-xs text-navy-foreground/65">Pre-loved kids items | Bangalore</p>
             </div>
           </Link>
           <Button asChild variant="outlineLight" size="sm" className="shrink-0">
@@ -123,8 +127,8 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 {tab === "signin"
-                  ? "Sign in to manage your vehicle bookings faster."
-                  : "Save your details for quicker vehicle valuations."}
+                  ? "Sign in to manage your item pickup requests."
+                  : "Save your details for selling and future pickups."}
               </p>
             </div>
 
@@ -281,7 +285,7 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
             </Tabs>
 
             <p className="mt-4 text-center text-xs text-muted-foreground">
-              By continuing you agree to Zapiboo's fair-pricing terms.
+              By continuing you agree to Zapiboo's terms of service.
             </p>
           </motion.div>
         </div>

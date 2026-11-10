@@ -1,9 +1,9 @@
 import Home from '@/views/index';
 import { pageMetadata } from '@/lib/metadata';
-import { breadcrumbSchema, localBusinessSchema, serviceSchema } from '@/lib/seo';
+import { breadcrumbSchema, serviceSchema } from '@/lib/seo';
 import { JsonLd } from '@/components/JsonLd';
 
-export const metadata = pageMetadata('/', 'Sell & Buy Used Cars, Bikes & Scooters in Bangalore | Zapiboo', 'Sell your used car, bike or scooter in Bangalore at the best price. Free doorstep inspection, instant payment, free RC transfer — and verified second-hand vehicles to buy.');
+export const metadata = pageMetadata('/', 'Sell Used Kids Toys, Books & Baby Gear in Bangalore | Zapiboo', 'Sell pre-loved kids toys, books, clothing and baby gear in Bangalore. Share item details, get selling support and arrange doorstep pickup when available.');
 export default function Page() {
-  return <><JsonLd data={[localBusinessSchema('/'), serviceSchema('/'), breadcrumbSchema([{ name: 'Home', path: '/' }])]} /><Home /></>;
+  return <><JsonLd data={[serviceSchema('/'), breadcrumbSchema([{ name: 'Home', path: '/' }])]} /><Home /></>;
 }

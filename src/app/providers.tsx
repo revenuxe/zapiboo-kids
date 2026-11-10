@@ -33,7 +33,7 @@ function SiteShell({ children }: { children: ReactNode }) {
     <Suspense fallback={null}><ScrollToTop /></Suspense>
     <div className="flex min-h-screen flex-col">
       {!chromeless && <SiteHeader />}
-      <main className="flex-1">{children}</main>
+      <main className={`flex-1 ${!chromeless && pathname !== "/" && pathname !== "/pickup" ? "editorial-pages" : ""}`}>{children}</main>
       {!chromeless && pathname !== '/repair' && <SellByModel />}
       {!chromeless && <SiteFooter />}
     </div>

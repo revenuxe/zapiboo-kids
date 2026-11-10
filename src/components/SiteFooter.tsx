@@ -2,23 +2,27 @@ import { servicesPaused, openingSoonHref } from "@/lib/launch-status";
 import Link from "next/link";
 import { Instagram, Youtube } from "lucide-react";
 import { Logo } from "@/components/Logo";
-import { vehicleSellingLinks } from "@/lib/vehicle-selling-links";
 
 const columns = [
   {
     title: "Explore",
     links: [
-      { label: "Price guide", to: "/materials" },
-      { label: "How it works", to: "/pickup" },
+      { label: "Sell your items", to: "/pickup" },
+      { label: "How it works", to: "/#how-it-works" },
       { label: "About us", to: "/about" },
+      { label: "Service areas", to: "/areas" },
       { label: "Contact", to: "/contact" },
     ],
   },
   {
-    title: "Sell in Bangalore",
+    title: "Categories",
     links: [
-      ...vehicleSellingLinks.map(({ label, path }) => ({ label, to: path })),
-      { label: "Book inspection", to: "/pickup" },
+      { label: "Sell toys & games", to: "/sell/toys" },
+      { label: "Sell kids books", to: "/sell/books" },
+      { label: "Sell kids clothing", to: "/sell/clothing" },
+      { label: "Sell baby gear", to: "/sell/gear" },
+      { label: "Sell cycles & ride-ons", to: "/sell/cycles" },
+      { label: "Sell kids electronics", to: "/sell/electronics" },
     ],
   },
   {
@@ -39,8 +43,8 @@ export function SiteFooter() {
           <div className="max-w-md">
             <Logo imageClassName="h-12 md:h-14" />
             <p className="mt-7 text-base leading-relaxed text-muted-foreground">
-              Zapiboo makes selling your used car, bike or scooter simple with a fair offer, free
-              doorstep inspection and secure RC transfer in Bangalore.
+              Zapiboo is the pre-loved kids marketplace where parents sell gently used toys,
+              books, clothing and baby gear — with selling support and doorstep pickup in Bangalore.
             </p>
             <div className="mt-6 flex items-center gap-4">
               <a

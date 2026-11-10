@@ -115,7 +115,7 @@ export function organizationSchema(path = "/") {
     "@id": `${siteUrl}/#organization`,
     name: businessContact.name,
     url: siteUrl,
-    logo: `${siteUrl}/favicon.png`,
+    logo: `${siteUrl}/zapiboo-logo.webp`,
     email: businessContact.email,
     telephone: businessContact.phoneHref.replace("tel:", ""),
     address: {
@@ -142,7 +142,7 @@ export function organizationSchema(path = "/") {
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
-        name: "Used vehicle buying and selling in Bangalore",
+        name: "Pre-loved kids item selling in Bangalore",
       },
     },
   };
@@ -179,17 +179,17 @@ export function websiteSchema() {
   };
 }
 
-export function serviceSchema(path: string, area?: ServiceArea) {
-  const name = area
-    ? `Sell your used vehicle in ${area.name}, Bangalore`
-    : "Used vehicle buying and selling in Bangalore";
+export function serviceSchema(path: string, area?: ServiceArea, serviceName?: string) {
+  const name = serviceName ?? (area
+    ? `Sell pre-loved kids items in ${area.name}, Bangalore`
+    : "Pre-loved kids item selling in Bangalore");
 
   return {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${absoluteUrl(path)}#service`,
     name,
-    serviceType: "Used vehicle valuation with doorstep inspection",
+    serviceType: "Pre-loved kids item selling with doorstep pickup",
     provider: { "@id": `${siteUrl}/#organization` },
     areaServed: {
       "@type": "Place",
@@ -287,16 +287,27 @@ export function howToSchema(input: {
       value: "0",
     },
     supply: [
-      { "@type": "HowToSupply", name: "Vehicle registration certificate" },
-      { "@type": "HowToSupply", name: "Government photo ID" },
+      { "@type": "HowToSupply", name: "Pre-loved kids item in good condition" },
+      { "@type": "HowToSupply", name: "Clear photos of the item" },
     ],
-    tool: [{ "@type": "HowToTool", name: "Zapiboo doorstep pickup" }],
+    tool: [{ "@type": "HowToTool", name: "Zapiboo marketplace app" }],
     step: input.steps.map((step, index) => ({
       "@type": "HowToStep",
       position: index + 1,
       name: step.name,
       text: step.text,
       url: `${url}#step-${index + 1}`,
+    })),
+  };
+}
+
+export function itemListSchema(name: string, items: ReadonlyArray<{ name: string; path?: string }>) {
+  return {
+    "@context": "https://schema.org", "@type": "ItemList", name,
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem", position: index + 1, name: item.name,
+      ...(item.path ? { url: absoluteUrl(item.path) } : {}),
     })),
   };
 }

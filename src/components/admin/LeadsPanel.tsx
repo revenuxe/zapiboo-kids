@@ -1,4 +1,5 @@
 "use client";
+import { PrivatePickupPhoto } from "@/components/admin/PrivatePickupPhoto";
 
 import { useMemo, useState } from "react";
 import useSWR from "swr";
@@ -47,6 +48,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
+import { isKidsPickup, pickupCategory, pickupCondition } from "@/lib/pickup-summary";
 import { isSpamLead } from "@/lib/spam-filter";
 
 type Lead = {
@@ -55,11 +57,6 @@ type Lead = {
   lead_type: string | null;
   vehicle_type: string;
   items: string[];
-  brand_name: string | null;
-  model_name: string | null;
-  vehicle_model_name?: string | null;
-  manufacture_year: number | null;
-  registration_number: string | null;
   has_photo: boolean;
   photo_url: string | null;
   locality: string | null;
@@ -75,6 +72,8 @@ type Lead = {
   lng: number | null;
   status: string;
   notes: string | null;
+  admin_notes: string | null;
+  message: string | null;
   created_at: string;
 };
 
@@ -104,18 +103,8 @@ function StatusChip({ status }: { status: string }) {
 function isQueryLead(lead: Lead) {
   return lead.lead_type === "query" || lead.vehicle_type === "query";
 }
-function isRepairLead(lead: Lead) {
-  return lead.lead_type === "repair_booking";
-}
 
 function LeadTypeChip({ lead }: { lead: Lead }) {
-  if (isRepairLead(lead)) {
-    return (
-      <span className="inline-flex rounded-full bg-primary/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-primary">
-        repair
-      </span>
-    );
-  }
   if (!isQueryLead(lead)) return null;
 
   return (
@@ -125,7 +114,7 @@ function LeadTypeChip({ lead }: { lead: Lead }) {
   );
 }
 
-export type LeadScope = "all" | "bookings" | "queries" | "repair-bookings";
+export type LeadScope = "all" | "bookings" | "queries";
 
 export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
   const qc = useDataCache();
@@ -135,13 +124,26 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
   const [draftStatus, setDraftStatus] = useState("new");
   const [draftNotes, setDraftNotes] = useState("");
 
-  const { data: leadData, isLoading: loading } = useSWR(["admin", "leads"], async () => {
+  const {
+    data: leadData,
+    isLoading: loading,
+    error: loadError,
+    mutate: reload,
+  } = useSWR(["admin", "leads"], async () => {
     const { data, error } = await supabase
       .from("leads")
       .select("*")
       .order("created_at", { ascending: false });
     if (error) throw error;
-    return data as unknown as Lead[];
+    const { data: privateNotes, error: notesError } = await supabase
+      .from("admin_lead_notes")
+      .select("lead_id,notes");
+    if (notesError) throw notesError;
+    const noteMap = new Map(privateNotes.map((note) => [note.lead_id, note.notes]));
+    return data.map((lead) => ({
+      ...lead,
+      admin_notes: noteMap.get(lead.id) ?? null,
+    })) as unknown as Lead[];
   });
   const leads = useMemo(() => leadData ?? [], [leadData]);
   const isLoading = loading && leadData === undefined;
@@ -154,9 +156,8 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
 
   const filtered = useMemo(() => {
     return leads.filter((l) => {
-      if (scope === "bookings" && (isQueryLead(l) || isRepairLead(l))) return false;
+      if (scope === "bookings" && !isKidsPickup(l)) return false;
       if (scope === "queries" && !isQueryLead(l)) return false;
-      if (scope === "repair-bookings" && !isRepairLead(l)) return false;
       if (filter === "spam") {
         if (!spamSet.has(l.id)) return false;
       } else if (filter === "all") {
@@ -171,7 +172,11 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
         l.phone.includes(q) ||
         (l.email ?? "").toLowerCase().includes(q) ||
         (l.subject ?? "").toLowerCase().includes(q) ||
+        (pickupCategory(l)?.name ?? "").toLowerCase().includes(q) ||
+        pickupCondition(l).toLowerCase().includes(q) ||
+        (l.message ?? "").toLowerCase().includes(q) ||
         (l.notes ?? "").toLowerCase().includes(q) ||
+        (l.admin_notes ?? "").toLowerCase().includes(q) ||
         (l.locality ?? "").toLowerCase().includes(q) ||
         (l.pincode ?? "").includes(q)
       );
@@ -181,20 +186,21 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
   const openLead = (lead: Lead) => {
     setSelected(lead);
     setDraftStatus(lead.status);
-    setDraftNotes(lead.notes ?? "");
+    setDraftNotes(lead.admin_notes ?? "");
   };
 
   const saveMutation = useCommand({
     execute: async () => {
       if (!selected) return;
-      const { error } = await supabase
-        .from("leads")
-        .update({ status: draftStatus, notes: draftNotes })
-        .eq("id", selected.id);
+      const { error } = await supabase.rpc("admin_update_lead", {
+        p_lead_id: selected.id,
+        p_status: draftStatus,
+        p_notes: draftNotes,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.refresh(["admin", "leads"]);
+      qc.refresh(["admin"]);
       toast.success("Lead updated.");
       setSelected(null);
     },
@@ -203,11 +209,11 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
 
   const deleteMutation = useCommand({
     execute: async (id: string) => {
-      const { error } = await supabase.from("leads").delete().eq("id", id);
+      const { error } = await supabase.from("leads").delete().eq("id", id).select("id").single();
       if (error) throw error;
     },
     onSuccess: () => {
-      qc.refresh(["admin", "leads"]);
+      qc.refresh(["admin"]);
       toast.success("Lead deleted.");
       setSelected(null);
     },
@@ -234,7 +240,7 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search name, phone, area…"
+            placeholder="Search seller, category, condition, area…"
             className="h-11 pl-9"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -290,14 +296,21 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
       )}
 
       {/* list */}
-      {isLoading ? (
+      {loadError ? (
+        <div role="alert" className="mt-4 rounded-2xl border border-destructive/30 bg-card p-5">
+          <p className="text-sm">Could not load pickup requests. Please try again.</p>
+          <Button variant="outline" className="mt-3" onClick={() => void reload()}>
+            Try again
+          </Button>
+        </div>
+      ) : isLoading ? (
         <div className="flex justify-center py-16">
           <Loader2 className="size-6 animate-spin text-primary" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-16 text-center">
           <Inbox className="size-8 text-muted-foreground" />
-          <p className="mt-3 text-sm text-muted-foreground">No leads yet.</p>
+          <p className="mt-3 text-sm text-muted-foreground">No matching requests yet.</p>
         </div>
       ) : (
         <div className="mt-4 space-y-2.5">
@@ -325,7 +338,7 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
                 <p className="mt-0.5 truncate text-xs text-muted-foreground">
                   {isQueryLead(lead)
                     ? `${lead.email ?? lead.phone} - ${lead.subject ?? "Contact query"}`
-                    : `${isRepairLead(lead) ? "Repair" : (lead.pickup_id ?? lead.phone)} - ${lead.subject ?? lead.model_name ?? lead.brand_name ?? lead.vehicle_type} - ${lead.preferred_date ?? "no date"}`}
+                    : `${lead.pickup_id ?? lead.phone} - ${lead.subject ?? pickupCategory(lead)?.name ?? lead.vehicle_type} - ${lead.preferred_date ?? "no date"}`}
                 </p>
               </div>
               <Button
@@ -377,46 +390,20 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
                       </>
                     ) : (
                       <>
-                        {isRepairLead(selected) && (
-                          <Row
-                            icon={Boxes}
-                            label="Repair booking ID"
-                            sub={`REP-${selected.id.slice(0, 8).toUpperCase()}`}
-                          />
-                        )}
                         {selected.pickup_id && (
                           <Row icon={Boxes} label="Pickup ID" sub={selected.pickup_id} />
                         )}
-                        {isRepairLead(selected) && (
-                          <Row icon={Boxes} label="Service" sub={selected.subject ?? undefined} />
-                        )}
-                        {isRepairLead(selected) && (
-                          <Row
-                            icon={Boxes}
-                            label="Vehicle model"
-                            sub={selected.model_name || selected.vehicle_model_name || "Not provided"}
-                          />
-                        )}
                         <Row
                           icon={Boxes}
-                          label={
-                            selected.items.length
-                              ? selected.items.join(", ")
-                              : selected.vehicle_type
-                          }
+                          label="Category"
+                          sub={pickupCategory(selected)?.name ?? selected.vehicle_type}
                         />
-                        {selected.brand_name && (
+                        <Row icon={Boxes} label="Condition" sub={pickupCondition(selected)} />
+                        {selected.message && (
                           <Row
-                            icon={Boxes}
-                            label="Vehicle"
-                            sub={`${selected.brand_name}${selected.model_name ? ` · ${selected.model_name}` : ""}${selected.manufacture_year ? ` · ${selected.manufacture_year}` : ""}`}
-                          />
-                        )}
-                        {selected.registration_number && (
-                          <Row
-                            icon={Boxes}
-                            label="Registration"
-                            sub={selected.registration_number}
+                            icon={MessageSquareText}
+                            label="Seller notes"
+                            sub={selected.message}
                           />
                         )}
                         <Row
@@ -437,18 +424,7 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
                         <p className="flex items-center gap-2 text-sm font-medium text-foreground">
                           <Camera className="size-4 text-primary" /> Uploaded photo
                         </p>
-                        <a
-                          href={selected.photo_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="block"
-                        >
-                          <img
-                            src={selected.photo_url}
-                            alt="Uploaded vehicle"
-                            className="max-h-44 w-full rounded-2xl border border-border object-cover sm:max-h-64"
-                          />
-                        </a>
+                        <PrivatePickupPhoto value={selected.photo_url} />
                       </div>
                     )}
                     {selected.lat != null && selected.lng != null && (
@@ -480,12 +456,13 @@ export function LeadsPanel({ scope = "all" }: { scope?: LeadScope } = {}) {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label>Notes</Label>
+                    <Label>Private admin notes</Label>
                     <Textarea
                       rows={3}
                       placeholder="Internal notes about this pickup…"
                       className="min-h-20 rounded-2xl"
                       value={draftNotes}
+                      maxLength={5000}
                       onChange={(e) => setDraftNotes(e.target.value)}
                     />
                   </div>

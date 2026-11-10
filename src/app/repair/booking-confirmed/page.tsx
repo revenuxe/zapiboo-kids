@@ -1,18 +1,5 @@
-import { Suspense } from "react";
-import { pageMetadata } from "@/lib/metadata";
-import { BookingConfirmation } from "@/components/repair/BookingConfirmation";
+import { permanentRedirect } from 'next/navigation';
 
-export const metadata = pageMetadata(
-  "/repair/booking-confirmed",
-  "Repair booking request received | Zapiboo",
-  "Your repair booking request has been received.",
-  true,
-);
-
-export default function RepairBookingConfirmedPage() {
-  return (
-    <Suspense>
-      <BookingConfirmation />
-    </Suspense>
-  );
+export default function Page() {
+  permanentRedirect('/orders');
 }

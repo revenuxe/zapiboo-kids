@@ -2,12 +2,19 @@
 
 import { servicesPaused, showOpeningSoon } from "@/lib/launch-status";
 
-
 import { OpeningSoonMessage } from "@/components/ServiceAvailability";
 import { useEffect, useRef, useState } from "react";
-import useSWR from "swr";
+
 import Link from "next/link";
-import { carRegistrationKey } from "@/components/CarValuationForm";
+import {
+  categoryImage,
+  getSellingCategory,
+  sellingCategories,
+  itemConditions,
+  validateSellingItem,
+  sellingItemPayload,
+} from "@/lib/selling-categories";
+import { getSupabaseConfig } from "@/integrations/supabase/config";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowRight,
@@ -25,18 +32,20 @@ import {
   Info,
   Phone,
   Loader2,
-  ChevronsUpDown,
-  Car,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PickupMap } from "@/components/PickupMap";
 import { PageLoader } from "@/components/PageLoader";
 import { GoogleIcon } from "@/components/GoogleIcon";
@@ -45,50 +54,23 @@ import { s3UploadsEnabled, uploadDataUrlToS3, uploadImageToS3 } from "@/lib/s3-u
 import { compressImageToWebp } from "@/lib/client-image";
 import { displayName, useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { getCachedVehicleOptions } from "@/lib/vehicle-catalogue-cache";
-import { optimizedImageUrl } from "@/lib/image-delivery";
-import carImgAsset from "@/assets/vehicle-car.webp";
-const carImg = carImgAsset.src;
-import bikeImgAsset from "@/assets/vehicle-bike.webp";
-const bikeImg = bikeImgAsset.src;
-import scooterImgAsset from "@/assets/vehicle-scooter.webp";
-const scooterImg = scooterImgAsset.src;
-import commercialImgAsset from "@/assets/vehicle-commercial.webp";
-const commercialImg = commercialImgAsset.src;
-import suvImgAsset from "@/assets/vehicle-suv.webp";
-const suvImg = suvImgAsset.src;
-import electricImgAsset from "@/assets/vehicle-electric.webp";
-const electricImg = electricImgAsset.src;
-
-const pickupVehicleCards = [
-  { id: "car", vehicleType: "car", name: "Car", tagline: "Hatchback, sedan, SUV — petrol, diesel, CNG or electric.", badge: "Most sold", image: carImg },
-  { id: "bike", vehicleType: "bike", name: "Bike", tagline: "Commuter, sports and cruiser bikes.", image: bikeImg },
-  { id: "scooter", vehicleType: "scooter", name: "Scooter", tagline: "Petrol and electric scooters.", image: scooterImg },
-  { id: "commercial", vehicleType: "commercial", name: "Commercial", tagline: "Autos, pickups, tempos and trucks.", image: commercialImg },
-];
-
-const subcategoryFallbackImage = (name: string, categoryImage?: string | null) =>
-  ({ SUV: suvImg, Electric: electricImg }[name] ?? categoryImage ?? carImg);
-
 type PickupSearch = {
-  vehicle?: string;
+  category?: string;
   pincode?: string;
   bookingAuth?: "1";
 };
 
-
 const timeSlots = ["Morning (8–11)", "Midday (11–2)", "Afternoon (2–5)", "Evening (5–8)"];
 const todayStr = new Date().toISOString().split("T")[0];
-const pickupDraftKey = "zapiboo-pickup-draft";
+const pickupDraftKey = "zapiboo-kids-pickup-draft-v4";
 const postAuthRedirectKey = "zapiboo-post-auth-redirect";
 const pickupPhotoBucket = "pickup-photos";
-const modelYears = Array.from({ length: new Date().getFullYear() - 2010 + 1 }, (_, index) => String(new Date().getFullYear() - index));
-type VehicleOption = { id: string; name: string; image_url?: string | null };
-const catalogueDb = supabase as unknown as { from: (table: string) => any };
 
 // This version is small enough to store safely with a booking when external
 // object storage is not configured, while still being clear for an evaluator.
-function imageToDataUrl(file: File): Promise<string> { return compressImageToWebp(file, 960, 0.7); }
+function imageToDataUrl(file: File): Promise<string> {
+  return compressImageToWebp(file, 960, 0.7);
+}
 
 type PickupPhoto = {
   id: string;
@@ -97,21 +79,7 @@ type PickupPhoto = {
   uploadedUrl: string | null;
 };
 
-function useVehicleOptions(table: string, foreignKey?: string, parentId?: string) {
-  const cache = getCachedVehicleOptions(table, parentId);
-  return useSWR((!foreignKey || Boolean(parentId)) ? ["vehicle-catalogue", table, parentId] : null, async () => {
-      const fields = table === "vehicle_categories" || table === "vehicle_subcategories" ? "id, name, image_url" : "id, name";
-      let query = catalogueDb.from(table).select(fields).eq("active", true).order("sort_order").order("name");
-      if (foreignKey && parentId) query = query.eq(foreignKey, parentId);
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as VehicleOption[];
-    }, { fallbackData: cache, dedupingInterval: 60_000 });
-}
-
-
 export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch }) {
-
   const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const currentStepRef = useRef(step);
@@ -131,15 +99,11 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     "idle",
   );
 
-  // steps 1–2: vehicle type, then body style and photo
-  const [vehicleType, setVehicleType] = useState<string>(pickupSearch.vehicle ?? "");
-  const [registrationNumber, setRegistrationNumber] = useState("");
-  const [vehicleBrandId, setVehicleBrandId] = useState("");
-  const [brandPickerOpen, setBrandPickerOpen] = useState(false);
-  const [vehicleModel, setVehicleModel] = useState("");
-  const [manufactureYear, setManufactureYear] = useState("");
-  const [vehicleCategoryId, setVehicleCategoryId] = useState("");
-  const [vehicleSubcategoryId, setVehicleSubcategoryId] = useState("");
+  // Select a category, then condition, optional notes and a photo.
+
+  const [condition, setCondition] = useState("");
+  const [description, setDescription] = useState("");
+  const [itemCategoryId, setItemCategoryId] = useState("");
   const [photo, setPhoto] = useState<PickupPhoto | null>(null);
   const [photoUploading, setPhotoUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -166,39 +130,29 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [saving, setSaving] = useState(false);
+  const submissionInFlight = useRef(false);
 
-  // Flow order: category, vehicle details, optional photo, sign in (if needed), address, schedule.
-  const progressSteps = servicesPaused ? (user ? [1, 5] : [1, 4, 5]) : user ? [1, 2, 3, 5, 6] : [1, 2, 3, 4, 5, 6];
+  // Flow order: category, condition and optional notes/photo, sign in (if needed), address, schedule.
+  const progressSteps = servicesPaused
+    ? user
+      ? [1, 3, 5]
+      : [1, 3, 4, 5]
+    : user
+      ? [1, 3, 5, 6]
+      : [1, 3, 4, 5, 6];
   const currentProgress = Math.max(1, progressSteps.indexOf(step) + 1);
 
   const bookingRedirectTo =
-    typeof window !== "undefined" ? `${window.location.origin}/auth/callback?next=${encodeURIComponent("/pickup?bookingAuth=1")}` : undefined;
+    typeof window !== "undefined"
+      ? `${window.location.origin}/auth/callback?next=${encodeURIComponent("/pickup?bookingAuth=1")}`
+      : undefined;
 
-  const { data: vehicleCategories = [], isLoading: categoriesLoading } = useVehicleOptions("vehicle_categories");
-  const { data: vehicleSubcategories = [], isLoading: subcategoriesLoading } = useVehicleOptions("vehicle_subcategories", "category_id", vehicleCategoryId);
-  const { data: vehicleBrands = [] } = useVehicleOptions("vehicle_brands", "category_id", vehicleCategoryId);
-  const selectedBrand = vehicleBrands.find((item) => item.id === vehicleBrandId);
-  const selectedCategory = vehicleCategories.find((item) => item.id === vehicleCategoryId);
-  const selectedSubcategory = vehicleSubcategories.find((item) => item.id === vehicleSubcategoryId);
-
-
-
-  useEffect(() => {
-    if (!hydrated || !vehicleType || vehicleCategoryId || !vehicleCategories.length) return;
-    const match = vehicleCategories.find((category) => {
-      const name = category.name.toLowerCase();
-      const type = vehicleType.toLowerCase();
-      return name === type || name.startsWith(type);
-    });
-    if (match) setVehicleCategoryId(match.id);
-  }, [hydrated, vehicleType, vehicleCategoryId, vehicleCategories]);
-
-  useEffect(() => {
-    if (step !== 2) return;
-    setVehicleSubcategoryId("");
-    setVehicleBrandId("");
-    
-  }, [step]);
+  const itemCategories = sellingCategories.map((category) => ({
+    ...category,
+    image_url: categoryImage(category.id),
+  }));
+  const selectedCategory = itemCategories.find((category) => category.id === itemCategoryId);
+  const itemDetails = { category: itemCategoryId, condition, description };
 
   const uploadPickupPhoto = async (snapshot: PickupPhoto): Promise<string> => {
     if (!s3UploadsEnabled) {
@@ -216,11 +170,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
           });
         if (error) throw error;
 
-        const { data } = supabase.storage
-          .from(pickupPhotoBucket)
-          .getPublicUrl(`${ownerId}/${snapshot.id}.webp`);
-        if (!data.publicUrl) throw new Error("Couldn't create a photo URL.");
-        return data.publicUrl;
+        return `${pickupPhotoBucket}/${ownerId}/${snapshot.id}.webp`;
       } catch {
         // Keep a compressed fallback with the lead if storage is temporarily
         // unavailable, so the dashboard can still render the uploaded photo.
@@ -254,7 +204,9 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     photoUploadIdRef.current = snapshot.id;
     const promise = uploadPickupPhoto(snapshot)
       .then((url) => {
-        setPhoto((current) => (current?.id === snapshot.id ? { ...current, uploadedUrl: url } : current));
+        setPhoto((current) =>
+          current?.id === snapshot.id ? { ...current, uploadedUrl: url } : current,
+        );
         if (notify) toast.success("Photo saved securely.");
         return url;
       })
@@ -279,14 +231,10 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
       pickupDraftKey,
       JSON.stringify({
         step,
-        flowVersion: 2,
-        registrationNumber,
-        vehicleType,
-        vehicleBrandId,
-        vehicleModel,
-        manufactureYear,
-        vehicleCategoryId,
-        vehicleSubcategoryId,
+        flowVersion: 4,
+        condition,
+        description,
+        itemCategoryId,
         pincode,
         address,
         geo,
@@ -316,13 +264,9 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
         const draft = JSON.parse(rawDraft) as {
           step?: number;
           flowVersion?: number;
-          registrationNumber?: string;
-          vehicleType?: string;
-          vehicleBrandId?: string;
-          vehicleModel?: string;
-          manufactureYear?: string;
-          vehicleCategoryId?: string;
-          vehicleSubcategoryId?: string;
+          condition?: string;
+          description?: string;
+          itemCategoryId?: string;
           pincode?: string;
           address?: string;
           geo?: { lat: number; lng: number } | null;
@@ -332,13 +276,9 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
           phone?: string;
           photo?: { id?: string; previewUrl?: string; uploadedUrl?: string | null } | null;
         };
-        if (draft.registrationNumber) setRegistrationNumber(draft.registrationNumber);
-        if (draft.vehicleType) setVehicleType(draft.vehicleType);
-        if (draft.vehicleBrandId) setVehicleBrandId(draft.vehicleBrandId);
-        if (draft.vehicleModel) setVehicleModel(draft.vehicleModel);
-        if (draft.manufactureYear) setManufactureYear(draft.manufactureYear);
-        if (draft.vehicleCategoryId) setVehicleCategoryId(draft.vehicleCategoryId);
-        if (draft.vehicleSubcategoryId) setVehicleSubcategoryId(draft.vehicleSubcategoryId);
+        if (draft.condition) setCondition(draft.condition);
+        if (draft.description) setDescription(draft.description);
+        if (draft.itemCategoryId) setItemCategoryId(draft.itemCategoryId);
         if (draft.pincode) setPincode(draft.pincode);
         if (draft.address) setAddress(draft.address);
         if (draft.geo) setGeo(draft.geo);
@@ -355,29 +295,24 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
           });
         }
         if (typeof draft.step === "number" && draft.step >= 1 && draft.step <= 6) {
-          // Translate drafts saved before vehicle details became their own step.
-          const restoredStep =
-            draft.flowVersion === 2
-              ? draft.step
-              : ({ 1: 2, 2: 4, 3: 3, 4: 5 }[draft.step] ?? 1);
-          setStep(restoredStep);
+          setStep(draft.step);
         }
       } catch {
         window.sessionStorage.removeItem(pickupDraftKey);
       }
     }
 
-    if (pickupSearch.vehicle && new URLSearchParams(window.location.search).get("vehicle") === pickupSearch.vehicle) {
-      setVehicleType(pickupSearch.vehicle);
-      setVehicleCategoryId("");
-      setVehicleSubcategoryId("");
-      setVehicleBrandId("");
-      setVehicleModel("");
-      setStep(2);
-      const registration = pickupSearch.vehicle === "car" ? window.sessionStorage.getItem(carRegistrationKey) : null;
-      setRegistrationNumber(registration ?? "");
+    if (
+      pickupSearch.category &&
+      getSellingCategory(pickupSearch.category) &&
+      new URLSearchParams(window.location.search).get("category") === pickupSearch.category
+    ) {
+      setItemCategoryId(pickupSearch.category);
+      setCondition("");
+      setDescription("");
+      setStep(3);
       const url = new URL(window.location.href);
-      url.searchParams.delete("vehicle");
+      url.searchParams.delete("category");
       window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
     }
     if (pickupSearch.bookingAuth === "1") setStep(5);
@@ -392,23 +327,32 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     // Keep prelaunch customers visible in the existing admin customer list,
     // without creating a pickup order or replacing an existing profile.
     const saveCustomer = async () => {
-      const { data, error } = await supabase.from("user_profiles")
-        .select("user_id").eq("user_id", user.id).maybeSingle();
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
       if (error || data) return;
       const metadata = user.user_metadata as { phone?: string };
-      const { error: saveError } = await supabase.from("user_profiles").upsert({
-        user_id: user.id,
-        full_name: displayName(user),
-        whatsapp: metadata.phone ?? null,
-      }, { onConflict: "user_id", ignoreDuplicates: true });
-      if (saveError) toast.error("Your account is saved, but we couldn't save your customer profile. Please try signing in again.");
+      const { error: saveError } = await supabase.from("user_profiles").upsert(
+        {
+          user_id: user.id,
+          full_name: displayName(user),
+          whatsapp: metadata.phone ?? null,
+        },
+        { onConflict: "user_id", ignoreDuplicates: true },
+      );
+      if (saveError)
+        toast.error(
+          "Your account is saved, but we couldn't save your customer profile. Please try signing in again.",
+        );
     };
     void saveCustomer();
   }, [user]);
 
   useEffect(() => {
     if (!servicesPaused || !hydrated || authLoading) return;
-    if (step !== 1 && step !== 4 && step !== 5) setStep(user ? 5 : 4);
+    if (step === 6) setStep(user ? 5 : 4);
     if (step === 5 && !user) setStep(4);
   }, [hydrated, authLoading, step, user]);
 
@@ -418,12 +362,31 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     if (!hydrated || submitted) return;
     savePickupDraft();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated, submitted, step, vehicleType, registrationNumber, vehicleCategoryId, vehicleSubcategoryId, vehicleBrandId, vehicleModel, manufactureYear, pincode, address, geo, date, slot, name, phone, photo]);
+  }, [
+    hydrated,
+    submitted,
+    step,
+    itemCategoryId,
+    condition,
+    description,
+    pincode,
+    address,
+    geo,
+    date,
+    slot,
+    name,
+    phone,
+    photo,
+  ]);
 
   useEffect(() => {
     if (!hydrated || flowHistoryReady.current || typeof window === "undefined") return;
     flowHistoryReady.current = true;
-    window.history.replaceState({ ...window.history.state, pickupFlow: true, pickupStep: currentStepRef.current }, "", window.location.href);
+    window.history.replaceState(
+      { ...window.history.state, pickupFlow: true, pickupStep: currentStepRef.current },
+      "",
+      window.location.href,
+    );
     const restoreStep = (event: PopStateEvent) => {
       const previousStep = event.state?.pickupFlow ? event.state.pickupStep : null;
       if (typeof previousStep === "number" && previousStep >= 1 && previousStep <= 6) {
@@ -441,11 +404,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     const params = new URLSearchParams(window.location.search);
     params.delete("bookingAuth");
     const query = params.toString();
-    window.history.replaceState(
-      null,
-      "",
-      `${window.location.pathname}${query ? `?${query}` : ""}`,
-    );
+    window.history.replaceState(null, "", `${window.location.pathname}${query ? `?${query}` : ""}`);
   }, [pickupSearch.bookingAuth]);
 
   useEffect(() => {
@@ -489,6 +448,10 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
 
   const signInDuringBooking = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!getSupabaseConfig())
+      return toast.error(
+        "Sign-in is not configured yet. Please try again once the service is available.",
+      );
     if (!authEmail.trim()) return toast.error("Enter your email.");
     if (!authPassword) return toast.error("Enter your password.");
 
@@ -499,18 +462,31 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     });
     setAuthBusy(false);
     if (error) return toast.error(error.message);
-    toast.success(servicesPaused ? "Signed in successfully." : "Signed in. Your saved address is filled in.");
+    toast.success(
+      servicesPaused ? "Signed in successfully." : "Signed in. Your saved address is filled in.",
+    );
     setStep(5);
   };
 
   const signInWithGoogleDuringBooking = async () => {
+    if (!getSupabaseConfig())
+      return toast.error(
+        "Sign-in is not configured yet. Please try again once the service is available.",
+      );
     savePickupDraft();
-    if (!bookingRedirectTo) return toast.error("Couldn't prepare the Google sign-in redirect. Please refresh and try again.");
+    if (!bookingRedirectTo)
+      return toast.error(
+        "Couldn't prepare the Google sign-in redirect. Please refresh and try again.",
+      );
     window.sessionStorage.setItem(postAuthRedirectKey, "/pickup?bookingAuth=1");
     setAuthBusy(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: bookingRedirectTo, scopes: "email profile", queryParams: { prompt: "select_account" } },
+      options: {
+        redirectTo: bookingRedirectTo,
+        scopes: "email profile",
+        queryParams: { prompt: "select_account" },
+      },
     });
     if (error) {
       setAuthBusy(false);
@@ -520,6 +496,10 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
 
   const signUpDuringBooking = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!getSupabaseConfig())
+      return toast.error(
+        "Sign-in is not configured yet. Please try again once the service is available.",
+      );
     if (authName.trim().length < 2) return toast.error("Enter your name.");
     if (authPhone.trim().length < 10) return toast.error("Enter a valid WhatsApp number.");
     if (!authEmail.trim()) return toast.error("Enter your email.");
@@ -542,7 +522,11 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     setName(authName.trim());
     setPhone(authPhone.trim());
     if (data.session) {
-      toast.success(servicesPaused ? "Account created successfully." : "Account created. Let's add your pickup address.");
+      toast.success(
+        servicesPaused
+          ? "Account created successfully."
+          : "Account created. Let's add your pickup address.",
+      );
       setStep(5);
     } else {
       toast.success("Account created. Please verify your email, then sign in here.");
@@ -584,7 +568,11 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
   const moveToStep = (nextStep: number) => {
     setStepLoading(true);
     window.requestAnimationFrame(() => {
-      window.history.pushState({ ...window.history.state, pickupFlow: true, pickupStep: nextStep }, "", window.location.href);
+      window.history.pushState(
+        { ...window.history.state, pickupFlow: true, pickupStep: nextStep },
+        "",
+        window.location.href,
+      );
       setStep(nextStep);
       window.setTimeout(() => setStepLoading(false), 220);
     });
@@ -592,16 +580,11 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
 
   const goNext = () => {
     if (step === 1) {
-      if (!vehicleType) return toast.error("Tell us what vehicle you're selling.");
-    }
-    if (step === 2) {
-      if (!selectedCategory || !vehicleSubcategoryId)
-        return toast.error("Choose your vehicle type.");
+      if (!selectedCategory) return toast.error("Choose what you want to sell.");
     }
     if (step === 3) {
-      if (!selectedBrand) return toast.error("Choose your vehicle brand.");
-      if (!vehicleModel.trim()) return toast.error("Add your vehicle model.");
-      if (!manufactureYear) return toast.error("Select your vehicle model year.");
+      const error = validateSellingItem(itemDetails);
+      if (error) return toast.error(error);
     }
     if (step === 5) {
       if (!pincode.trim()) return toast.error("Add your Bengaluru pincode.");
@@ -611,8 +594,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
         return toast.error("Address looks too short — add your flat, street and a landmark.");
     }
     if (step === 1) {
-      moveToStep(servicesPaused ? (user ? 5 : 4) : 2);
-    } else if (step === 2) {
       moveToStep(3);
     } else if (step === 3) {
       moveToStep(user ? 5 : 4);
@@ -622,20 +603,21 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
   };
 
   const goBack = () => {
-    if (servicesPaused) { setStep(1); return; }
     setStep((s) => {
       if (s === 6) return 5;
       if (s === 5) return user ? 3 : 4;
       if (s === 4) return 3;
-      if (s === 3) return 2;
-      if (s === 2) return 1;
+      if (s === 3) return 1;
       return 1;
     });
   };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (servicesPaused) { showOpeningSoon(); return; }
+    if (servicesPaused) {
+      showOpeningSoon();
+      return;
+    }
     if (!user) {
       toast.error("Please sign in before confirming your pickup.");
       setStep(4);
@@ -650,91 +632,110 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     if (!name.trim() || phone.trim().length < 10)
       return toast.error("Add your name and a valid phone number.");
 
-
+    const itemError = validateSellingItem(itemDetails);
+    if (itemError) {
+      setStep(3);
+      return toast.error(itemError);
+    }
+    if (submissionInFlight.current) return;
+    submissionInFlight.current = true;
     setSaving(true);
-
-    // Prefer an object-storage URL where configured. Otherwise retain the
-    // compressed WebP data URL with the booking for the admin order view.
-    let photoUrl: string | null = null;
-    if (photo) {
-      try {
-        photoUrl = (photo.uploadedUrl ?? (await beginPhotoUpload(photo))) || null;
-      } catch {
-        // Photo storage is optional — never block the booking on it.
-        photoUrl = null;
+    try {
+      // Prefer an object-storage URL where configured. Otherwise retain the
+      // compressed WebP data URL with the booking for the admin order view.
+      let photoUrl: string | null = null;
+      if (photo) {
+        try {
+          photoUrl = (photo.uploadedUrl ?? (await beginPhotoUpload(photo))) || null;
+        } catch {
+          // Photo storage is optional — never block the booking on it.
+          photoUrl = null;
+        }
       }
-    }
 
-    const { error } = await supabase.from("leads").insert({
-      // Set ownership explicitly so the customer's row-level permissions apply
-      // immediately, including on Supabase projects with older trigger state.
-      user_id: user.id,
-      registration_number: registrationNumber.trim() || null,
-      vehicle_type: selectedCategory?.name ?? vehicleType ?? "car",
-      items: [selectedCategory?.name, selectedSubcategory?.name, selectedBrand?.name, vehicleModel.trim()].filter(Boolean) as string[],
-      brand_id: selectedBrand?.id ?? null,
-      brand_name: selectedBrand?.name ?? null,
-      model_id: null,
-      model_name: vehicleModel.trim() || null,
-      vehicle_model_name: vehicleModel.trim() || null,
-      manufacture_year: manufactureYear ? Number(manufactureYear) : null,
-      variant_id: null,
-      variant_name: null,
-      has_photo: !!photoUrl,
-      photo_url: photoUrl,
-      locality: null,
-      pincode,
-      address: address.trim(),
-      name: name.trim(),
-      phone: phone.trim(),
-      preferred_date: date,
-      slot,
-      lat: geo?.lat ?? null,
-      lng: geo?.lng ?? null,
-      status: "new",
-    });
-    setSaving(false);
+      const { data: savedPickup, error } = await supabase
+        .from("leads")
+        .insert({
+          // Set ownership explicitly so the customer's row-level permissions apply
+          // immediately, including on Supabase projects with older trigger state.
+          user_id: user.id,
+          ...sellingItemPayload(itemDetails),
+          has_photo: !!photoUrl,
+          photo_url: photoUrl,
+          locality: null,
+          pincode,
+          address: address.trim(),
+          name: name.trim(),
+          phone: phone.trim(),
+          preferred_date: date,
+          slot,
+          lat: geo?.lat ?? null,
+          lng: geo?.lng ?? null,
+          status: "new",
+        })
+        .select("pickup_id")
+        .single();
 
-    if (error) {
-      toast.error("Couldn't save your booking. Please try again.");
-      return;
+      if (error) {
+        toast.error("Couldn't save your booking. Please try again.");
+        return;
+      }
+      try {
+        const { error: profileError } = await supabase.from("user_profiles").upsert(
+          {
+            user_id: user.id,
+            full_name: name.trim(),
+            whatsapp: phone.trim(),
+            address: address.trim(),
+            pincode,
+            lat: geo?.lat ?? null,
+            lng: geo?.lng ?? null,
+          },
+          { onConflict: "user_id" },
+        );
+        if (profileError) {
+          toast.warning("Pickup saved, but we couldn't save these details for next time.");
+        }
+      } catch {
+        toast.warning("Pickup saved, but your profile could not be updated for next time.");
+      }
+      try {
+        window.sessionStorage.removeItem(pickupDraftKey);
+      } catch {
+        /* Pickup is already saved. */
+      }
+      toast.success("Pickup request received. Our team will confirm the next steps.");
+      setPickupId(savedPickup?.pickup_id ?? null);
+      setSubmitted(true);
+    } catch {
+      toast.error("Connection interrupted. Your details are saved here; please try again.");
+    } finally {
+      submissionInFlight.current = false;
+      setSaving(false);
     }
-    const { error: profileError } = await supabase.from("user_profiles").upsert(
-      {
-        user_id: user.id,
-        full_name: name.trim(),
-        whatsapp: phone.trim(),
-        address: address.trim(),
-        pincode,
-        lat: geo?.lat ?? null,
-        lng: geo?.lng ?? null,
-      },
-      { onConflict: "user_id" },
-    );
-    if (profileError) {
-      console.error(profileError);
-      toast.warning("Pickup saved, but we couldn't save these details for next time.");
-    }
-    if (typeof window !== "undefined") {
-      window.sessionStorage.removeItem(pickupDraftKey);
-      window.sessionStorage.removeItem(carRegistrationKey);
-    }
-    toast.success("Pickup booked! We'll confirm on WhatsApp shortly.");
-    setPickupId(null);
-    setSubmitted(true);
   };
 
-  const loadingVehicleOptions =
-    !hydrated ||
-    (step === 2 &&
-      Boolean(vehicleType) &&
-      (categoriesLoading ||
-        (vehicleCategories.length > 0 && !selectedCategory) ||
-        (Boolean(selectedCategory) && subcategoriesLoading)));
-
-  if (loadingVehicleOptions) {
-    return <PageLoader label="Preparing your vehicle options..." />;
-  }
+  if (!hydrated)
+    return (
+      <section className="pickup-studio">
+        <div className="pickup-studio-shell">
+          <h1 className="pickup-kicker">Sell your kids items</h1>
+          <div className="pickup-loading">
+            <PageLoader label="Preparing your selling form..." full={false} />
+          </div>
+          <noscript>
+            <style>{".pickup-loading { display: none; }"}</style>
+            <p className="mt-5 text-sm">
+              Enable JavaScript to use the selling form. You can still explore our item categories
+              and preparation guides.
+            </p>
+            <Link href="/#sell-categories" className="mt-5 inline-flex font-semibold text-primary">
+              Explore selling categories
+            </Link>
+          </noscript>
+        </div>
+      </section>
+    );
 
   if (submitted) {
     return (
@@ -759,10 +760,14 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
             Thank you, {name.split(" ")[0] || "friend"}!
           </motion.h1>
           <p className="mt-4 text-navy-foreground/80">
-            Your vehicle valuation visit is booked. A Zapiboo expert will confirm your slot on WhatsApp,
-            inspect your vehicle, and share the final offer with you.
+            Your pickup request has been received. Our team will review your item details and
+            confirm availability and the next steps on WhatsApp.
           </p>
-          {pickupId && <p className="mx-auto mt-5 w-fit rounded-full bg-navy-foreground/10 px-4 py-2 text-xs font-bold tracking-wider text-navy-foreground">Pickup ID: {pickupId}</p>}
+          {pickupId && (
+            <p className="mx-auto mt-5 w-fit rounded-full bg-navy-foreground/10 px-4 py-2 text-xs font-bold tracking-wider text-navy-foreground">
+              Pickup ID: {pickupId}
+            </p>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -770,11 +775,28 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
             transition={{ delay: 0.25 }}
             className="mx-auto mt-8 max-w-md rounded-2xl border border-navy-foreground/15 bg-navy-foreground/5 p-6 text-left"
           >
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">What happens next</p>
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-primary">
+              What happens next
+            </p>
             <ol className="mt-4 space-y-3 text-sm text-navy-foreground/80">
-              <li className="flex gap-3"><span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">1</span><span>We confirm your selected pickup time on WhatsApp.</span></li>
-              <li className="flex gap-3"><span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">2</span><span>Our expert inspects the vehicle at your chosen address.</span></li>
-              <li className="flex gap-3"><span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">3</span><span>You receive a transparent final offer and can decide with no obligation.</span></li>
+              <li className="flex gap-3">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  1
+                </span>
+                <span>We confirm your selected pickup time on WhatsApp.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  2
+                </span>
+                <span>Our team reviews your items and confirms handover arrangements.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                  3
+                </span>
+                <span>You review the sale and payment details before deciding to proceed.</span>
+              </li>
             </ol>
           </motion.div>
 
@@ -798,7 +820,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
                 setStep(1);
               }}
             >
-              Book another valuation
+              Sell more items
             </Button>
             <Button asChild variant="outlineLight" size="lg">
               <Link href="/orders">View pickup orders</Link>
@@ -811,145 +833,182 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
 
   return (
     <>
-      <section className="bg-background py-5 md:py-8">
-        <div className="mx-auto max-w-2xl px-4 sm:px-6">
-          <div className="mb-4">
-            <h1 className="text-left text-2xl font-bold tracking-normal text-foreground sm:text-3xl">
-              Booking
-            </h1>
-          </div>
+      <section className="pickup-studio">
+        <div className="pickup-studio-shell">
+          <div className="pickup-workspace">
+            <div className="pickup-workspace-heading">
+              <h1 className="pickup-kicker">SELL YOUR KIDS ITEMS</h1>
+              <span className="pickup-step-count">
+                STEP {currentProgress} OF {progressSteps.length}
+              </span>
+            </div>
 
-          {/* progress */}
-          <div className="mb-5 flex items-center gap-1.5">
-            {progressSteps.map((stepNumber, index) => {
-              const visualStep = index + 1;
-              return (
-                <div key={stepNumber} className="flex flex-1 items-center gap-1.5">
-                  <div
-                    className={cn(
-                      "flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors",
-                      currentProgress > visualStep
-                        ? "bg-gradient-brand text-primary-foreground"
-                        : currentProgress === visualStep
-                          ? "bg-foreground text-background"
-                          : "bg-secondary text-muted-foreground",
-                    )}
-                  >
-                    {currentProgress > visualStep ? <Check className="size-4" /> : visualStep}
-                  </div>
-                  {index < progressSteps.length - 1 && (
-                    <div
+            <nav className="pickup-progress" aria-label="Pickup progress">
+              <ol>
+                {progressSteps.map((stepNumber, index) => {
+                  const labels: Record<number, string> = {
+                    1: "Category",
+                    3: "Item details",
+                    4: "Your account",
+                    5: servicesPaused ? "Next steps" : "Address",
+                    6: "Pickup slot",
+                  };
+                  const complete = currentProgress > index + 1;
+                  return (
+                    <li
+                      key={stepNumber}
                       className={cn(
-                        "h-1 flex-1 rounded-full transition-colors",
-                        currentProgress > visualStep ? "bg-primary" : "bg-secondary",
+                        complete && "is-complete",
+                        currentProgress === index + 1 && "is-current",
                       )}
-                    />
-                  )}
+                      aria-current={currentProgress === index + 1 ? "step" : undefined}
+                    >
+                      <span className="pickup-progress-dot">
+                        {complete ? <Check size={13} /> : String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span>{labels[stepNumber]}</span>
+                    </li>
+                  );
+                })}
+              </ol>
+            </nav>
+
+            <div className="pickup-form-panel relative">
+              {stepLoading && (
+                <div className="absolute inset-0 z-20 grid place-items-center rounded-3xl bg-background/75 backdrop-blur-sm">
+                  <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold shadow-soft">
+                    <Loader2 className="size-4 animate-spin text-primary" /> Preparing next step
+                  </div>
                 </div>
-              );
-            })}
-          </div>
+              )}
+              <AnimatePresence mode="wait">
+                {/* STEP 1 */}
+                {step === 1 && (
+                  <motion.div
+                    key="s1"
+                    initial={{ opacity: 0, x: 16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -16 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <h2 className="text-xl font-bold">What are you selling?</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Choose a category, add the condition and a photo if you like, then continue.
+                    </p>
 
-            <div className="relative rounded-3xl border border-border bg-card p-4 shadow-soft sm:p-8">
-            {stepLoading && <div className="absolute inset-0 z-20 grid place-items-center rounded-3xl bg-background/75 backdrop-blur-sm"><div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold shadow-soft"><Loader2 className="size-4 animate-spin text-primary" /> Preparing next step</div></div>}
-            <AnimatePresence mode="wait">
-              {/* STEP 1 */}
-              {step === 1 && (
-                <motion.div
-                  key="s1"
-                  initial={{ opacity: 0, x: 16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -16 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <h2 className="text-xl font-bold">What are you selling?</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Pick your vehicle type, then sign in to save your details for when we open.
-                  </p>
-
-                  <div className="mt-3 grid grid-cols-2 gap-2.5">
-                    {vehicleCategories.map((category) => {
-                      const active = vehicleCategoryId === category.id;
-                      return (
-                        <button
-                          type="button"
-                          key={category.id}
-                          onClick={() => {
-                            setVehicleType(category.name.toLowerCase());
-                            try {
-                              setRegistrationNumber(category.name.toLowerCase().startsWith("car") ? sessionStorage.getItem(carRegistrationKey) ?? "" : "");
-                            } catch { setRegistrationNumber(""); }
-                            setVehicleCategoryId(category.id);
-                            setVehicleSubcategoryId("");
-                            setVehicleBrandId("");
-                            setVehicleModel("");
-                            
-                          }}
-                          className={cn(
-                            "relative min-h-36 overflow-hidden rounded-2xl border-2 p-3 text-left transition-all sm:p-5",
-                            active
-                              ? "border-primary bg-accent shadow-soft"
-                              : "border-border hover:border-primary/40",
-                          )}
-                        >
-                          <div className="relative flex h-20 items-center justify-center sm:h-28">
-                            <img src={optimizedImageUrl(category.image_url, 480) || ({ Car: carImg, Bike: bikeImg, Scooter: scooterImg, "Commercial vehicle": commercialImg }[category.name] ?? carImg)} alt="" className="h-full w-full object-contain pt-3" />
-                          </div>
-                          <div
+                    <div className="pickup-choices">
+                      {itemCategories.map((category) => {
+                        const active = itemCategoryId === category.id;
+                        return (
+                          <button
+                            type="button"
+                            key={category.id}
+                            aria-pressed={active}
+                            data-category={category.id}
+                            onClick={() => {
+                              if (category.id === itemCategoryId) return;
+                              setPhoto(null);
+                              setItemCategoryId(category.id);
+                              setCondition("");
+                              setDescription("");
+                            }}
                             className={cn(
-                              "mt-1 text-center text-base font-bold sm:mt-2 sm:text-lg",
-                              category.name.length > 12 && "whitespace-nowrap tracking-tight",
+                              "pickup-choice relative overflow-hidden text-left transition-all",
+                              active
+                                ? "border-primary bg-primary/10 shadow-soft"
+                                : "border-border hover:border-primary/40",
                             )}
                           >
-                            {category.name}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
+                            <span className="pickup-choice-check">
+                              {active ? <Check size={14} /> : <ArrowRight size={14} />}
+                            </span>
+                            <div className="pickup-choice-image">
+                              <img
+                                src={category.image_url}
+                                alt=""
+                                width={420}
+                                height={420}
+                                className="h-full w-full object-contain"
+                              />
+                            </div>
+                            <div
+                              className={cn(
+                                "mt-1 text-center text-base font-bold sm:mt-2 sm:text-lg",
+                                category.name.length > 12 && "tracking-tight",
+                              )}
+                            >
+                              {category.name}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
 
-              {/* STEP 2 */}
-              {step === 2 && (
-                <motion.div
-                  key="s2-vehicle-details"
-                  initial={{ opacity: 0, x: 16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -16 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <h2 className="text-xl font-bold">What type of vehicle?</h2>
-                  <div className="mt-4">
-                    <Label htmlFor="booking-registration">Registration number (optional)</Label>
-                    <Input id="booking-registration" value={registrationNumber} onChange={event => setRegistrationNumber(event.target.value.toUpperCase().replace(/[^A-Z0-9 -]/g, ""))} maxLength={18} placeholder="KA 01 AB 1234" className="mt-2 uppercase" />
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Pick the exact vehicle type — the next step asks for the brand.
-                  </p>
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <div className="sm:col-span-2"><Label className="text-sm font-semibold">{selectedCategory ? `${selectedCategory.name} type` : "Vehicle type"}</Label><div className="mt-3 grid grid-cols-2 gap-2.5">{vehicleSubcategories.map((item) => <button type="button" key={item.id} onClick={() => { setVehicleSubcategoryId(item.id); setVehicleBrandId(""); setVehicleModel(""); moveToStep(3); }} className={cn("relative min-h-36 overflow-hidden rounded-2xl border-2 p-3 transition-all sm:p-5", vehicleSubcategoryId === item.id ? "border-primary bg-accent shadow-soft" : "border-border hover:border-primary/40")}><div className="flex h-20 items-center justify-center sm:h-28"><img src={optimizedImageUrl(item.image_url || subcategoryFallbackImage(item.name, selectedCategory?.image_url), 480)} alt="" className="h-full w-full object-contain pt-3" onError={(event) => { event.currentTarget.src = optimizedImageUrl(subcategoryFallbackImage(item.name, null), 480); }} /></div><div className="mt-1 text-center text-base font-bold sm:mt-2 sm:text-lg">{item.name}</div></button>)}</div></div>
-                  </div>
-
-
-                  <div className="mt-8 hidden">
-                    <h3 className="font-bold">Add a photo (optional)</h3>
+                {/* STEP 3 */}
+                {step === 3 && (
+                  <motion.div
+                    key="s3-photo"
+                    initial={{ opacity: 0, x: 16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -16 }}
+                  >
+                    <h2 className="text-xl font-bold">Condition &amp; photo</h2>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {selectedCategory?.name} selected. Add the condition and anything we should
+                      know before pickup.
+                    </p>
+                    <div className="mt-5 space-y-5">
+                      <div>
+                        <Label htmlFor="item-condition">Condition *</Label>
+                        <Select value={condition} onValueChange={setCondition}>
+                          <SelectTrigger id="item-condition" className="mt-2">
+                            <SelectValue placeholder="Choose condition" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {itemConditions.map((value) => (
+                              <SelectItem key={value} value={value}>
+                                {value}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="item-description">Anything else? (optional)</Label>
+                        <Textarea
+                          id="item-description"
+                          value={description}
+                          onChange={(event) => setDescription(event.target.value)}
+                          maxLength={1000}
+                          rows={4}
+                          placeholder="Anything we should know: wear, missing parts, size or items in a bundle"
+                          className="mt-2"
+                        />
+                      </div>
+                    </div>
+                    <h3 className="mt-8 font-bold">
+                      Add a photo{" "}
+                      <span className="font-normal text-muted-foreground">(optional)</span>
+                    </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Snap it and we'll come prepared.
+                      A clear photo helps our team review the condition and prepare for pickup.
                     </p>
                     <input
                       ref={fileRef}
                       type="file"
                       accept="image/*"
+                      aria-label="Add a photo"
                       className="hidden"
                       onChange={onPhoto}
                     />
                     {photo ? (
-                      <div className="mt-3 relative w-fit">
+                      <div className="mt-5 relative w-fit">
                         <img
                           src={photo.previewUrl}
-                          alt="Your vehicle"
-                          className="size-28 rounded-xl object-cover"
+                          alt="Your items"
+                          className="size-40 rounded-2xl object-cover"
                         />
                         <button
                           type="button"
@@ -957,492 +1016,456 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
                             setPhoto(null);
                             if (fileRef.current) fileRef.current.value = "";
                           }}
-                          className="absolute -right-2 -top-2 flex size-6 items-center justify-center rounded-full bg-foreground text-background"
+                          className="absolute -right-2 -top-2 flex size-7 items-center justify-center rounded-full bg-foreground text-background"
                           aria-label="Remove photo"
                         >
-                          <X className="size-3.5" />
+                          <X className="size-4" />
                         </button>
-                        <div className="mt-2 text-xs font-medium text-muted-foreground">
-                          {photo.uploadedUrl
-                            ? "Photo saved securely."
-                            : photoUploading
-                              ? "Saving photo securely…"
-                              : "Photo will be saved before booking."}
-                        </div>
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          {photoUploading ? "Saving photo…" : "Photo ready to attach."}
+                        </p>
                       </div>
                     ) : (
                       <button
                         type="button"
                         onClick={() => fileRef.current?.click()}
-                        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-6 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/50 hover:text-foreground"
+                        className="pickup-photo-drop"
                       >
-                        <Camera className="size-5" />
-                        Take or upload a photo
+                        <span className="pickup-photo-icon">
+                          <Camera size={25} strokeWidth={1.5} />
+                        </span>
+                        <strong>Take or upload a photo</strong>
+                        <span>One clear photo is a lovely start</span>
                       </button>
                     )}
+                  </motion.div>
+                )}
+
+                {/* STEP 5 */}
+                {step === 5 && servicesPaused && (
+                  <div className="py-4">
+                    <OpeningSoonMessage saved={!!user} />
+                    <Button asChild variant="outline" className="mt-6 w-full">
+                      <Link href="/">Back to home</Link>
+                    </Button>
                   </div>
-                </motion.div>
-              )}
-
-              {/* STEP 3 */}
-              {step === 3 && (
-                <motion.div key="s3-photo" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }}>
-                  <h2 className="text-xl font-bold">Your vehicle details</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">Choose the brand and enter the exact model. You can add a photo below.</p>
-                  <div className="mt-5">
-                    <Label htmlFor="vehicle-brand">Vehicle brand</Label>
-                      <Popover open={brandPickerOpen} onOpenChange={setBrandPickerOpen}>
-                      <PopoverTrigger asChild>
-                        <Button id="vehicle-brand" type="button" variant="outline" role="combobox" className="mt-2 h-12 w-full justify-between rounded-xl px-3 text-base font-normal">
-                          {selectedBrand?.name ?? "Search or select a brand"}<ChevronsUpDown className="size-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-                        <Command>
-                          <CommandInput placeholder="Search brands…" />
-                          <CommandList><CommandEmpty>No matching brand found.</CommandEmpty>{vehicleBrands.map((brand) => <CommandItem key={brand.id} value={brand.name} onSelect={() => { setVehicleBrandId(brand.id); setVehicleModel(""); setManufactureYear(""); setBrandPickerOpen(false); }}><Check className={cn("mr-2 size-4", vehicleBrandId === brand.id ? "opacity-100" : "opacity-0")} />{brand.name}</CommandItem>)}</CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                    {!vehicleBrands.length && <p className="mt-3 text-sm text-muted-foreground">No brands are available yet. You can continue and confirm the brand during inspection.</p>}
-                  </div>
-                  <div className="mt-5 rounded-2xl border-2 border-primary bg-primary/5 p-4 shadow-sm">
-                    <Label htmlFor="vehicle-model" className="flex items-center justify-between font-bold text-foreground">
-                      Vehicle model
-                      <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">Required</span>
-                    </Label>
-                    <Input
-                      id="vehicle-model"
-                      value={vehicleModel}
-                      onChange={(event) => setVehicleModel(event.target.value.slice(0, 80))}
-                      placeholder="e.g. Swift VXi, Activa 6G, Creta SX"
-                      maxLength={80}
-                      className="mt-3 h-12 border-primary/40 bg-background text-base shadow-sm focus-visible:ring-primary"
-                    />
-                    <p className="mt-2 text-xs text-muted-foreground">Enter the model shown on your RC or service records.</p>
-                  </div>
-                  <div className="mt-4 rounded-2xl border border-border bg-card p-4">
-                    <Label htmlFor="vehicle-year" className="flex items-center justify-between font-bold text-foreground">Select model year <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">Required</span></Label>
-                    <Select value={manufactureYear} onValueChange={setManufactureYear}>
-                      <SelectTrigger id="vehicle-year" className="mt-3 h-12 rounded-xl bg-background text-base"><SelectValue placeholder="Choose year" /></SelectTrigger>
-                      <SelectContent>{modelYears.map((year) => <SelectItem key={year} value={year}>{year}</SelectItem>)}</SelectContent>
-                    </Select>
-                    <p className="mt-2 text-xs text-muted-foreground">Choose the manufacturing year shown on your RC.</p>
-                  </div>
-                  <h3 className="mt-8 font-bold">Add a photo <span className="font-normal text-muted-foreground">(optional)</span></h3>
-                  <p className="mt-1 text-sm text-muted-foreground">A clear photo helps our evaluator arrive prepared.</p>
-                  <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPhoto} />
-                  {photo ? <div className="mt-5 relative w-fit"><img src={photo.previewUrl} alt="Your vehicle" className="size-40 rounded-2xl object-cover" /><button type="button" onClick={() => { setPhoto(null); if (fileRef.current) fileRef.current.value = ""; }} className="absolute -right-2 -top-2 flex size-7 items-center justify-center rounded-full bg-foreground text-background" aria-label="Remove photo"><X className="size-4" /></button><p className="mt-2 text-xs text-muted-foreground">{photoUploading ? "Saving photo…" : "Photo ready to attach."}</p></div> : <button type="button" onClick={() => fileRef.current?.click()} className="mt-5 flex w-full min-h-40 items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border text-sm font-semibold text-muted-foreground transition-colors hover:border-primary hover:text-foreground"><Camera className="size-5" /> Take or upload a photo</button>}
-                </motion.div>
-              )}
-
-              {/* STEP 5 */}
-              {step === 5 && servicesPaused && <div className="py-4"><OpeningSoonMessage saved={!!user} /><Button asChild variant="outline" className="mt-6 w-full"><Link href="/">Back to home</Link></Button></div>}
-              {step === 5 && !servicesPaused && (
-                <motion.div
-                  key="s5-address"
-                  initial={{ opacity: 0, x: 16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -16 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <h2 className="text-xl font-bold">Where in Bengaluru?</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    We provide doorstep inspections across Bengaluru.
-                  </p>
-
-                  {user && profileStatus === "loading" && (
-                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-border bg-secondary/40 px-3 py-2.5 text-sm text-muted-foreground">
-                      <Loader2 className="size-4 animate-spin" /> Loading your saved address…
-                    </div>
-                  )}
-                  {user && profileStatus === "filled" && addressStepReady && (
-                    <div className="mt-4 flex items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2.5 text-sm font-medium text-primary">
-                      <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
-                      <span>Auto-filled from your account. Edit anything that changed.</span>
-                    </div>
-                  )}
-                  {user && profileStatus === "missing" && !addressStepReady && (
-                    <div className="mt-4 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm font-medium text-destructive">
-                      <Info className="mt-0.5 size-4 shrink-0" />
-                      <span>
-                        No saved address on your account yet — add it below and we'll remember it
-                        for your next pickup.
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="mt-6 space-y-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="pin">Pincode</Label>
-                      <Input
-                        id="pin"
-                        inputMode="numeric"
-                        maxLength={6}
-                        className="h-11"
-                        placeholder="6-digit pincode"
-                        value={pincode}
-                        onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
-                        aria-invalid={pincodeBad}
-                      />
-                      {pincodeOk && (
-                        <p className="flex items-center gap-1.5 text-sm font-medium text-primary">
-                          <CheckCircle2 className="size-4" /> Great — we provide doorstep pickup across Bengaluru.
-                        </p>
-                      )}
-                      {pincode.length > 0 && pincode.length < 6 && (
-                        <p className="text-sm text-muted-foreground">
-                          {6 - pincode.length} more digit{6 - pincode.length > 1 ? "s" : ""} to go.
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="addr">Flat / house & landmark</Label>
-                      <Textarea
-                        id="addr"
-                        rows={3}
-                        placeholder="e.g. #12, 3rd Cross, near Forum Mall"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        aria-invalid={addressTooShort}
-                      />
-                      {addressTooShort && (
-                        <p className="flex items-center gap-1.5 text-sm font-medium text-destructive">
-                          <Info className="size-4" /> Add a bit more detail — flat/house number,
-                          street and a landmark.
-                        </p>
-                      )}
-                    </div>
-
-
-                    <div className="space-y-2">
-                      <Label className="flex items-center gap-1.5">
-                        <MapPin className="size-4 text-primary" /> Pin your location (optional)
-                      </Label>
-                      <PickupMap value={geo} onChange={setGeo} interactive={mapEditing} onEdit={() => setMapEditing(true)} onDone={() => setMapEditing(false)} />
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STEP 3 */}
-              {step === 4 && (
-                <motion.div
-                  key="s3-auth"
-                  initial={{ opacity: 0, x: 16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -16 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <div className="mb-4">
-                    <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">
-                      Customer account
-                    </p>
-                    <h2 className="mt-1 text-2xl font-extrabold leading-tight">
-                      {authTab === "signin" ? "Sign in to continue" : "Create your account"}
-                    </h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Create an account so your details are ready when pickups open.
-                    </p>
-                  </div>
-
-                  {authLoading ? (
-                    <div className="flex items-center justify-center rounded-2xl border border-border bg-background py-10">
-                      <Loader2 className="size-6 animate-spin text-primary" />
-                    </div>
-                  ) : (
-                    <div className="rounded-2xl border border-border bg-background p-3 shadow-soft sm:p-4">
-                      <Button
-                        type="button"
-                        variant="google"
-                        size="lg"
-                        className="mb-3 h-11 w-full rounded-xl text-sm"
-                        disabled={authBusy}
-                        onClick={signInWithGoogleDuringBooking}
-                      >
-                        {authBusy ? (
-                          <Loader2 className="size-4 animate-spin" />
-                        ) : (
-                          <GoogleIcon className="size-5" />
-                        )}
-                        <span className="whitespace-nowrap">Continue with Google</span>
-                        {!authBusy && <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">Recommended</span>}
-                      </Button>
-                      <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
-                        <span className="h-px flex-1 bg-border" />
-                        or
-                        <span className="h-px flex-1 bg-border" />
-                      </div>
-
-                      <Tabs
-                        value={authTab}
-                        onValueChange={(v) => setAuthTab(v as "signin" | "signup")}
-                      >
-                        <TabsList className="grid h-10 w-full grid-cols-2 rounded-xl bg-muted p-1">
-                          <TabsTrigger value="signin" className="rounded-xl">
-                            Sign in
-                          </TabsTrigger>
-                          <TabsTrigger value="signup" className="rounded-xl">
-                            Create account
-                          </TabsTrigger>
-                        </TabsList>
-
-                        <TabsContent value="signin" className="mt-4">
-                          <form onSubmit={signInDuringBooking} className="space-y-3">
-                            <div className="space-y-1.5">
-                              <Label htmlFor="booking-si-email">Email</Label>
-                              <Input
-                                id="booking-si-email"
-                                type="email"
-                                autoComplete="email"
-                                value={authEmail}
-                                onChange={(e) => setAuthEmail(e.target.value)}
-                                placeholder="you@example.com"
-                                className="h-11 rounded-xl bg-background px-3"
-                              />
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label htmlFor="booking-si-password">Password</Label>
-                              <Input
-                                id="booking-si-password"
-                                type="password"
-                                autoComplete="current-password"
-                                value={authPassword}
-                                onChange={(e) => setAuthPassword(e.target.value)}
-                                placeholder="Password"
-                                className="h-11 rounded-xl bg-background px-3"
-                              />
-                            </div>
-                            <Button
-                              type="submit"
-                              variant="hero"
-                              size="lg"
-                              className="h-11 w-full rounded-xl text-sm"
-                              disabled={authBusy}
-                            >
-                              {authBusy ? (
-                                <Loader2 className="size-4 animate-spin" />
-                              ) : (
-                                "Sign in and continue"
-                              )}
-                            </Button>
-                          </form>
-                        </TabsContent>
-
-                        <TabsContent value="signup" className="mt-4">
-                          <form onSubmit={signUpDuringBooking} className="space-y-3">
-                            <div className="grid gap-3 sm:grid-cols-2">
-                              <div className="space-y-1.5">
-                                <Label htmlFor="booking-su-name">Full name</Label>
-                                <Input
-                                  id="booking-su-name"
-                                  value={authName}
-                                  onChange={(e) => setAuthName(e.target.value)}
-                                  placeholder="Your name"
-                                  className="h-11 rounded-xl bg-background px-3"
-                                />
-                              </div>
-                              <div className="space-y-1.5">
-                                <Label htmlFor="booking-su-phone">WhatsApp</Label>
-                                <Input
-                                  id="booking-su-phone"
-                                  type="tel"
-                                  inputMode="numeric"
-                                  maxLength={10}
-                                  value={authPhone}
-                                  onChange={(e) => setAuthPhone(e.target.value.replace(/\D/g, ""))}
-                                  placeholder="10-digit mobile"
-                                  className="h-11 rounded-xl bg-background px-3"
-                                />
-                              </div>
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label htmlFor="booking-su-email">Email</Label>
-                              <Input
-                                id="booking-su-email"
-                                type="email"
-                                autoComplete="email"
-                                value={authEmail}
-                                onChange={(e) => setAuthEmail(e.target.value)}
-                                placeholder="you@example.com"
-                                className="h-11 rounded-xl bg-background px-3"
-                              />
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label htmlFor="booking-su-password">Password</Label>
-                              <Input
-                                id="booking-su-password"
-                                type="password"
-                                autoComplete="new-password"
-                                value={authPassword}
-                                onChange={(e) => setAuthPassword(e.target.value)}
-                                placeholder="At least 6 characters"
-                                className="h-11 rounded-xl bg-background px-3"
-                              />
-                            </div>
-                            <Button
-                              type="submit"
-                              variant="hero"
-                              size="lg"
-                              className="h-11 w-full rounded-xl text-sm"
-                              disabled={authBusy}
-                            >
-                              {authBusy ? (
-                                <Loader2 className="size-4 animate-spin" />
-                              ) : (
-                                "Create account and continue"
-                              )}
-                            </Button>
-                          </form>
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {/* STEP 5 */}
-              {step === 6 && (
-                <motion.form
-                  key="s5-schedule"
-                  onSubmit={onSubmit}
-                  initial={{ opacity: 0, x: 16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -16 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <h2 className="text-xl font-bold">When should we come?</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Pick a day and slot — we'll confirm on WhatsApp.
-                  </p>
-
-                  <div className="mt-6 space-y-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="date">Preferred date</Label>
-                      <Input
-                        id="date"
-                        type="date"
-                        min={todayStr}
-                        className="h-11"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Time slot</Label>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        {timeSlots.map((s) => (
-                          <button
-                            type="button"
-                            key={s}
-                            onClick={() => setSlot(s)}
-                            className={cn(
-                              "rounded-xl border px-2 py-3 text-sm font-medium transition-all",
-                              slot === s
-                                ? "border-primary bg-accent text-accent-foreground"
-                                : "border-border bg-background hover:border-primary/40",
-                            )}
-                          >
-                            {s}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="nm">Your name</Label>
-                        <Input
-                          id="nm"
-                          className="h-11"
-                          placeholder="Full name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="ph">Phone (WhatsApp)</Label>
-                        <Input
-                          id="ph"
-                          type="tel"
-                          inputMode="numeric"
-                          className="h-11"
-                          placeholder="10-digit mobile"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    variant="hero"
-                    size="xl"
-                    className="mt-8 w-full"
-                    disabled={saving}
+                )}
+                {step === 5 && !servicesPaused && (
+                  <motion.div
+                    key="s5-address"
+                    initial={{ opacity: 0, x: 16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -16 }}
+                    transition={{ duration: 0.25 }}
                   >
-                    {saving ? "Booking…" : "Confirm pickup"}
-                    {!saving && <ArrowRight />}
-                  </Button>
-                  <p className="mt-3 text-center text-xs text-muted-foreground">
-                    Free to book · You approve the rate before anything is sold.
-                  </p>
-                </motion.form>
-              )}
-            </AnimatePresence>
+                    <h2 className="text-xl font-bold">Where in Bengaluru?</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Tell us where to collect your pre-loved kids items in Bangalore.
+                    </p>
 
-            {/* nav buttons (vehicle + address steps) */}
-            {step !== 2 && step !== 4 && step !== 6 && !(servicesPaused && step === 5) && (
-              <div className="mt-4 flex items-center justify-between gap-3">
-                {step > 1 ? (
+                    {user && profileStatus === "loading" && (
+                      <div className="mt-4 flex items-center gap-2 rounded-xl border border-border bg-secondary/40 px-3 py-2.5 text-sm text-muted-foreground">
+                        <Loader2 className="size-4 animate-spin" /> Loading your saved address…
+                      </div>
+                    )}
+                    {user && profileStatus === "filled" && addressStepReady && (
+                      <div className="mt-4 flex items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2.5 text-sm font-medium text-primary">
+                        <CheckCircle2 className="mt-0.5 size-4 shrink-0" />
+                        <span>Auto-filled from your account. Edit anything that changed.</span>
+                      </div>
+                    )}
+                    {user && profileStatus === "missing" && !addressStepReady && (
+                      <div className="mt-4 flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2.5 text-sm font-medium text-destructive">
+                        <Info className="mt-0.5 size-4 shrink-0" />
+                        <span>
+                          No saved address on your account yet — add it below and we'll remember it
+                          for your next pickup.
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="mt-6 space-y-5">
+                      <div className="space-y-2">
+                        <Label htmlFor="pin">Pincode</Label>
+                        <Input
+                          id="pin"
+                          inputMode="numeric"
+                          maxLength={6}
+                          className="h-11"
+                          placeholder="6-digit pincode"
+                          value={pincode}
+                          onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
+                          aria-invalid={pincodeBad}
+                        />
+                        {pincodeOk && (
+                          <p className="flex items-center gap-1.5 text-sm font-medium text-primary">
+                            <CheckCircle2 className="size-4" /> Great — we provide doorstep pickup
+                            across Bengaluru.
+                          </p>
+                        )}
+                        {pincode.length > 0 && pincode.length < 6 && (
+                          <p className="text-sm text-muted-foreground">
+                            {6 - pincode.length} more digit{6 - pincode.length > 1 ? "s" : ""} to
+                            go.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="addr">Flat / house & landmark</Label>
+                        <Textarea
+                          id="addr"
+                          rows={3}
+                          placeholder="e.g. #12, 3rd Cross, near Forum Mall"
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                          aria-invalid={addressTooShort}
+                        />
+                        {addressTooShort && (
+                          <p className="flex items-center gap-1.5 text-sm font-medium text-destructive">
+                            <Info className="size-4" /> Add a bit more detail — flat/house number,
+                            street and a landmark.
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-1.5">
+                          <MapPin className="size-4 text-primary" /> Pin your location (optional)
+                        </Label>
+                        <PickupMap
+                          value={geo}
+                          onChange={setGeo}
+                          interactive={mapEditing}
+                          onEdit={() => setMapEditing(true)}
+                          onDone={() => setMapEditing(false)}
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* STEP 3 */}
+                {step === 4 && (
+                  <motion.div
+                    key="s3-auth"
+                    initial={{ opacity: 0, x: 16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -16 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <div className="mb-4">
+                      <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">
+                        Customer account
+                      </p>
+                      <h2 className="mt-1 text-2xl font-extrabold leading-tight">
+                        {authTab === "signin" ? "Sign in to continue" : "Create your account"}
+                      </h2>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Create an account so your details are ready when pickups open.
+                      </p>
+                    </div>
+
+                    {authLoading ? (
+                      <div className="flex items-center justify-center rounded-2xl border border-border bg-background py-10">
+                        <Loader2 className="size-6 animate-spin text-primary" />
+                      </div>
+                    ) : (
+                      <div className="rounded-2xl border border-border bg-background p-3 shadow-soft sm:p-4">
+                        <Button
+                          type="button"
+                          variant="google"
+                          size="lg"
+                          className="mb-3 h-11 w-full rounded-xl text-sm"
+                          disabled={authBusy}
+                          onClick={signInWithGoogleDuringBooking}
+                        >
+                          {authBusy ? (
+                            <Loader2 className="size-4 animate-spin" />
+                          ) : (
+                            <GoogleIcon className="size-5" />
+                          )}
+                          <span className="whitespace-nowrap">Continue with Google</span>
+                          {!authBusy && (
+                            <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                              Recommended
+                            </span>
+                          )}
+                        </Button>
+                        <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
+                          <span className="h-px flex-1 bg-border" />
+                          or
+                          <span className="h-px flex-1 bg-border" />
+                        </div>
+
+                        <Tabs
+                          value={authTab}
+                          onValueChange={(v) => setAuthTab(v as "signin" | "signup")}
+                        >
+                          <TabsList className="grid h-10 w-full grid-cols-2 rounded-xl bg-muted p-1">
+                            <TabsTrigger value="signin" className="rounded-xl">
+                              Sign in
+                            </TabsTrigger>
+                            <TabsTrigger value="signup" className="rounded-xl">
+                              Create account
+                            </TabsTrigger>
+                          </TabsList>
+
+                          <TabsContent value="signin" className="mt-4">
+                            <form onSubmit={signInDuringBooking} className="space-y-3">
+                              <div className="space-y-1.5">
+                                <Label htmlFor="booking-si-email">Email</Label>
+                                <Input
+                                  id="booking-si-email"
+                                  type="email"
+                                  autoComplete="email"
+                                  value={authEmail}
+                                  onChange={(e) => setAuthEmail(e.target.value)}
+                                  placeholder="you@example.com"
+                                  className="h-11 rounded-xl bg-background px-3"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <Label htmlFor="booking-si-password">Password</Label>
+                                <Input
+                                  id="booking-si-password"
+                                  type="password"
+                                  autoComplete="current-password"
+                                  value={authPassword}
+                                  onChange={(e) => setAuthPassword(e.target.value)}
+                                  placeholder="Password"
+                                  className="h-11 rounded-xl bg-background px-3"
+                                />
+                              </div>
+                              <Button
+                                type="submit"
+                                variant="hero"
+                                size="lg"
+                                className="h-11 w-full rounded-xl text-sm"
+                                disabled={authBusy}
+                              >
+                                {authBusy ? (
+                                  <Loader2 className="size-4 animate-spin" />
+                                ) : (
+                                  "Sign in and continue"
+                                )}
+                              </Button>
+                            </form>
+                          </TabsContent>
+
+                          <TabsContent value="signup" className="mt-4">
+                            <form onSubmit={signUpDuringBooking} className="space-y-3">
+                              <div className="grid gap-3 sm:grid-cols-2">
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="booking-su-name">Full name</Label>
+                                  <Input
+                                    id="booking-su-name"
+                                    value={authName}
+                                    onChange={(e) => setAuthName(e.target.value)}
+                                    placeholder="Your name"
+                                    className="h-11 rounded-xl bg-background px-3"
+                                  />
+                                </div>
+                                <div className="space-y-1.5">
+                                  <Label htmlFor="booking-su-phone">WhatsApp</Label>
+                                  <Input
+                                    id="booking-su-phone"
+                                    type="tel"
+                                    inputMode="numeric"
+                                    maxLength={10}
+                                    value={authPhone}
+                                    onChange={(e) =>
+                                      setAuthPhone(e.target.value.replace(/\D/g, ""))
+                                    }
+                                    placeholder="10-digit mobile"
+                                    className="h-11 rounded-xl bg-background px-3"
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-1.5">
+                                <Label htmlFor="booking-su-email">Email</Label>
+                                <Input
+                                  id="booking-su-email"
+                                  type="email"
+                                  autoComplete="email"
+                                  value={authEmail}
+                                  onChange={(e) => setAuthEmail(e.target.value)}
+                                  placeholder="you@example.com"
+                                  className="h-11 rounded-xl bg-background px-3"
+                                />
+                              </div>
+                              <div className="space-y-1.5">
+                                <Label htmlFor="booking-su-password">Password</Label>
+                                <Input
+                                  id="booking-su-password"
+                                  type="password"
+                                  autoComplete="new-password"
+                                  value={authPassword}
+                                  onChange={(e) => setAuthPassword(e.target.value)}
+                                  placeholder="At least 6 characters"
+                                  className="h-11 rounded-xl bg-background px-3"
+                                />
+                              </div>
+                              <Button
+                                type="submit"
+                                variant="hero"
+                                size="lg"
+                                className="h-11 w-full rounded-xl text-sm"
+                                disabled={authBusy}
+                              >
+                                {authBusy ? (
+                                  <Loader2 className="size-4 animate-spin" />
+                                ) : (
+                                  "Create account and continue"
+                                )}
+                              </Button>
+                            </form>
+                          </TabsContent>
+                        </Tabs>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+
+                {/* STEP 5 */}
+                {step === 6 && (
+                  <motion.form
+                    key="s5-schedule"
+                    onSubmit={onSubmit}
+                    initial={{ opacity: 0, x: 16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -16 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <h2 className="text-xl font-bold">When should we come?</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Pick a day and slot — we'll confirm on WhatsApp.
+                    </p>
+
+                    <div className="mt-6 space-y-5">
+                      <div className="space-y-2">
+                        <Label htmlFor="date">Preferred date</Label>
+                        <Input
+                          id="date"
+                          type="date"
+                          min={todayStr}
+                          className="h-11"
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Time slot</Label>
+                        <div className="grid grid-cols-2 gap-2.5">
+                          {timeSlots.map((s) => (
+                            <button
+                              type="button"
+                              key={s}
+                              onClick={() => setSlot(s)}
+                              className={cn(
+                                "rounded-xl border px-2 py-3 text-sm font-medium transition-all",
+                                slot === s
+                                  ? "border-primary bg-accent text-accent-foreground"
+                                  : "border-border bg-background hover:border-primary/40",
+                              )}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid gap-5 sm:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="nm">Your name</Label>
+                          <Input
+                            id="nm"
+                            className="h-11"
+                            placeholder="Full name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="ph">Phone (WhatsApp)</Label>
+                          <Input
+                            id="ph"
+                            type="tel"
+                            inputMode="numeric"
+                            className="h-11"
+                            placeholder="10-digit mobile"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      variant="hero"
+                      size="xl"
+                      className="mt-8 w-full"
+                      disabled={saving}
+                    >
+                      {saving ? "Booking…" : "Confirm pickup"}
+                      {!saving && <ArrowRight />}
+                    </Button>
+                    <p className="mt-3 text-center text-xs text-muted-foreground">
+                      Free to book · You approve the rate before anything is sold.
+                    </p>
+                  </motion.form>
+                )}
+              </AnimatePresence>
+
+              {/* nav buttons (item + address steps) */}
+              {step !== 4 && step !== 6 && !(servicesPaused && step === 5) && (
+                <div className="pickup-form-actions">
+                  {step > 1 ? (
+                    <Button type="button" variant="ghost" onClick={goBack}>
+                      <ArrowLeft />
+                      Back
+                    </Button>
+                  ) : (
+                    <span />
+                  )}
+                  <Button type="button" variant="hero" size="lg" onClick={goNext}>
+                    Continue
+                    <ArrowRight />
+                  </Button>
+                </div>
+              )}
+              {(step === 4 || step === 6) && (
+                <div className="mt-4">
                   <Button type="button" variant="ghost" onClick={goBack}>
                     <ArrowLeft />
                     Back
                   </Button>
-                ) : (
-                  <span />
-                )}
-                <Button type="button" variant="hero" size="lg" onClick={goNext}>
-                  Continue
-                  <ArrowRight />
-                </Button>
-              </div>
-            )}
-            {(step === 2 || step === 4 || step === 6) && (
-              <div className="mt-4">
-                <Button type="button" variant="ghost" onClick={goBack}>
-                  <ArrowLeft />
-                  Back
-                </Button>
-              </div>
-            )}
+                </div>
+              )}
+            </div>
 
-          </div>
-
-          {/* trust strip */}
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {[
-              { icon: ShieldCheck, t: "Certified scale" },
-              { icon: Wallet, t: "Instant payment" },
-              { icon: Clock, t: "Same / next day" },
-              { icon: CheckCircle2, t: "Free to book" },
-            ].map((r) => (
-              <div
-                key={r.t}
-                className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-xs font-medium"
-              >
-                <r.icon className="size-4 shrink-0 text-primary" />
-                {r.t}
-              </div>
-            ))}
+            {/* trust strip */}
+            <div className="pickup-trust-strip">
+              {[
+                { icon: ShieldCheck, t: "Item review" },
+                { icon: Wallet, t: "Clear payment terms" },
+                { icon: Clock, t: "Convenient pickup" },
+                { icon: CheckCircle2, t: "Free to book" },
+              ].map((r) => (
+                <div
+                  key={r.t}
+                  className="flex items-center gap-2 rounded-xl border border-border bg-card p-3 text-xs font-medium"
+                >
+                  <r.icon className="size-4 shrink-0 text-primary" />
+                  {r.t}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
     </>
   );
 }
-
-
