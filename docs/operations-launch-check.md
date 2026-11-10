@@ -31,3 +31,10 @@ All temporary test users, the request and the photo were removed. No email or Wh
 The site is prepared for a coming-soon release. Bookings remain paused intentionally. The final public scheduling/submission path with bookings enabled has not been browser-tested against production operations. Production-domain Google OAuth, confirmation emails, hosting configuration and monitoring still need verification on the deployed domain. Existing tests do not establish that those external systems are ready.
 
 Automated notifications, category editing/CMS, revenue tracking, staff assignment and dispatch scheduling are not implemented. Staff can manually review requests, update statuses and contact sellers; the UI does not claim those additional capabilities.
+## Final connection and branding check
+
+The connected CLI project and local public application configuration match. A read-only remote database audit confirmed the admin-notes RLS/policy, customer-write guard, admin seller-profile policy, transactional update function and private photo bucket. The migration dry run reported no unapplied migrations.
+
+The supplied Zapiboo favicon family is installed for browser tabs, Apple home screens and Android app icons. Metadata and the web manifest use content-versioned URLs to avoid retaining old cached icons. The legacy favicon PNG also uses the supplied artwork. The pickup loading boundary now provides a useful no-JavaScript fallback.
+
+Final validation: production build, all 50 Playwright browser tests and all nine unit tests passed. The provided ICO and installed favicon have identical SHA-256 hashes. Environment credentials remain ignored by Git.

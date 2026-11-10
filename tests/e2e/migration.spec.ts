@@ -17,7 +17,9 @@ for (const [path, heading] of pages) {
     expect((await page.goto(path))?.status()).toBe(200);
     if (path === "/pickup")
       await expect(
-        page.getByText("Enable JavaScript to use the selling form.", { exact: false }),
+        page
+          .locator("noscript p")
+          .filter({ hasText: "Enable JavaScript to use the selling form.", visible: true }),
       ).toBeVisible();
     else if (path !== "/auth") await expect(page.locator("h1").first()).toContainText(heading);
     await expect(page.locator("head title")).toHaveCount(1);
