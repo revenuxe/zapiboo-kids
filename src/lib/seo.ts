@@ -6,6 +6,7 @@ export const businessContact = {
   name: "Zapiboo",
   phone: "+91 9886579923",
   phoneHref: "tel:+919886579923",
+  whatsappHref: "https://wa.me/919886579923",
   email: "zapiboo.com@gmail.com",
   emailHref: "mailto:zapiboo.com@gmail.com",
   address: "No 6, 1st Cross, Umar Nagar, Nagawara Main Road, Bangalore 560045",
@@ -180,9 +181,11 @@ export function websiteSchema() {
 }
 
 export function serviceSchema(path: string, area?: ServiceArea, serviceName?: string) {
-  const name = serviceName ?? (area
-    ? `Sell pre-loved kids items in ${area.name}, Bangalore`
-    : "Pre-loved kids item selling in Bangalore");
+  const name =
+    serviceName ??
+    (area
+      ? `Sell pre-loved kids items in ${area.name}, Bangalore`
+      : "Pre-loved kids item selling in Bangalore");
 
   return {
     "@context": "https://schema.org",
@@ -301,12 +304,19 @@ export function howToSchema(input: {
   };
 }
 
-export function itemListSchema(name: string, items: ReadonlyArray<{ name: string; path?: string }>) {
+export function itemListSchema(
+  name: string,
+  items: ReadonlyArray<{ name: string; path?: string }>,
+) {
   return {
-    "@context": "https://schema.org", "@type": "ItemList", name,
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
     numberOfItems: items.length,
     itemListElement: items.map((item, index) => ({
-      "@type": "ListItem", position: index + 1, name: item.name,
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
       ...(item.path ? { url: absoluteUrl(item.path) } : {}),
     })),
   };

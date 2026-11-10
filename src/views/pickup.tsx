@@ -1,4 +1,5 @@
 "use client";
+import { ContactActions } from "@/components/ContactActions";
 
 import { servicesPaused, showOpeningSoon } from "@/lib/launch-status";
 
@@ -61,7 +62,12 @@ type PickupSearch = {
 };
 
 const timeSlots = ["Morning (8–11)", "Midday (11–2)", "Afternoon (2–5)", "Evening (5–8)"];
-const todayStr = new Date().toISOString().split("T")[0];
+const todayStr = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Kolkata",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+}).format(new Date());
 const pickupDraftKey = "zapiboo-kids-pickup-draft-v4";
 const postAuthRedirectKey = "zapiboo-post-auth-redirect";
 const pickupPhotoBucket = "pickup-photos";
@@ -559,7 +565,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     }
   };
 
-  const pincodeOk = pincode.length === 6;
+  const pincodeOk = /^\d{6}$/.test(pincode);
   const pincodeBad = false;
   const addressOk = address.trim().length >= 10;
   const addressTooShort = address.trim().length > 0 && !addressOk;
@@ -627,7 +633,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
       setStep(5);
       return toast.error("Please complete your pickup address and a serviceable pincode.");
     }
-    if (!date) return toast.error("Pick a date.");
+    if (!date || date < todayStr) return toast.error("Choose today or a future pickup date.");
     if (!slot) return toast.error("Pick a time slot.");
     if (!name.trim() || phone.trim().length < 10)
       return toast.error("Add your name and a valid phone number.");
@@ -811,6 +817,10 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
               <Phone className="size-4 text-brand-green" /> {phone}
             </p>
           </div>
+          <ContactActions
+            dark
+            message={`Hi Zapiboo, I have submitted pickup request ${pickupId ?? ""} for ${selectedCategory?.name ?? "kids items"}. Please help confirm the pickup details.`}
+          />
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button
               variant="hero"

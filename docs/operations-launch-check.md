@@ -22,13 +22,13 @@ The opt-in script `scripts/verify-live-operations.mjs` used three temporary acco
 - Admin access to seller profiles.
 - A private storage bucket, blocked public photo URL, blocked other-seller signing, and working admin signed photo access.
 - Actual authenticated admin UI at mobile and desktop sizes; request details, private-photo rendering and saving private notes through the UI.
-- Actual customer order tracking and an opening-soon notice at the end of the paused pickup flow.
+- Actual customer order tracking and full live pickup submission through address, scheduling and confirmation, with a saved pickup reference and working call/WhatsApp links.
 
 All temporary test users, the request and the photo were removed. No email or WhatsApp was sent. Credentials were neither written to files nor printed.
 
 ## Launch boundary
 
-The site is prepared for a coming-soon release. Bookings remain paused intentionally. The final public scheduling/submission path with bookings enabled has not been browser-tested against production operations. Production-domain Google OAuth, confirmation emails, hosting configuration and monitoring still need verification on the deployed domain. Existing tests do not establish that those external systems are ready.
+Pickup requests and contact support are open at the owner's instruction (`servicesPaused = false`). The complete authenticated address, scheduling, submission, confirmation and customer-tracking workflow was verified using temporary records against the live Supabase project and the production preview. Phone and WhatsApp links use +91 9886579923; the confirmation chat includes the generated request reference. Production-domain Google OAuth, confirmation-email delivery and hosting monitoring remain external deployment checks, separate from the verified password-authenticated flow.
 
 Automated notifications, category editing/CMS, revenue tracking, staff assignment and dispatch scheduling are not implemented. Staff can manually review requests, update statuses and contact sellers; the UI does not claim those additional capabilities.
 ## Final connection and branding check
@@ -38,3 +38,7 @@ The connected CLI project and local public application configuration match. A re
 The supplied Zapiboo favicon family is installed for browser tabs, Apple home screens and Android app icons. Metadata and the web manifest use content-versioned URLs to avoid retaining old cached icons. The legacy favicon PNG also uses the supplied artwork. The pickup loading boundary now provides a useful no-JavaScript fallback.
 
 Final validation: production build, all 50 Playwright browser tests and all nine unit tests passed. The provided ICO and installed favicon have identical SHA-256 hashes. Environment credentials remain ignored by Git.
+
+## Service opening
+
+Removed the public closed-service state, enabled pickup requests and contact enquiries, and added direct call/WhatsApp links to the homepage, contact page, footer and pickup confirmation. WhatsApp opens a prefilled chat; no automated message is sent. The contact form accepts enquiries without a phone number. The production build, all 50 browser tests and all nine unit tests passed, alongside the real authenticated live workflow verification. Temporary accounts, photos and requests were removed.

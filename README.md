@@ -12,7 +12,7 @@ The existing linked project can also be configured with `npm run supabase:login`
 
 Apply the migrations in `supabase/migrations` before running the current admin UI. Migration `20261110120000_secure_kids_pickup_operations.sql` separates private operational notes, secures pickup photo storage, enables admin seller-profile reads and restricts customer cancellation writes. It was applied and verified against the linked Zapiboo Kids project on 10 November 2026.
 
-Bookings remain paused by `src/lib/launch-status.ts`. Public pages, accounts and saved drafts are available; no pickup is confirmed while paused. Open bookings only when operations and production authentication settings are ready. Status updates and customer contact are manual; automated WhatsApp/email delivery is not implemented.
+Pickup requests are open (`servicesPaused = false` in `src/lib/launch-status.ts`). Customers can submit their item details, address and preferred slot. Phone and WhatsApp support use +91 9886579923. Staff confirm availability and update request statuses; WhatsApp links open a chat with a prefilled message rather than sending automated notifications.
 
 ## Validation
 

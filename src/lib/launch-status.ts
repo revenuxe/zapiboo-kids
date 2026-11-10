@@ -1,5 +1,5 @@
-// Change this single switch when pickup operations are ready to launch.
-export const servicesPaused = true;
+// One switch to pause or reopen pickup requests and contact support.
+export const servicesPaused = false;
 export const openingSoonHref = "#service-opening-soon";
 export function showOpeningSoon() {
   window.dispatchEvent(new Event("zapiboo:opening-soon"));

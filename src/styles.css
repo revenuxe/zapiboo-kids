@@ -673,3 +673,15 @@
 .admin-studio input { min-height: 45px; border-radius: 12px; background: white; }
 .admin-studio [role=tabpanel] { background: #ffffff80; border: 1px solid #dce7f3; border-radius: 22px; padding: 24px; }
 @media(max-width:639px) { .admin-heading { align-items: start; flex-direction: column; gap: 17px; } .admin-heading h1 { font-size: 30px; } .admin-studio [role=tabpanel] { padding: 16px; border-radius: 18px; } .admin-tabs [role=tab] { padding-inline: 11px; font-size: 11px; } .admin-studio header a[target=_blank] { font-size: 10px; padding-inline: 8px; } }
+
+/* Active phone and WhatsApp entry points, including mobile tap targets. */
+.contact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin-top: 24px; }
+.contact-actions a { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; font-size: 11px; font-weight: 700; text-decoration: none; border-radius: 11px; }
+.contact-whatsapp { padding: 11px 14px; color: #125b41; background: #e0f6ed; border: 1px solid #c3e8d8; }
+.contact-whatsapp:hover { background: #cef0e1; }
+.contact-phone { padding: 10px 4px; color: #33577d; }
+.contact-phone:hover { color: #0069c7; }
+.contact-actions-dark { justify-content: center; }
+.contact-actions-dark .contact-phone { color: #e3efff; }
+.contact-actions a:focus-visible { outline: 2px solid #0069c7; outline-offset: 4px; }
+@media(max-width:639px) { .contact-actions { gap: 8px 14px; margin-top: 18px; } .contact-actions a { font-size: 10px; } .contact-whatsapp { padding-inline: 11px; } }

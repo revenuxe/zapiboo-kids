@@ -1,3 +1,4 @@
+import { ContactActions } from "@/components/ContactActions";
 import { servicesPaused, openingSoonHref } from "@/lib/launch-status";
 import Link from "next/link";
 import { Instagram, Youtube } from "lucide-react";
@@ -43,9 +44,10 @@ export function SiteFooter() {
           <div className="max-w-md">
             <Logo imageClassName="h-12 md:h-14" />
             <p className="mt-7 text-base leading-relaxed text-muted-foreground">
-              Zapiboo is the pre-loved kids marketplace where parents sell gently used toys,
-              books, clothing and baby gear — with selling support and doorstep pickup in Bangalore.
+              Zapiboo is the pre-loved kids marketplace where parents sell gently used toys, books,
+              clothing and baby gear — with selling support and doorstep pickup in Bangalore.
             </p>
+            <ContactActions />
             <div className="mt-6 flex items-center gap-4">
               <a
                 href={servicesPaused ? openingSoonHref : "https://www.instagram.com/zapiboo/"}

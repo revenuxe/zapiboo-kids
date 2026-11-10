@@ -90,15 +90,13 @@ try {
     "Test admin role",
   );
   ok(
-    await owner.client
-      .from("user_profiles")
-      .upsert({
-        user_id: owner.id,
-        full_name: "Operations Verification Seller",
-        whatsapp: "9999999999",
-        address: "Verification address only",
-        pincode: "560043",
-      }),
+    await owner.client.from("user_profiles").upsert({
+      user_id: owner.id,
+      full_name: "Operations Verification Seller",
+      whatsapp: "9999999999",
+      address: "Verification address only",
+      pincode: "560043",
+    }),
     "Seller profile",
   );
   const name = "Operations Verification " + randomUUID().slice(0, 8);
@@ -273,9 +271,50 @@ try {
   await customer.getByLabel("Condition", { exact: false }).click();
   await customer.getByRole("option", { name: "Good", exact: true }).click();
   await customer.getByRole("button", { name: "Continue", exact: true }).click();
-  await customer.getByRole("heading", { name: /Sorry, we/ }).waitFor();
+  await customer.getByRole("heading", { name: "Where in Bengaluru?", exact: true }).waitFor();
+  await customer.locator("#pin").fill("560043");
+  await customer.locator("#addr").fill("Integration verification address only");
+  await customer.getByRole("button", { name: "Continue", exact: true }).click();
+  await customer.getByRole("heading", { name: "When should we come?", exact: true }).waitFor();
+  await customer
+    .locator("#date")
+    .fill(new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10));
+  await customer.getByRole("button", { name: /Morning/ }).click();
+  const liveName = "Live Pickup Verification " + randomUUID().slice(0, 8);
+  await customer.locator("#nm").fill(liveName);
+  await customer.locator("#ph").fill("9999999999");
+  await customer.getByRole("button", { name: "Confirm pickup", exact: true }).click();
+  await customer.getByRole("heading", { name: /Thank you/ }).waitFor();
+  const saved = ok(
+    await owner.client
+      .from("leads")
+      .select("id,pickup_id,status,user_id")
+      .eq("name", liveName)
+      .single(),
+    "Full UI pickup submission",
+  );
+  check(
+    saved.status === "new" && saved.user_id === owner.id && Boolean(saved.pickup_id),
+    "Submitted pickup has invalid ownership, status or reference",
+  );
+  check(
+    (await customer.getByText("Pickup ID: " + saved.pickup_id, { exact: true }).count()) === 1,
+    "Confirmation does not show saved reference",
+  );
+  const whatsapp = await customer.locator('main a[href^="https://wa.me/"]').getAttribute("href");
+  check(
+    whatsapp.startsWith("https://wa.me/919886579923?") &&
+      decodeURIComponent(whatsapp).includes(saved.pickup_id),
+    "WhatsApp confirmation link is incorrect",
+  );
+  check(
+    (await customer.locator('main a[href="tel:+919886579923"]').count()) === 1,
+    "Confirmation phone link is incorrect",
+  );
+  await customer.goto(origin + "/orders", { waitUntil: "networkidle" });
+  await customer.getByText(saved.pickup_id, { exact: true }).waitFor();
   console.log(
-    "PASS: real authenticated admin dashboard, mobile/desktop layout, signed photo view, private-note save, customer order tracking and paused-booking notice.",
+    "PASS: real authenticated admin UI, mobile/desktop layout, private notes/photos, customer tracking, full live pickup submission, confirmation reference and WhatsApp/call links.",
   );
 } finally {
   if (browser) await browser.close();
@@ -283,8 +322,8 @@ try {
     const r = await service.storage.from("pickup-photos").remove([photoPath]);
     if (r.error) console.error("Test photo cleanup failed.");
   }
-  if (leadId) {
-    const r = await service.from("leads").delete().eq("id", leadId);
+  if (users.length) {
+    const r = await service.from("leads").delete().in("user_id", users);
     if (r.error) console.error("Test request cleanup failed.");
   }
   for (const id of users) {
