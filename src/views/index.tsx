@@ -42,7 +42,7 @@ const faqs = [
     "Are pickups available now?",
     servicesPaused
       ? "We are preparing our pickup service. You can explore categories and create an account; an opening-soon message will appear while bookings are paused."
-      : "Choose a preferred date and time in the pickup form. Our team will confirm availability for your address.",
+      : "Share your address and WhatsApp number in the pickup form. Our team will confirm a convenient collection time with you.",
   ],
 ];
 
@@ -165,7 +165,7 @@ export default async function Home() {
             </p>
             <ul>
               {[
-                "Pickup slots confirmed with you",
+                "Pickup timing confirmed with you",
                 "A little guidance on getting items ready",
                 "Sale & payment details agreed before handover",
               ].map((text) => (

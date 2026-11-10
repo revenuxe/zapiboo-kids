@@ -28,7 +28,6 @@ import {
   MapPin,
   ShieldCheck,
   Wallet,
-  Clock,
   Boxes,
   Info,
   Phone,
@@ -47,7 +46,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PickupMap } from "@/components/PickupMap";
 import { PageLoader } from "@/components/PageLoader";
 import { GoogleIcon } from "@/components/GoogleIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,13 +59,6 @@ type PickupSearch = {
   bookingAuth?: "1";
 };
 
-const timeSlots = ["Morning (8–11)", "Midday (11–2)", "Afternoon (2–5)", "Evening (5–8)"];
-const todayStr = new Intl.DateTimeFormat("en-CA", {
-  timeZone: "Asia/Kolkata",
-  year: "numeric",
-  month: "2-digit",
-  day: "2-digit",
-}).format(new Date());
 const pickupDraftKey = "zapiboo-kids-pickup-draft-v4";
 const postAuthRedirectKey = "zapiboo-post-auth-redirect";
 const pickupPhotoBucket = "pickup-photos";
@@ -119,8 +110,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
   // step 4
   const [pincode, setPincode] = useState(pickupSearch.pincode ?? "");
   const [address, setAddress] = useState("");
-  const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(null);
-  const [mapEditing, setMapEditing] = useState(false);
 
   // step 3 auth gate
   const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
@@ -131,21 +120,19 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
   const [authBusy, setAuthBusy] = useState(false);
 
   // step 5
-  const [date, setDate] = useState("");
-  const [slot, setSlot] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [saving, setSaving] = useState(false);
   const submissionInFlight = useRef(false);
 
-  // Flow order: category, condition and optional notes/photo, sign in (if needed), address, schedule.
+  // Flow order: category, condition and optional notes/photo, sign in (if needed), pickup details.
   const progressSteps = servicesPaused
     ? user
       ? [1, 3, 5]
       : [1, 3, 4, 5]
     : user
-      ? [1, 3, 5, 6]
-      : [1, 3, 4, 5, 6];
+      ? [1, 3, 5]
+      : [1, 3, 4, 5];
   const currentProgress = Math.max(1, progressSteps.indexOf(step) + 1);
 
   const bookingRedirectTo =
@@ -251,9 +238,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
         itemCategoryId,
         pincode,
         address,
-        geo,
-        date,
-        slot,
         name,
         phone,
         photo: photo
@@ -283,9 +267,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
           itemCategoryId?: string;
           pincode?: string;
           address?: string;
-          geo?: { lat: number; lng: number } | null;
-          date?: string;
-          slot?: string;
           name?: string;
           phone?: string;
           photo?: { id?: string; previewUrl?: string; uploadedUrl?: string | null } | null;
@@ -295,9 +276,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
         if (draft.itemCategoryId) setItemCategoryId(draft.itemCategoryId);
         if (draft.pincode) setPincode(draft.pincode);
         if (draft.address) setAddress(draft.address);
-        if (draft.geo) setGeo(draft.geo);
-        if (draft.date) setDate(draft.date);
-        if (draft.slot) setSlot(draft.slot);
         if (draft.name) setName(draft.name);
         if (draft.phone) setPhone(draft.phone);
         if (draft.photo?.previewUrl) {
@@ -309,7 +287,9 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
           });
         }
         if (typeof draft.step === "number" && draft.step >= 1 && draft.step <= 6) {
-          setStep(draft.step);
+          // Older drafts used step 6 for date/time selection. Resume them on
+          // the new final details step instead of making people start over.
+          setStep(Math.min(draft.step, 5));
         }
       } catch {
         window.sessionStorage.removeItem(pickupDraftKey);
@@ -366,7 +346,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
 
   useEffect(() => {
     if (!servicesPaused || !hydrated || authLoading) return;
-    if (step === 6) setStep(user ? 5 : 4);
     if (step === 5 && !user) setStep(4);
   }, [hydrated, authLoading, step, user]);
 
@@ -385,9 +364,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     description,
     pincode,
     address,
-    geo,
-    date,
-    slot,
     name,
     phone,
     photo,
@@ -403,7 +379,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     );
     const restoreStep = (event: PopStateEvent) => {
       const previousStep = event.state?.pickupFlow ? event.state.pickupStep : null;
-      if (typeof previousStep === "number" && previousStep >= 1 && previousStep <= 6) {
+      if (typeof previousStep === "number" && previousStep >= 1 && previousStep <= 5) {
         setStep(previousStep);
       }
     };
@@ -450,7 +426,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
         if (!phone && data.whatsapp) setPhone(data.whatsapp);
         if (!address && data.address) setAddress(data.address);
         if (!pincode && data.pincode) setPincode(data.pincode);
-        if (!geo && data.lat != null && data.lng != null) setGeo({ lat: data.lat, lng: data.lng });
         const hasSaved = Boolean(data.address?.trim()) && Boolean(data.pincode?.trim());
         setProfileStatus(hasSaved ? "filled" : "missing");
       });
@@ -458,7 +433,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     return () => {
       ignore = true;
     };
-  }, [address, authEmail, authName, authPhone, geo, name, phone, pincode, step, user]);
+  }, [address, authEmail, authName, authPhone, name, phone, pincode, step, user]);
 
   const signInDuringBooking = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -611,14 +586,11 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
       moveToStep(3);
     } else if (step === 3) {
       moveToStep(user ? 5 : 4);
-    } else if (step === 5) {
-      moveToStep(6);
     }
   };
 
   const goBack = () => {
     setStep((s) => {
-      if (s === 6) return 5;
       if (s === 5) return user ? 3 : 4;
       if (s === 4) return 3;
       if (s === 3) return 1;
@@ -641,8 +613,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
       setStep(5);
       return toast.error("Please complete your pickup address and a serviceable pincode.");
     }
-    if (!date || date < todayStr) return toast.error("Choose today or a future pickup date.");
-    if (!slot) return toast.error("Pick a time slot.");
     if (!name.trim() || phone.trim().length < 10)
       return toast.error("Add your name and a valid phone number.");
 
@@ -681,10 +651,10 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
           address: address.trim(),
           name: name.trim(),
           phone: phone.trim(),
-          preferred_date: date,
-          slot,
-          lat: geo?.lat ?? null,
-          lng: geo?.lng ?? null,
+          preferred_date: null,
+          slot: null,
+          lat: null,
+          lng: null,
           status: "new",
         })
         .select("pickup_id")
@@ -702,8 +672,8 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
             whatsapp: phone.trim(),
             address: address.trim(),
             pincode,
-            lat: geo?.lat ?? null,
-            lng: geo?.lng ?? null,
+            lat: null,
+            lng: null,
           },
           { onConflict: "user_id" },
         );
@@ -794,10 +764,8 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
             </p>
             <ol className="mt-4 space-y-3 text-sm text-navy-foreground/80">
               <li className="flex gap-3">
-                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-                  1
-                </span>
-                <span>We confirm your selected pickup time on WhatsApp.</span>
+                <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">1</span>
+                <span>We confirm a convenient pickup time with you on WhatsApp.</span>
               </li>
               <li className="flex gap-3">
                 <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
@@ -817,9 +785,6 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
           <div className="mt-8 rounded-2xl border border-navy-foreground/15 bg-navy-foreground/5 p-5 text-left text-sm">
             <p className="flex items-center gap-2">
               <MapPin className="size-4 text-brand-green" /> Bengaluru {pincode}
-            </p>
-            <p className="mt-2 flex items-center gap-2">
-              <Clock className="size-4 text-brand-green" /> {date} · {slot}
             </p>
             <p className="mt-2 flex items-center gap-2">
               <Phone className="size-4 text-brand-green" /> {phone}
@@ -868,8 +833,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
                     1: "Category",
                     3: "Item details",
                     4: "Your account",
-                    5: servicesPaused ? "Next steps" : "Address",
-                    6: "Pickup slot",
+                    5: servicesPaused ? "Next steps" : "Your details",
                   };
                   const complete = currentProgress > index + 1;
                   return (
@@ -1070,16 +1034,17 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
                   </div>
                 )}
                 {step === 5 && !servicesPaused && (
-                  <motion.div
+                  <motion.form
                     key="s5-address"
+                    onSubmit={onSubmit}
                     initial={{ opacity: 0, x: 16 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -16 }}
                     transition={{ duration: 0.25 }}
                   >
-                    <h2 className="text-xl font-bold">Where in Bengaluru?</h2>
+                    <h2 className="text-xl font-bold">Where should we pick up?</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Tell us where to collect your pre-loved kids items in Bangalore.
+                      Share your address and WhatsApp number. We’ll confirm a convenient time with you.
                     </p>
 
                     {user && profileStatus === "loading" && (
@@ -1148,20 +1113,23 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
                         )}
                       </div>
 
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-1.5">
-                          <MapPin className="size-4 text-primary" /> Pin your location (optional)
-                        </Label>
-                        <PickupMap
-                          value={geo}
-                          onChange={setGeo}
-                          interactive={mapEditing}
-                          onEdit={() => setMapEditing(true)}
-                          onDone={() => setMapEditing(false)}
-                        />
+                      <div className="grid gap-5 sm:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="nm">Your name</Label>
+                          <Input id="nm" className="h-11" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="ph">WhatsApp number</Label>
+                          <Input id="ph" type="tel" inputMode="numeric" className="h-11" placeholder="10-digit mobile" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} />
+                        </div>
                       </div>
                     </div>
-                  </motion.div>
+                    <Button type="submit" variant="hero" size="xl" className="mt-8 w-full" disabled={saving}>
+                      {saving ? "Sending request…" : "Request pickup"}
+                      {!saving && <ArrowRight />}
+                    </Button>
+                    <p className="mt-3 text-center text-xs text-muted-foreground">Free to request · We’ll confirm the pickup details on WhatsApp.</p>
+                  </motion.form>
                 )}
 
                 {/* STEP 3 */}
@@ -1344,100 +1312,10 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
                   </motion.div>
                 )}
 
-                {/* STEP 5 */}
-                {step === 6 && (
-                  <motion.form
-                    key="s5-schedule"
-                    onSubmit={onSubmit}
-                    initial={{ opacity: 0, x: 16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -16 }}
-                    transition={{ duration: 0.25 }}
-                  >
-                    <h2 className="text-xl font-bold">When should we come?</h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Pick a day and slot — we'll confirm on WhatsApp.
-                    </p>
-
-                    <div className="mt-6 space-y-5">
-                      <div className="space-y-2">
-                        <Label htmlFor="date">Preferred date</Label>
-                        <Input
-                          id="date"
-                          type="date"
-                          min={todayStr}
-                          className="h-11"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Time slot</Label>
-                        <div className="grid grid-cols-2 gap-2.5">
-                          {timeSlots.map((s) => (
-                            <button
-                              type="button"
-                              key={s}
-                              onClick={() => setSlot(s)}
-                              className={cn(
-                                "rounded-xl border px-2 py-3 text-sm font-medium transition-all",
-                                slot === s
-                                  ? "border-primary bg-accent text-accent-foreground"
-                                  : "border-border bg-background hover:border-primary/40",
-                              )}
-                            >
-                              {s}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="grid gap-5 sm:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label htmlFor="nm">Your name</Label>
-                          <Input
-                            id="nm"
-                            className="h-11"
-                            placeholder="Full name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="ph">Phone (WhatsApp)</Label>
-                          <Input
-                            id="ph"
-                            type="tel"
-                            inputMode="numeric"
-                            className="h-11"
-                            placeholder="10-digit mobile"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <Button
-                      type="submit"
-                      variant="hero"
-                      size="xl"
-                      className="mt-8 w-full"
-                      disabled={saving}
-                    >
-                      {saving ? "Booking…" : "Confirm pickup"}
-                      {!saving && <ArrowRight />}
-                    </Button>
-                    <p className="mt-3 text-center text-xs text-muted-foreground">
-                      Free to book · You approve the rate before anything is sold.
-                    </p>
-                  </motion.form>
-                )}
               </AnimatePresence>
 
               {/* nav buttons (item + address steps) */}
-              {step !== 4 && step !== 6 && !(servicesPaused && step === 5) && (
+              {step !== 4 && step !== 5 && !(servicesPaused && step === 5) && (
                 <div className="pickup-form-actions">
                   {step > 1 ? (
                     <Button type="button" variant="ghost" onClick={goBack}>
@@ -1453,7 +1331,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
                   </Button>
                 </div>
               )}
-              {(step === 4 || step === 6) && (
+              {(step === 4 || step === 5) && (
                 <div className="mt-4">
                   <Button type="button" variant="ghost" onClick={goBack}>
                     <ArrowLeft />
@@ -1468,7 +1346,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
               {[
                 { icon: ShieldCheck, t: "Item review" },
                 { icon: Wallet, t: "Clear payment terms" },
-                { icon: Clock, t: "Convenient pickup" },
+                { icon: MapPin, t: "Doorstep pickup" },
                 { icon: CheckCircle2, t: "Free to book" },
               ].map((r) => (
                 <div
