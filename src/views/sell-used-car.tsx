@@ -1,5 +1,5 @@
 import { servicesPaused, openingSoonHref } from "@/lib/launch-status";
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,

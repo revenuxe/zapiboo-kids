@@ -24,15 +24,16 @@ export function PageLoader({
         className,
       )}
     >
-      <div className="relative flex size-20 items-center justify-center">
-        <span className="absolute inset-0 animate-ping rounded-full bg-primary/25" />
-        <span className="absolute inset-2 rounded-full bg-primary/10 blur-md" />
-        <span className="relative flex size-16 items-center justify-center rounded-2xl bg-background shadow-elevated ring-1 ring-border">
+      <div className="zap-loader-mark" aria-hidden="true">
+        <span className="zap-loader-track" />
+        <span className="zap-loader-orb zap-loader-orb-one" />
+        <span className="zap-loader-orb zap-loader-orb-two" />
+        <span className="zap-loader-logo">
           <img
             src={logo}
             alt=""
             aria-hidden
-            className="h-8 w-auto animate-pulse"
+            className="h-7 w-auto"
           />
         </span>
       </div>
@@ -55,9 +56,10 @@ export function InlineLoader({
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2 text-sm text-muted-foreground", className)}>
-      <span className="relative inline-flex size-4">
-        <span className="absolute inset-0 animate-ping rounded-full bg-primary/40" />
-        <span className="relative inline-flex size-4 rounded-full bg-gradient-brand" />
+      <span className="zap-inline-loader" aria-hidden="true">
+        <i />
+        <i />
+        <i />
       </span>
       {label}
     </span>

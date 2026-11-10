@@ -22,7 +22,7 @@ import { LeadsPanel } from "@/components/admin/LeadsPanel";
 import { UsersPanel } from "@/components/admin/UsersPanel";
 import { servicesPaused } from "@/lib/launch-status";
 import { SellingOverview } from "@/components/admin/SellingOverview";
-import { sellingCategories } from "@/lib/selling-categories";
+import { CategoriesPanel } from "@/components/admin/CategoriesPanel";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -173,33 +173,7 @@ export default function AdminDashboard() {
             <LeadsPanel scope="bookings" />
           </TabsContent>
           <TabsContent value="categories" className="mt-5">
-            <p className="mb-5 text-sm text-muted-foreground">
-              These categories match the public website. Content is managed in the website source.
-            </p>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {sellingCategories.map((category) => (
-                <article key={category.id} className="rounded-2xl border border-border bg-card p-5">
-                  <img
-                    src={`/sell-categories/${category.id}.webp`}
-                    alt=""
-                    className="mx-auto h-32 object-contain"
-                  />
-                  <h2 className="mt-4 font-bold">{category.name}</h2>
-                  <p className="mt-2 text-sm text-muted-foreground">{category.description}</p>
-                  <p className="mt-4 text-xs font-semibold text-primary">
-                    {category.types.length} item types
-                  </p>
-                  <Link
-                    href={`/sell/${category.id}`}
-                    target="_blank"
-                    className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-primary"
-                  >
-                    View category page
-                    <ArrowUpRight size={15} />
-                  </Link>
-                </article>
-              ))}
-            </div>
+            <CategoriesPanel />
           </TabsContent>
 
           <TabsContent value="leads" className="mt-5">

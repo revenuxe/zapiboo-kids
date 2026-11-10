@@ -1,3 +1,4 @@
+import { getPublicSellingCategories } from "@/lib/selling-catalog-server";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Manrope, Sora } from "next/font/google";
@@ -37,7 +38,8 @@ export const metadata: Metadata = {
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#edf5ff" };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const categories = await getPublicSellingCategories();
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <body>
@@ -49,7 +51,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </style>
         </noscript>
         <JsonLd data={[organizationSchema("/"), websiteSchema()]} />
-        <Providers initialUser={null}>{children}</Providers>
+        <Providers initialUser={null} initialCategories={categories}>
+          {children}
+        </Providers>
       </body>
     </html>
   );

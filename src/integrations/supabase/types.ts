@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      selling_categories: {
+        Row: { id: string; name: string; description: string; image_url: string; tagline: string; accent_color: string; types: string[]; preparation: string; intro: string; seo_title: string; seo_description: string; sort_order: number; is_active: boolean; created_at: string; updated_at: string }
+        Insert: { id: string; name: string; description: string; image_url: string; tagline?: string; accent_color?: string; types: string[]; preparation: string; intro?: string; seo_title?: string; seo_description?: string; sort_order?: number; is_active?: boolean }
+        Update: { name?: string; description?: string; image_url?: string; tagline?: string; accent_color?: string; types?: string[]; preparation?: string; intro?: string; seo_title?: string; seo_description?: string; sort_order?: number; is_active?: boolean }
+        Relationships: []
+      }
       admin_lead_notes: {
         Row: { lead_id: string; notes: string; updated_at: string }
         Insert: { lead_id: string; notes?: string; updated_at?: string }
@@ -22,6 +28,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          selling_category_id: string | null
           address: string | null
           brand_id: string | null
           brand_name: string | null
@@ -64,6 +71,7 @@ export type Database = {
           vehicle_variant_name: string | null
         }
         Insert: {
+          selling_category_id?: string | null
           address?: string | null
           brand_id?: string | null
           brand_name?: string | null
@@ -106,6 +114,7 @@ export type Database = {
           vehicle_variant_name?: string | null
         }
         Update: {
+          selling_category_id?: string | null
           address?: string | null
           brand_id?: string | null
           brand_name?: string | null

@@ -1,9 +1,20 @@
-import { ContactActions } from "@/components/ContactActions";
+import { sellingCategories } from "@/lib/selling-categories";
+import type { SellingCategory } from "@/lib/selling-categories";
+import { WhatsAppIcon } from "@/components/WhatsAppIcon";
+import { businessContact } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowDown, ArrowUpRight, Heart, MapPin, Sparkles, Truck } from "lucide-react";
+import { ArrowUpRight, Heart, MapPin, Sparkles, Truck } from "lucide-react";
 
-export function HomeHero() {
+export function HomeHero({
+  categories = sellingCategories,
+}: {
+  categories?: readonly SellingCategory[];
+}) {
+  const featured = categories.find((category) => category.id === "toys") || categories[0];
+  const secondary =
+    categories.find((category) => category.id === "books" && category.id !== featured?.id) ||
+    categories.find((category) => category.id !== featured?.id);
   return (
     <section id="sell-kids-items" className="home-hero" aria-label="Sell pre-loved kids items">
       <div className="home-shell home-hero-grid">
@@ -30,11 +41,15 @@ export function HomeHero() {
             <Link href="#sell-categories" className="home-button">
               Sell your items <ArrowUpRight size={20} />
             </Link>
-            <Link href="#how-it-works" className="home-text-link">
-              How it works <ArrowDown size={16} />
-            </Link>
+            <a
+              href={`${businessContact.whatsappHref}?text=${encodeURIComponent("Hi Zapiboo, I would like to sell some pre-loved kids items. Can you help?")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="home-whatsapp-button"
+            >
+              <WhatsAppIcon className="size-5" /> Chat on WhatsApp <ArrowUpRight size={18} />
+            </a>
           </div>
-          <ContactActions />
           <div className="home-hero-notes">
             <span>
               <MapPin size={15} /> Made for Bangalore
@@ -49,14 +64,17 @@ export function HomeHero() {
           <div className="home-mini-note">
             <Heart size={18} fill="currentColor" /> More play. Less waste.
           </div>
-          <Link href="/pickup?category=toys" className="home-display-card home-display-toys">
+          <Link
+            href={featured ? `/pickup?category=${featured.id}` : "/contact"}
+            className="home-display-card home-display-toys"
+          >
             <div className="home-display-label">
               <span>THE PLAYTIME COLLECTION</span>
               <ArrowUpRight size={18} />
             </div>
             <Image
-              src="/sell-categories/toys.webp"
-              alt="Pre-loved toys and games"
+              src={featured?.image_url || "/sell-categories/toys.webp"}
+              alt={featured?.name || "Pre-loved kids items"}
               width={440}
               height={330}
               preload
@@ -73,11 +91,14 @@ export function HomeHero() {
               </span>
             </div>
           </Link>
-          <Link href="/pickup?category=books" className="home-display-card home-display-books">
+          <Link
+            href={secondary ? `/pickup?category=${secondary.id}` : "/contact"}
+            className="home-display-card home-display-books"
+          >
             <span>ONE MORE STORY</span>
             <Image
-              src="/sell-categories/books.webp"
-              alt="Kids story books"
+              src={secondary?.image_url || "/sell-categories/books.webp"}
+              alt={secondary?.name || "Pre-loved kids books"}
               width={200}
               height={170}
               sizes="180px"

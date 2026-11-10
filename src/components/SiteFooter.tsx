@@ -1,3 +1,5 @@
+"use client";
+import { useSellingCategories } from "@/components/CatalogProvider";
 import { ContactActions } from "@/components/ContactActions";
 import { servicesPaused, openingSoonHref } from "@/lib/launch-status";
 import Link from "next/link";
@@ -37,6 +39,17 @@ const columns = [
 ] as const;
 
 export function SiteFooter() {
+  const categories = useSellingCategories();
+  const currentColumns = columns.map((column) => ({
+    ...column,
+    links:
+      column.title === "Categories"
+        ? categories.map((category) => ({
+            label: `Sell ${category.name.toLowerCase()}`,
+            to: `/sell/${category.id}`,
+          }))
+        : column.links,
+  }));
   return (
     <footer className="bg-secondary/35 px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
       <div className="mx-auto max-w-7xl rounded-[2rem] border border-border bg-card px-6 py-10 shadow-soft sm:px-10 lg:px-11 lg:py-12">
@@ -69,7 +82,7 @@ export function SiteFooter() {
               </a>
             </div>
           </div>
-          {columns.map((column) => (
+          {currentColumns.map((column) => (
             <div key={column.title}>
               <h2 className="text-sm font-bold text-foreground">{column.title}</h2>
               <ul className="mt-6 space-y-4 text-sm">

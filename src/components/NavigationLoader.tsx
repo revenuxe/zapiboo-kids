@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { LoaderCircle } from "lucide-react";
 
 /** Shows immediately after an internal navigation begins, before the new route streams. */
 export function NavigationLoader() {
@@ -25,5 +24,5 @@ export function NavigationLoader() {
   }, []);
 
   if (!loading) return null;
-  return <div aria-live="polite" aria-label="Opening page" className="fixed inset-x-0 top-0 z-[100] pointer-events-none"><div className="h-1 overflow-hidden bg-primary/15"><div className="h-full w-1/2 animate-[loading-bar_0.9s_ease-in-out_infinite] rounded-full bg-primary" /></div><div className="absolute right-4 top-4 flex items-center gap-2 rounded-full border border-border bg-background/95 px-3 py-2 text-xs font-semibold text-foreground shadow-elevated backdrop-blur"><LoaderCircle className="size-4 animate-spin text-primary" /> Opening Zapiboo</div></div>;
+  return <div aria-live="polite" aria-label="Opening page" className="pointer-events-none fixed inset-x-0 top-0 z-[100]"><div className="zap-navigation-progress"><span /></div></div>;
 }

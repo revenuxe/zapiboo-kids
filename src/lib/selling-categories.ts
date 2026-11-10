@@ -123,7 +123,23 @@ export const sellingCategories = [
   },
 ] as const;
 
-export type SellingCategoryId = (typeof sellingCategories)[number]["id"];
+export type BuiltInSellingCategoryId = (typeof sellingCategories)[number]["id"];
+export type SellingCategoryId = string;
+export type SellingCategory = {
+  id: string;
+  name: string;
+  description: string;
+  types: readonly string[];
+  preparation: string;
+  image_url?: string;
+  tagline?: string;
+  accent_color?: string;
+  intro?: string;
+  seo_title?: string;
+  seo_description?: string;
+  sort_order?: number;
+  is_active?: boolean;
+};
 export const itemConditions = ["Like new", "Good", "Well used"] as const;
 export const itemAges = [
   "Less than 6 months",
@@ -134,8 +150,10 @@ export const itemAges = [
   "Not sure",
 ] as const;
 export const categoryImage = (id: string) => `/sell-categories/${id}.webp`;
-export const getSellingCategory = (id?: string) =>
-  sellingCategories.find((category) => category.id === id);
+export const getSellingCategory = (
+  id?: string,
+  categories: readonly SellingCategory[] = sellingCategories,
+) => categories.find((category) => category.id === id);
 
 export type SellingItemDetails = {
   category: string;
@@ -143,9 +161,13 @@ export type SellingItemDetails = {
   description: string;
 };
 
-export function validateSellingItem(item: SellingItemDetails): string | null {
-  const category = getSellingCategory(item.category);
-  if (!category) return "Choose the category of items you want to sell.";
+export function validateSellingItem(
+  item: SellingItemDetails,
+  categories: readonly SellingCategory[] = sellingCategories,
+): string | null {
+  const category = getSellingCategory(item.category, categories);
+  if (!category || category.is_active === false)
+    return "Choose the category of items you want to sell.";
   if (!(itemConditions as readonly string[]).includes(item.condition))
     return "Select the condition of your items.";
   if (item.description.length > 1000) return "Keep the description within 1,000 characters.";
@@ -154,11 +176,16 @@ export function validateSellingItem(item: SellingItemDetails): string | null {
 
 // Keep the existing leads schema and its ownership policies. Item specifics are
 // stored in its generic items/message fields; vehicle foreign keys stay null.
-export function sellingItemPayload(item: SellingItemDetails) {
-  const error = validateSellingItem(item);
+export function sellingItemPayload(
+  item: SellingItemDetails,
+  categories: readonly SellingCategory[] = sellingCategories,
+) {
+  const error = validateSellingItem(item, categories);
   if (error) throw new Error(error);
-  const category = getSellingCategory(item.category)!;
+  const category = getSellingCategory(item.category, categories)!;
   return {
+    lead_type: "kids_pickup",
+    selling_category_id: category.id,
     vehicle_type: category.name,
     registration_number: null,
     manufacture_year: null,

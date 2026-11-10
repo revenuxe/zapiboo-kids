@@ -1,4 +1,5 @@
 "use client";
+import { useSellingCategories } from "@/components/CatalogProvider";
 import { ContactActions } from "@/components/ContactActions";
 
 import { servicesPaused, showOpeningSoon } from "@/lib/launch-status";
@@ -10,7 +11,6 @@ import Link from "next/link";
 import {
   categoryImage,
   getSellingCategory,
-  sellingCategories,
   itemConditions,
   validateSellingItem,
   sellingItemPayload,
@@ -153,10 +153,18 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
       ? `${window.location.origin}/auth/callback?next=${encodeURIComponent("/pickup?bookingAuth=1")}`
       : undefined;
 
-  const itemCategories = sellingCategories.map((category) => ({
+  const catalog = useSellingCategories();
+  const itemCategories = catalog.map((category) => ({
     ...category,
-    image_url: categoryImage(category.id),
+    image_url: category.image_url || categoryImage(category.id),
   }));
+  useEffect(() => {
+    if (hydrated && itemCategoryId && !catalog.some((category) => category.id === itemCategoryId)) {
+      setItemCategoryId("");
+      setStep(1);
+      toast.info("That category is no longer available. Please choose another.");
+    }
+  }, [catalog, hydrated, itemCategoryId]);
   const selectedCategory = itemCategories.find((category) => category.id === itemCategoryId);
   const itemDetails = { category: itemCategoryId, condition, description };
 
@@ -310,7 +318,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
 
     if (
       pickupSearch.category &&
-      getSellingCategory(pickupSearch.category) &&
+      getSellingCategory(pickupSearch.category, itemCategories) &&
       new URLSearchParams(window.location.search).get("category") === pickupSearch.category
     ) {
       setItemCategoryId(pickupSearch.category);
@@ -589,7 +597,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
       if (!selectedCategory) return toast.error("Choose what you want to sell.");
     }
     if (step === 3) {
-      const error = validateSellingItem(itemDetails);
+      const error = validateSellingItem(itemDetails, itemCategories);
       if (error) return toast.error(error);
     }
     if (step === 5) {
@@ -638,7 +646,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
     if (!name.trim() || phone.trim().length < 10)
       return toast.error("Add your name and a valid phone number.");
 
-    const itemError = validateSellingItem(itemDetails);
+    const itemError = validateSellingItem(itemDetails, itemCategories);
     if (itemError) {
       setStep(3);
       return toast.error(itemError);
@@ -665,7 +673,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
           // Set ownership explicitly so the customer's row-level permissions apply
           // immediately, including on Supabase projects with older trigger state.
           user_id: user.id,
-          ...sellingItemPayload(itemDetails),
+          ...sellingItemPayload(itemDetails, itemCategories),
           has_photo: !!photoUrl,
           photo_url: photoUrl,
           locality: null,
@@ -913,6 +921,7 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
                           <button
                             type="button"
                             key={category.id}
+                            style={{ backgroundColor: category.accent_color }}
                             aria-pressed={active}
                             data-category={category.id}
                             onClick={() => {
@@ -1186,18 +1195,16 @@ export default function Pickup({ pickupSearch }: { pickupSearch: PickupSearch })
                           type="button"
                           variant="google"
                           size="lg"
-                          className="mb-3 h-11 w-full rounded-xl text-sm"
+                          className="mb-3 h-12 w-full justify-start rounded-xl px-3 text-sm"
                           disabled={authBusy}
                           onClick={signInWithGoogleDuringBooking}
                         >
-                          {authBusy ? (
-                            <Loader2 className="size-4 animate-spin" />
-                          ) : (
-                            <GoogleIcon className="size-5" />
-                          )}
-                          <span className="whitespace-nowrap">Continue with Google</span>
+                          <span className="grid size-6 shrink-0 place-items-center">
+                            {authBusy ? <Loader2 className="size-4 animate-spin" /> : <GoogleIcon className="size-5" />}
+                          </span>
+                          <span className="min-w-0 flex-1 text-left font-semibold">Continue with Google</span>
                           {!authBusy && (
-                            <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-primary max-[420px]:hidden">
                               Recommended
                             </span>
                           )}

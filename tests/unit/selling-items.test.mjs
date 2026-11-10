@@ -50,3 +50,27 @@ test("booking payload retains only category, condition and optional notes withou
   ])
     assert.equal(payload[key], null);
 });
+
+test("custom published categories validate and carry stable IDs in pickup payloads", () => {
+  const catalog = [
+    {
+      id: "school-bags",
+      name: "School bags",
+      description: "Kids bags and backpacks.",
+      types: ["Backpacks"],
+      preparation: "Clean and describe any wear.",
+      is_active: true,
+    },
+  ];
+  const item = { category: "school-bags", condition: "Good", description: "Two school bags." };
+  assert.equal(validateSellingItem(item, catalog), null);
+  const payload = sellingItemPayload(item, catalog);
+  assert.equal(payload.selling_category_id, "school-bags");
+  assert.equal(payload.lead_type, "kids_pickup");
+  assert.equal(payload.vehicle_type, "School bags");
+  assert.equal(validateSellingItem(item), "Choose the category of items you want to sell.");
+  assert.equal(
+    validateSellingItem(item, [{ ...catalog[0], is_active: false }]),
+    "Choose the category of items you want to sell.",
+  );
+});

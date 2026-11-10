@@ -147,17 +147,13 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                   type="button"
                   variant="google"
                   size="lg"
-                  className="mb-3 h-11 w-full rounded-xl text-sm"
+                  className="mb-3 h-12 w-full justify-start rounded-xl px-3 text-sm"
                   disabled={busy}
                   onClick={signInWithGoogle}
                 >
-                  {busy ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    <GoogleIcon className="size-5" />
-                  )}
-                  <span className="whitespace-nowrap">{googleLabel}</span>
-                  {!busy && <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">Recommended</span>}
+                  <span className="grid size-6 shrink-0 place-items-center">{busy ? <Loader2 className="size-4 animate-spin" /> : <GoogleIcon className="size-5" />}</span>
+                  <span className="min-w-0 flex-1 text-left font-semibold">{googleLabel}</span>
+                  {!busy && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-primary max-[420px]:hidden">Recommended</span>}
                 </Button>
                 <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="h-px flex-1 bg-border" />
@@ -206,17 +202,13 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                   type="button"
                   variant="google"
                   size="lg"
-                  className="mb-3 h-11 w-full rounded-xl text-sm"
+                  className="mb-3 h-12 w-full justify-start rounded-xl px-3 text-sm"
                   disabled={busy}
                   onClick={signInWithGoogle}
                 >
-                  {busy ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    <GoogleIcon className="size-5" />
-                  )}
-                  <span className="whitespace-nowrap">{googleLabel}</span>
-                  {!busy && <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">Recommended</span>}
+                  <span className="grid size-6 shrink-0 place-items-center">{busy ? <Loader2 className="size-4 animate-spin" /> : <GoogleIcon className="size-5" />}</span>
+                  <span className="min-w-0 flex-1 text-left font-semibold">{googleLabel}</span>
+                  {!busy && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-primary max-[420px]:hidden">Recommended</span>}
                 </Button>
                 <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="h-px flex-1 bg-border" />
