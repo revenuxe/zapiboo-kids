@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { HomeHero } from "@/components/HomeHero";
 import { steps } from "@/lib/site-data";
-import { featuredServiceAreas, serviceAreas } from "@/lib/seo";
+import { serviceAreas } from "@/lib/seo";
 import { servicesPaused } from "@/lib/launch-status";
 import pickupImage from "@/assets/kids-doorstep-pickup.webp";
 
@@ -48,7 +48,7 @@ const faqs = [
 
 export default async function Home() {
   const categories = await getPublicSellingCategories();
-  const areas = serviceAreas.filter((area) => featuredServiceAreas.includes(area.slug));
+  const areas = serviceAreas;
   return (
     <div className="modern-home">
       <HomeHero categories={categories} />
@@ -223,17 +223,17 @@ export default async function Home() {
             Contact us to confirm pickup in your area.
           </p>
         </div>
-        <div className="home-area-list">
+        <div className="home-area-list home-area-list-full">
           {areas.map((area) => (
             <Link key={area.slug} href={`/areas/${area.slug}`}>
               {area.name}
               <ArrowUpRight size={15} />
             </Link>
           ))}
+          <Link href="/areas" className="home-area-explore">
+            Explore all service areas <ArrowRight size={17} />
+          </Link>
         </div>
-        <Link href="/areas" className="home-text-link home-all-areas">
-          Explore all service areas <ArrowRight size={17} />
-        </Link>
       </section>
 
       <HomeCollectionSupport />

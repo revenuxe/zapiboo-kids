@@ -10,11 +10,11 @@ import {
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowUpRight, Check } from "lucide-react";
-import { getSellingCategory, categoryImage } from "@/lib/selling-categories";
+import { getSellingCategory, categoryImage, sellingCategories } from "@/lib/selling-categories";
 import { getSellerGuide } from "@/lib/seller-guides";
 import { servicesPaused } from "@/lib/launch-status";
 import { pageMetadata } from "@/lib/metadata";
-import { breadcrumbSchema, serviceSchema, itemListSchema } from "@/lib/seo";
+import { absoluteUrl, breadcrumbSchema, serviceSchema, itemListSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
 
 type Props = { params: Promise<{ category: string }> };
@@ -25,7 +25,16 @@ export async function generateMetadata({ params }: Props) {
   const category = getSellingCategory((await params).category, await getPublicSellingCategories());
   if (!category) notFound();
   const guide = getSellerGuide(category);
-  return pageMetadata(`/sell/${category.id}`, guide.title, guide.description);
+  const metadata = pageMetadata(`/sell/${category.id}`, guide.title, guide.description);
+  if (sellingCategories.some(({ id }) => id === category.id)) {
+    const image = absoluteUrl(`/category-images/${category.id}`);
+    metadata.openGraph = {
+      ...metadata.openGraph,
+      images: [{ url: image, width: 420, height: 420, alt: category.name }],
+    };
+    metadata.twitter = { ...metadata.twitter, images: [image] };
+  }
+  return metadata;
 }
 export default async function Page({ params }: Props) {
   const category = getSellingCategory((await params).category, await getPublicSellingCategories());
@@ -77,7 +86,11 @@ export default async function Page({ params }: Props) {
         description={guide.intro}
         href={pickupHref}
         action="Start selling"
-        image={category.image_url || categoryImage(category.id)}
+        image={
+          sellingCategories.some(({ id }) => id === category.id)
+            ? `/category-images/${category.id}`
+            : category.image_url || categoryImage(category.id)
+        }
         imageAlt={category.name}
       />
       <LandingBreadcrumbs
