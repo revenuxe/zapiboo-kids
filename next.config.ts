@@ -13,9 +13,6 @@ const nextConfig: NextConfig = {
   },
   reactStrictMode: true,
   devIndicators: false,
-  async redirects() {
-    return [{ source: "/sell-used-car", destination: "/sell/toys", permanent: true }];
-  },
   // The Supabase URL and publishable key are intentionally available to the
   // browser client. Vercel does not require the NEXT_PUBLIC_ prefix when a
   // value is explicitly passed through this configuration.
