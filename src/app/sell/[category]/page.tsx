@@ -16,6 +16,11 @@ import { servicesPaused } from "@/lib/launch-status";
 import { pageMetadata } from "@/lib/metadata";
 import { absoluteUrl, breadcrumbSchema, serviceSchema, itemListSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
+import {
+  CategoryListingHelp,
+  SellerBenefits,
+  SellerQuestionBanner,
+} from "@/components/SellerLandingSections";
 
 type Props = { params: Promise<{ category: string }> };
 export async function generateStaticParams() {
@@ -133,6 +138,8 @@ export default async function Page({ params }: Props) {
         action="Share my items"
       />
       <CategoryAdvice category={category} />
+      <CategoryListingHelp category={category} />
+      <SellerBenefits href={pickupHref} />
       <section className="home-shell seller-section">
         <div className="home-section-heading">
           <div>
@@ -171,6 +178,7 @@ export default async function Page({ params }: Props) {
         title={`Questions about selling ${category.name.toLowerCase()}`}
         questions={questions}
       />
+      <SellerQuestionBanner href={pickupHref} subject={category.name.toLowerCase()} />
       <CategoryAreaLinks category={category.name} />
       <SellerCta
         title="Keep the memories. Make some room."

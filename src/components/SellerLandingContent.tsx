@@ -5,6 +5,7 @@ import { servicesPaused } from "@/lib/launch-status";
 import { getSellerGuide } from "@/lib/seller-guides";
 import type { SellingCategory } from "@/lib/selling-categories";
 import { featuredServiceAreas, serviceAreas, type ServiceArea } from "@/lib/seo";
+import { SellerActions } from "@/components/SellerLandingSections";
 
 export function LandingBreadcrumbs({ items }: { items: { name: string; href?: string }[] }) {
   return (
@@ -49,10 +50,11 @@ export function SellerCta({
           </small>
         </div>
         <div className="seller-cta-actions">
-          <Link className="home-grand-button" href={href}>
-            {action}
-            <ArrowUpRight size={20} />
-          </Link>
+          <SellerActions
+            href={href}
+            action={action}
+            message="Hi Zapiboo, I would like help selling my pre-loved kids items."
+          />
           <Link href="/contact">
             Ask our team a question
             <ArrowUpRight size={15} />
