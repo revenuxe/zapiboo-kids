@@ -3,7 +3,7 @@ import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { businessContact } from "@/lib/seo";
 
 export function ContactActions({
-  message = "Hi Zapiboo, I would like help selling my pre-loved kids items.",
+  message = "Hi Zapiboo, I would like help finding services for my family in Bangalore.",
   dark = false,
 }: {
   message?: string;

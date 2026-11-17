@@ -1,4 +1,5 @@
 "use client";
+import { HeadingText } from "@/components/HeadingText";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -14,9 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GoogleIcon } from "@/components/GoogleIcon";
-import logoAsset from "@/assets/zapiboo-kids-logo.webp";
+import logoAsset from "@/assets/zapiboo-brand.webp";
 const logo = logoAsset.src;
-
 
 const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters").max(72);
@@ -31,7 +31,10 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}` : undefined;
+  const redirectTo =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`
+      : undefined;
 
   useEffect(() => {
     if (!getSupabaseConfig()) return;
@@ -42,7 +45,8 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!getSupabaseConfig()) return toast.error("Sign-in is temporarily unavailable. Please try again later.");
+    if (!getSupabaseConfig())
+      return toast.error("Sign-in is temporarily unavailable. Please try again later.");
     const em = emailSchema.safeParse(email);
     if (!em.success) return toast.error(em.error.issues[0].message);
     if (!password) return toast.error("Enter your password.");
@@ -78,8 +82,12 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
   };
 
   const signInWithGoogle = async () => {
-    if (!getSupabaseConfig()) return toast.error("Sign-in is temporarily unavailable. Please try again later.");
-    if (!redirectTo) return toast.error("Couldn't prepare the Google sign-in redirect. Please refresh and try again.");
+    if (!getSupabaseConfig())
+      return toast.error("Sign-in is temporarily unavailable. Please try again later.");
+    if (!redirectTo)
+      return toast.error(
+        "Couldn't prepare the Google sign-in redirect. Please refresh and try again.",
+      );
     setBusy(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -98,10 +106,18 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-md flex-col">
         <div className="mb-4 flex items-center justify-between gap-4">
           <Link href="/" className="flex min-w-0 items-center gap-3">
-            <img src={logo} alt="Zapiboo" width={1774} height={887} className="h-10 w-24 shrink-0 rounded-lg bg-background p-1 object-contain" />
+            <img
+              src={logo}
+              alt="Zapiboo"
+              width={944}
+              height={272}
+              className="h-10 w-24 shrink-0 rounded-lg bg-background p-1 object-contain"
+            />
             <div className="min-w-0">
               <p className="text-sm font-extrabold leading-tight">Zapiboo</p>
-              <p className="truncate text-xs text-navy-foreground/65">Pre-loved kids items | Bangalore</p>
+              <p className="truncate text-xs text-navy-foreground/65">
+                Kids & family services | Bangalore
+              </p>
             </div>
           </Link>
           <Button asChild variant="outlineLight" size="sm" className="shrink-0">
@@ -123,12 +139,14 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                 Customer account
               </p>
               <h1 className="mt-1 text-2xl font-extrabold leading-tight">
-                {tab === "signin" ? "Welcome back" : "Create your account"}
+                <HeadingText>
+                  {tab === "signin" ? "Welcome back" : "Create your account"}
+                </HeadingText>
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 {tab === "signin"
-                  ? "Sign in to manage your item pickup requests."
-                  : "Save your details for selling and future pickups."}
+                  ? "Sign in to manage your Zapiboo account."
+                  : "Create an account for your next chapter with Zapiboo."}
               </p>
             </div>
 
@@ -151,9 +169,19 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                   disabled={busy}
                   onClick={signInWithGoogle}
                 >
-                  <span className="grid size-6 shrink-0 place-items-center">{busy ? <Loader2 className="size-4 animate-spin" /> : <GoogleIcon className="size-5" />}</span>
+                  <span className="grid size-6 shrink-0 place-items-center">
+                    {busy ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <GoogleIcon className="size-5" />
+                    )}
+                  </span>
                   <span className="min-w-0 flex-1 text-left font-semibold">{googleLabel}</span>
-                  {!busy && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-primary max-[420px]:hidden">Recommended</span>}
+                  {!busy && (
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-primary max-[420px]:hidden">
+                      Recommended
+                    </span>
+                  )}
                 </Button>
                 <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="h-px flex-1 bg-border" />
@@ -206,9 +234,19 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                   disabled={busy}
                   onClick={signInWithGoogle}
                 >
-                  <span className="grid size-6 shrink-0 place-items-center">{busy ? <Loader2 className="size-4 animate-spin" /> : <GoogleIcon className="size-5" />}</span>
+                  <span className="grid size-6 shrink-0 place-items-center">
+                    {busy ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      <GoogleIcon className="size-5" />
+                    )}
+                  </span>
                   <span className="min-w-0 flex-1 text-left font-semibold">{googleLabel}</span>
-                  {!busy && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-primary max-[420px]:hidden">Recommended</span>}
+                  {!busy && (
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-primary max-[420px]:hidden">
+                      Recommended
+                    </span>
+                  )}
                 </Button>
                 <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="h-px flex-1 bg-border" />

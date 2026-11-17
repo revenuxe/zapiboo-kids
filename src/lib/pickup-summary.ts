@@ -1,4 +1,12 @@
-﻿import { sellingCategories, type SellingCategory } from "./selling-categories";
+// Read-only labels for historical requests; the selling flow is retired.
+const legacyCategories = [
+  { id: "toys", name: "Toys & games" },
+  { id: "books", name: "Kids books" },
+  { id: "clothing", name: "Kids clothing" },
+  { id: "gear", name: "Baby gear" },
+  { id: "cycles", name: "Cycles & ride-ons" },
+  { id: "electronics", name: "Kids electronics" },
+] as const;
 export type PickupSummarySource = {
   vehicle_type: string;
   items: string[] | null;
@@ -7,7 +15,7 @@ export type PickupSummarySource = {
 };
 export function pickupCategory(
   lead: PickupSummarySource,
-  categories: readonly SellingCategory[] = sellingCategories,
+  categories: readonly { id: string; name: string }[] = legacyCategories,
 ) {
   // Requests retain their submitted category name even when the catalog is renamed or hidden.
   if (lead.selling_category_id || lead.lead_type === "kids_pickup")

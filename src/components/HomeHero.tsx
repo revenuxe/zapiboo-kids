@@ -1,48 +1,54 @@
-import { sellingCategories } from "@/lib/selling-categories";
-import type { SellingCategory } from "@/lib/selling-categories";
+import { familyServices } from "@/lib/family-service-catalog";
+import type { FamilyService } from "@/lib/family-service-catalog";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { businessContact } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Heart, MapPin, Sparkles, Truck } from "lucide-react";
+import { ArrowUpRight, Heart, MapPin, Sparkles, CalendarDays } from "lucide-react";
 
 export function HomeHero({
-  categories = sellingCategories,
+  categories = familyServices,
 }: {
-  categories?: readonly SellingCategory[];
+  categories?: readonly FamilyService[];
 }) {
-  const featured = categories.find((category) => category.id === "toys") || categories[0];
+  const featured =
+    categories.find((category) => category.id === "play-entertainment") || categories[0];
   const secondary =
-    categories.find((category) => category.id === "books" && category.id !== featured?.id) ||
-    categories.find((category) => category.id !== featured?.id);
+    categories.find(
+      (category) => category.id === "preschool-daycare" && category.id !== featured?.id,
+    ) || categories.find((category) => category.id !== featured?.id);
   return (
-    <section id="sell-kids-items" className="home-hero" aria-label="Sell pre-loved kids items">
+    <section
+      id="sell-kids-items"
+      className="home-hero"
+      aria-label="Kids and family services in Bangalore"
+    >
       <div className="home-shell home-hero-grid">
         <div className="home-hero-copy">
           <span className="home-eyebrow">
-            <span className="home-status-dot" /> LITTLE THINGS. BIG NEW BEGINNINGS.
+            <span className="home-status-dot" /> PRESCHOOL, DAYCARE & KIDS ACTIVITIES
           </span>
           <h1>
-            Outgrown.
+            Kids services.
             <br />
-            Still{" "}
+            In{" "}
             <span className="home-loved">
-              so loved.
+              Bangalore.
               <svg viewBox="0 0 400 20" aria-hidden="true">
                 <path d="M4 14 Q180 -5 394 10" />
               </svg>
             </span>
           </h1>
           <p>
-            Their next chapter starts with a little more space. Sell pre-loved toys, books & baby
-            gear, right from home.
+            Find a starting point for preschool, daycare, kids classes, play areas and birthday
+            celebrations in Bangalore. Explore babysitting, nanny and development support too.
           </p>
           <div className="home-hero-actions">
             <Link href="#sell-categories" className="home-button">
-              Sell your items <ArrowUpRight size={20} />
+              Explore services <ArrowUpRight size={20} />
             </Link>
             <a
-              href={`${businessContact.whatsappHref}?text=${encodeURIComponent("Hi Zapiboo, I would like to sell some pre-loved kids items. Can you help?")}`}
+              href={`${businessContact.whatsappHref}?text=${encodeURIComponent("Hi Zapiboo, I would like to explore services for my family in Bangalore. Can you help?")}`}
               target="_blank"
               rel="noreferrer"
               className="home-whatsapp-button"
@@ -55,26 +61,26 @@ export function HomeHero({
               <MapPin size={15} /> Made for Bangalore
             </span>
             <span>
-              <Truck size={16} /> Doorstep pickup
+              <CalendarDays size={16} /> Care, learning & play
             </span>
           </div>
         </div>
-        <div className="home-collage" aria-label="Give toys, books and baby gear a new beginning">
+        <div className="home-collage" aria-label="Discover learning and play for your child">
           <span className="home-collage-orbit" aria-hidden="true" />
           <div className="home-mini-note">
-            <Heart size={18} fill="currentColor" /> More play. Less waste.
+            <Heart size={18} fill="currentColor" /> More play. More joy.
           </div>
           <Link
-            href={featured ? `/pickup?category=${featured.id}` : "/contact"}
+            href={featured ? `/services/${featured.id}` : "/contact"}
             className="home-display-card home-display-toys"
           >
             <div className="home-display-label">
-              <span>THE PLAYTIME COLLECTION</span>
+              <span>PLAY & ENTERTAINMENT</span>
               <ArrowUpRight size={18} />
             </div>
             <Image
-              src={featured?.image_url || "/sell-categories/toys.webp"}
-              alt={featured?.name || "Pre-loved kids items"}
+              src={featured?.image_url || "/services/play-entertainment.webp"}
+              alt={featured?.name || "Play and entertainment"}
               width={440}
               height={330}
               preload
@@ -82,7 +88,7 @@ export function HomeHero({
             />
             <div className="home-display-bottom">
               <strong>
-                Small toys.
+                Big smiles.
                 <br />
                 Endless possibilities.
               </strong>
@@ -92,46 +98,46 @@ export function HomeHero({
             </div>
           </Link>
           <Link
-            href={secondary ? `/pickup?category=${secondary.id}` : "/contact"}
+            href={secondary ? `/services/${secondary.id}` : "/contact"}
             className="home-display-card home-display-books"
           >
-            <span>ONE MORE STORY</span>
+            <span>PRESCHOOL & DAYCARE</span>
             <Image
-              src={secondary?.image_url || "/sell-categories/books.webp"}
-              alt={secondary?.name || "Pre-loved kids books"}
+              src={secondary?.image_url || "/services/preschool-daycare.webp"}
+              alt={secondary?.name || "Early learning and daycare"}
               width={200}
               height={170}
               sizes="180px"
             />
             <strong>
-              Pass on the magic <ArrowUpRight size={15} />
+              Start their story <ArrowUpRight size={15} />
             </strong>
           </Link>
           <div className="home-circle-stamp">
             <Sparkles size={23} />
             <span>
-              PRE-LOVED.
+              LEARN.
               <br />
-              RE-LOVED.
+              PLAY. GROW.
             </span>
           </div>
           <div className="home-pickup-note">
             <span>
-              <Truck size={21} />
+              <CalendarDays size={21} />
             </span>
             <div>
-              <strong>A lighter home awaits</strong>
-              <small>You share. We help with the rest.</small>
+              <strong>Your next chapter starts here</strong>
+              <small>Your family. Your kind of support.</small>
             </div>
           </div>
         </div>
       </div>
       <div className="home-values-strip">
-        <span>Less clutter, more possibilities</span>
+        <span>Little discoveries, big possibilities</span>
         <span aria-hidden="true">&#10035;</span>
-        <span>Good things deserve a second childhood</span>
+        <span>Care for every stage of childhood</span>
         <span aria-hidden="true">&#10035;</span>
-        <span>A little kinder to the planet</span>
+        <span>More happy moments together</span>
       </div>
     </section>
   );

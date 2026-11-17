@@ -1,7 +1,5 @@
 "use client";
 
-import { CatalogProvider } from "@/components/CatalogProvider";
-import type { SellingCategory } from "@/lib/selling-categories";
 import { Suspense, useMemo, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { SWRConfig } from "swr";
@@ -10,7 +8,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import { useAuthContext } from "@/components/AuthProvider";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { SellByModel } from "@/components/SellByModel";
+import { ServiceExplorer } from "@/components/ServiceExplorer";
 import { Toaster } from "@/components/ui/sonner";
 import { NavigationLoader } from "@/components/NavigationLoader";
 import { ServiceAvailability } from "@/components/ServiceAvailability";
@@ -19,26 +17,18 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 export function Providers({
   children,
   initialUser,
-  initialCategories,
 }: {
   children: ReactNode;
   initialUser: User | null;
-  initialCategories: SellingCategory[];
 }) {
   return (
     <AuthProvider initialUser={initialUser}>
-      <DataProvider initialCategories={initialCategories}>{children}</DataProvider>
+      <DataProvider>{children}</DataProvider>
     </AuthProvider>
   );
 }
 
-function DataProvider({
-  children,
-  initialCategories,
-}: {
-  children: ReactNode;
-  initialCategories: SellingCategory[];
-}) {
+function DataProvider({ children }: { children: ReactNode }) {
   const { user } = useAuthContext();
   // A new cache on identity changes prevents one account's data appearing in another.
   const identity = user?.id ?? "anonymous";
@@ -48,9 +38,7 @@ function DataProvider({
   );
   return (
     <SWRConfig key={identity} value={config}>
-      <CatalogProvider initialCategories={initialCategories}>
-        <SiteShell>{children}</SiteShell>
-      </CatalogProvider>
+      <SiteShell>{children}</SiteShell>
     </SWRConfig>
   );
 }
@@ -70,7 +58,7 @@ function SiteShell({ children }: { children: ReactNode }) {
         >
           {children}
         </main>
-        {!chromeless && pathname !== "/repair" && <SellByModel />}
+        {!chromeless && pathname !== "/repair" && <ServiceExplorer />}
         {!chromeless && <SiteFooter />}
       </div>
       <ServiceAvailability />

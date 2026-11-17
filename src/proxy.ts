@@ -1,6 +1,6 @@
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
-import { getSupabaseConfig } from '@/integrations/supabase/config';
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+import { getSupabaseConfig } from "@/integrations/supabase/config";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -23,5 +23,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!$|about(?:/|$)|contact(?:/|$)|areas(?:/|$)|sell(?:/|$)|materials(?:/|$)|pickup(?:/|$)|privacy(?:/|$)|sell-used-(?:car|bike|scooter)(?:/|$)|sell-used-(?:car|bike|scooter|suv)-bangalore(?:/|$)|sell-commercial-vehicle-bangalore(?:/|$)|terms(?:/|$)|_next/static|_next/image|favicon\\.(?:png|ico)|robots\\.txt|sitemap\\.xml|api/keepalive|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)'],
+  matcher: [
+    "/((?!$|about(?:/|$)|contact(?:/|$)|areas(?:/|$)|services(?:/|$)|sell(?:/|$)|materials(?:/|$)|pickup(?:/|$)|privacy(?:/|$)|sell-used-(?:car|bike|scooter)(?:/|$)|sell-used-(?:car|bike|scooter|suv)-bangalore(?:/|$)|sell-commercial-vehicle-bangalore(?:/|$)|terms(?:/|$)|_next/static|_next/image|favicon\\.(?:png|ico)|robots\\.txt|sitemap\\.xml|api/keepalive|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };

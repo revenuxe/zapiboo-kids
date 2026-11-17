@@ -1,11 +1,14 @@
-﻿import Link from "next/link";
+import { HeadingText } from "@/components/HeadingText";
+import Link from "next/link";
 import { PageLoader } from "@/components/PageLoader";
 
 export default function Loading() {
   return (
     <section className="pickup-studio">
       <div className="pickup-studio-shell">
-        <h1 className="pickup-kicker">Sell your kids items</h1>
+        <h1 className="pickup-kicker">
+          <HeadingText>Sell your kids items</HeadingText>
+        </h1>
         <div className="pickup-route-loader">
           <PageLoader label="Preparing your selling form" full={false} />
         </div>

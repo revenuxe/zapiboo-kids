@@ -1,4 +1,5 @@
 "use client";
+import { HeadingText } from "@/components/HeadingText";
 
 import { useState } from "react";
 import useSWR from "swr";
@@ -144,7 +145,7 @@ export default function OrdersPage() {
             Zapiboo pickup orders
           </p>
           <h1 className="mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Your item pickups
+            <HeadingText>Your item pickups</HeadingText>
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/70 sm:text-base">
             Track your selling requests, view appointment details and manage pending pickups in one

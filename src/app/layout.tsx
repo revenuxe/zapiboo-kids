@@ -1,4 +1,3 @@
-import { getPublicSellingCategories } from "@/lib/selling-catalog-server";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Manrope, Sora } from "next/font/google";
@@ -7,6 +6,7 @@ import { siteUrl, organizationSchema, websiteSchema } from "@/lib/seo";
 import { JsonLd } from "@/components/JsonLd";
 import { pageMetadata } from "@/lib/metadata";
 import "@/styles.css";
+import { homepageSearch } from "@/lib/service-search-content";
 
 const manrope = Manrope({ subsets: ["latin"], display: "swap", variable: "--font-manrope" });
 const sora = Sora({ subsets: ["latin"], display: "swap", variable: "--font-sora" });
@@ -15,11 +15,7 @@ const sora = Sora({ subsets: ["latin"], display: "swap", variable: "--font-sora"
 // still opt into request-time rendering automatically.
 export const runtime = "nodejs";
 export const metadata: Metadata = {
-  ...pageMetadata(
-    "/",
-    "Zapiboo | Pre-Loved Kids Marketplace — Sell Used Kids Toys, Books & Gear",
-    "Sell pre-loved kids toys, books, clothing and baby gear in Bangalore. Share item details, get selling support and arrange doorstep pickup when available.",
-  ),
+  ...pageMetadata("/", homepageSearch.title, homepageSearch.description),
   metadataBase: new URL(siteUrl),
   authors: [{ name: "Zapiboo" }],
   icons: {
@@ -39,7 +35,6 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#edf5ff" };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const categories = await getPublicSellingCategories();
   return (
     <html lang="en" className={`${manrope.variable} ${sora.variable}`}>
       <body>
@@ -51,9 +46,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           </style>
         </noscript>
         <JsonLd data={[organizationSchema("/"), websiteSchema()]} />
-        <Providers initialUser={null} initialCategories={categories}>
-          {children}
-        </Providers>
+        <Providers initialUser={null}>{children}</Providers>
       </body>
     </html>
   );

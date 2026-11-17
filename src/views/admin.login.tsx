@@ -1,4 +1,5 @@
 "use client";
+import { HeadingText } from "@/components/HeadingText";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -122,7 +123,7 @@ export default function AdminLogin({ initialMode }: { initialMode: "signin" | "s
             <ShieldCheck className="size-6" />
           </div>
           <h1 className="mt-4 text-2xl font-bold text-navy-foreground">
-            {mode === "setup" ? "Create admin account" : "Admin sign in"}
+            <HeadingText>{mode === "setup" ? "Create admin account" : "Admin sign in"}</HeadingText>
           </h1>
           <p className="mt-1 text-sm text-navy-foreground/70">
             {mode === "setup"

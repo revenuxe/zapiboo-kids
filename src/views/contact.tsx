@@ -16,7 +16,13 @@ import { businessContact } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { isSpamLead } from "@/lib/spam-filter";
 
-export default function Contact() {
+export default function Contact({
+  serviceName = "",
+  areaName = "",
+}: {
+  serviceName?: string;
+  areaName?: string;
+}) {
   const [sending, setSending] = useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -80,10 +86,10 @@ export default function Contact() {
         eyebrow="Contact"
         title={
           <>
-            Let&apos;s <span className="text-gradient">connect</span>
+            Kids’ services. <span className="text-gradient">Let’s talk.</span>
           </>
         }
-        subtitle="Whether you need help listing items, pickup support, or have a question about our service, we would love to help."
+        subtitle="Looking for care, learning, play or a special celebration? Share what your family needs and ask our team about the next steps."
       />
 
       <section className="bg-background py-16 md:py-24">
@@ -135,13 +141,19 @@ export default function Contact() {
                 </div>
               </div>
             ))}
-            <ContactActions />
+            <ContactActions
+              message={
+                serviceName
+                  ? `Hi Zapiboo, I would like to enquire about ${serviceName}${areaName ? ` in ${areaName}` : ""}.`
+                  : undefined
+              }
+            />
             <aside className="rounded-3xl border border-primary/20 bg-primary/5 p-6 sm:p-8">
               <h2 className="text-xl font-bold">Serving Nagawara and all of Bangalore</h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">
-                Zapiboo is located on Nagawara Main Road and helps parents across Bangalore sell
-                pre-loved kids items with selling support and doorstep pickup. Contact us to check
-                availability in your area.
+                Zapiboo is based on Nagawara Main Road. Explore family services across Bangalore and
+                contact us about your preferred category and neighbourhood. Provider availability is
+                confirmed before booking.
               </p>
             </aside>
           </div>
@@ -189,6 +201,13 @@ export default function Contact() {
                 <Input
                   id="csubject"
                   name="subject"
+                  defaultValue={
+                    serviceName
+                      ? `Enquiry: ${serviceName}${areaName ? ` in ${areaName}` : ""}`
+                      : areaName
+                        ? `Service enquiry in ${areaName}`
+                        : ""
+                  }
                   maxLength={200}
                   required
                   placeholder="How can we help?"
@@ -199,10 +218,15 @@ export default function Contact() {
                 <Textarea
                   id="cmsg"
                   name="message"
+                  defaultValue={
+                    areaName
+                      ? `Area: ${areaName}\nChild’s age: \nPreferred dates or timings: \nBudget: `
+                      : ""
+                  }
                   maxLength={5000}
                   required
                   rows={5}
-                  placeholder="Tell us about what you'd like to sell..."
+                  placeholder="Tell us your area, child's age, service, preferred dates and budget. Please avoid sharing sensitive medical details here."
                 />
               </div>
             </div>

@@ -198,7 +198,7 @@ try {
   ok(
     await owner.client.storage
       .from("pickup-photos")
-      .upload(photoPath, readFileSync("public/sell-categories/toys.webp"), {
+      .upload(photoPath, readFileSync("public/services/play-entertainment.webp"), {
         contentType: "image/webp",
       }),
     "Private photo upload",
@@ -330,7 +330,7 @@ try {
       id: managedCategoryId + "-denied",
       name: "Denied test",
       description: "This must not be saved.",
-      image_url: "/sell-categories/toys.webp",
+      image_url: "/services/play-entertainment.webp",
       types: ["School bags"],
       preparation: "Clean and inspect the bag.",
     });
@@ -344,7 +344,7 @@ try {
     .fill("Pre-loved school bags, lunch bags and kids backpacks for review.");
   await editor
     .getByLabel("Category image", { exact: true })
-    .setInputFiles("public/sell-categories/toys.webp");
+    .setInputFiles("public/services/play-entertainment.webp");
   await editor.getByRole("img", { name: "Category image preview" }).waitFor();
   await editor
     .getByLabel("Item examples (one per line)", { exact: true })

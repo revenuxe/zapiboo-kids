@@ -1,5 +1,5 @@
 "use client";
-import { useSellingCategories } from "@/components/CatalogProvider";
+import { familyServices } from "@/lib/family-service-catalog";
 import { ContactActions } from "@/components/ContactActions";
 import { servicesPaused, openingSoonHref } from "@/lib/launch-status";
 import Link from "next/link";
@@ -10,7 +10,7 @@ const columns = [
   {
     title: "Explore",
     links: [
-      { label: "Sell your items", to: "/pickup" },
+      { label: "Explore services", to: "/#sell-categories" },
       { label: "How it works", to: "/#how-it-works" },
       { label: "About us", to: "/about" },
       { label: "Service areas", to: "/areas" },
@@ -20,12 +20,7 @@ const columns = [
   {
     title: "Categories",
     links: [
-      { label: "Sell toys & games", to: "/sell/toys" },
-      { label: "Sell kids books", to: "/sell/books" },
-      { label: "Sell kids clothing", to: "/sell/clothing" },
-      { label: "Sell baby gear", to: "/sell/gear" },
-      { label: "Sell cycles & ride-ons", to: "/sell/cycles" },
-      { label: "Sell kids electronics", to: "/sell/electronics" },
+      ...familyServices.map((service) => ({ label: service.name, to: `/services/${service.id}` })),
     ],
   },
   {
@@ -39,14 +34,14 @@ const columns = [
 ] as const;
 
 export function SiteFooter() {
-  const categories = useSellingCategories();
+  const categories = familyServices;
   const currentColumns = columns.map((column) => ({
     ...column,
     links:
       column.title === "Categories"
         ? categories.map((category) => ({
-            label: `Sell ${category.name.toLowerCase()}`,
-            to: `/sell/${category.id}`,
+            label: category.name,
+            to: `/services/${category.id}`,
           }))
         : column.links,
   }));
@@ -57,8 +52,8 @@ export function SiteFooter() {
           <div className="max-w-md">
             <Logo imageClassName="h-12 md:h-14" />
             <p className="mt-7 text-base leading-relaxed text-muted-foreground">
-              Zapiboo is the pre-loved kids marketplace where parents sell gently used toys, books,
-              clothing and baby gear — with selling support and doorstep pickup in Bangalore.
+              Explore preschool, daycare, classes, play, celebrations, childcare and development
+              support for your family in Bangalore.
             </p>
             <ContactActions />
             <div className="mt-6 flex items-center gap-4">

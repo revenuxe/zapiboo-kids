@@ -1,4 +1,5 @@
 "use client";
+import { HeadingText } from "@/components/HeadingText";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -77,7 +78,9 @@ export default function AdminDashboard() {
   if (authError)
     return (
       <main className="mx-auto max-w-lg px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold">Could not verify admin access</h1>
+        <h1 className="text-2xl font-bold">
+          <HeadingText>Could not verify admin access</HeadingText>
+        </h1>
         <p className="mt-3 text-muted-foreground">Check your connection and try again.</p>
         <Button className="mt-6" onClick={() => setAuthAttempt((value) => value + 1)}>
           Try again
@@ -124,11 +127,13 @@ export default function AdminDashboard() {
               <ShieldCheck size={14} /> ZAPIBOO OPERATIONS
             </span>
             <h1>
-              Every request.
-              <br className="sm:hidden" /> One clear view.
+              <HeadingText>
+                Every request.
+                <br className="sm:hidden" /> One clear view.
+              </HeadingText>
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Manage kids-item pickup requests, seller details and customer enquiries.
+              Manage family service enquiries, customer details and historical requests.
             </p>
           </div>
           <Button
@@ -149,15 +154,13 @@ export default function AdminDashboard() {
         </div>
 
         <p className="mb-5 mt-3 w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
-          {servicesPaused
-            ? "Pickup bookings paused - sellers can save their progress"
-            : "Pickup bookings open"}
+          {servicesPaused ? "Service enquiries paused" : "Service enquiries open"}
         </p>
         <SellingOverview />
         <Tabs defaultValue="bookings" className="admin-tabs mt-6">
           <TabsList className="flex w-full max-w-full flex-nowrap justify-start gap-1 overflow-x-auto p-1 sm:w-auto">
             <TabsTrigger value="bookings" className="gap-1.5">
-              <LayoutDashboard className="size-4" /> <span>Pickups</span>
+              <LayoutDashboard className="size-4" /> <span>Past requests</span>
             </TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>
 
@@ -165,7 +168,7 @@ export default function AdminDashboard() {
               <Inbox className="size-4" /> <span>Enquiries</span>
             </TabsTrigger>
             <TabsTrigger value="users" className="gap-1.5">
-              <Users className="size-4" /> <span>Sellers</span>
+              <Users className="size-4" /> <span>Customers</span>
             </TabsTrigger>
           </TabsList>
 

@@ -1,10 +1,10 @@
+import { HeadingText } from "@/components/HeadingText";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Heart, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { businessContact } from "@/lib/seo";
-import { sellingCategories } from "@/lib/selling-categories";
 
 export function LandingHero({
   eyebrow,
@@ -25,10 +25,6 @@ export function LandingHero({
   imageAlt?: string;
   children?: ReactNode;
 }) {
-  const previewCategory = sellingCategories.find(
-    ({ id }) => image === `/sell-categories/${id}.webp`,
-  );
-  const heroImage = previewCategory ? `/category-images/${previewCategory.id}` : image;
   return (
     <section className="landing-hero">
       <div className="home-shell landing-hero-grid">
@@ -37,12 +33,14 @@ export function LandingHero({
             <span className="home-status-dot" />
             {eyebrow}
           </span>
-          <h1>{title}</h1>
+          <h1>
+            <HeadingText>{title}</HeadingText>
+          </h1>
           <p>{description}</p>
           {href && (
             <div className="home-hero-actions">
               <Link href={href} className="home-button">
-                {action || "Start selling"}
+                {action || "Enquire Service"}
                 <ArrowUpRight size={19} />
               </Link>
               <a
@@ -50,7 +48,7 @@ export function LandingHero({
                   businessContact.whatsappHref +
                   "?text=" +
                   encodeURIComponent(
-                    "Hi Zapiboo, I would like to sell some pre-loved kids items. Can you help?",
+                    "Hi Zapiboo, I would like to find services for my family. Can you help?",
                   )
                 }
                 target="_blank"
@@ -67,7 +65,8 @@ export function LandingHero({
               Made for Bangalore
             </span>
             <span>
-              <Heart size={14} />A little used. A lot to give.
+              <Heart size={14} />
+              Care, learning and happy moments.
             </span>
           </div>
         </div>
@@ -76,7 +75,7 @@ export function LandingHero({
             <div className="landing-art-card">
               <span className="home-eyebrow">GOOD THINGS KEEP GOING</span>
               <Image
-                src={heroImage || image}
+                src={image}
                 alt={imageAlt || ""}
                 width={480}
                 height={360}
@@ -91,9 +90,9 @@ export function LandingHero({
               </div>
             </div>
             <span className="landing-art-sticker">
-              PRE-LOVED.
+              LEARN.
               <br />
-              RE-LOVED.
+              PLAY. GROW.
             </span>
           </div>
         ) : (

@@ -1,4 +1,4 @@
-import { SellerBenefits, SellerQuestionBanner } from "@/components/SellerLandingSections";
+import { HomeCollectionSupport } from "@/components/HomeSections";
 import { LandingHero } from "@/components/LandingHero";
 import Link from "next/link";
 import { ArrowUpRight, MapPin } from "lucide-react";
@@ -9,8 +9,8 @@ import { JsonLd } from "@/components/JsonLd";
 
 export const metadata = pageMetadata(
   "/areas",
-  "Sell Pre-Loved Kids Items Across Bangalore | Zapiboo Service Areas",
-  "Find your Bangalore neighbourhood and learn how to sell outgrown toys, books, clothes and baby gear with Zapiboo. Check local pickup details and availability.",
+  "Kids Services Near You in Bangalore | Zapiboo Areas",
+  "Find preschool, daycare, kids classes, play areas and childcare by Bangalore neighbourhood. Explore Whitefield, HSR Layout, Hebbal, Nagawara and more.",
 );
 
 export default function AreasPage() {
@@ -24,7 +24,7 @@ export default function AreasPage() {
             { name: "Service areas", path: "/areas" },
           ]),
           itemListSchema(
-            "Bangalore neighbourhood pickup guides",
+            "Bangalore family service areas",
             areas.map((area) => ({ name: area.name, path: `/areas/${area.slug}` })),
           ),
         ]}
@@ -33,27 +33,25 @@ export default function AreasPage() {
         eyebrow="IN YOUR NEIGHBOURHOOD"
         title={
           <>
-            Hey, <span>Bangalore.</span>
-            <br />
-            Let&apos;s make some room.
+            Kids’ services. <span>Near you.</span>
           </>
         }
-        description="A new chapter for their outgrown things, closer to home. Find your neighbourhood to explore selling categories, prepare your items and check the next steps for doorstep pickup."
-        image="/sell-categories/cycles.webp"
+        description="Looking for preschool, daycare or kids activities near you? Choose your Bangalore neighbourhood to explore learning, play, birthdays, babysitting and development support."
+        image="/services/classes-activities-art.webp"
         imageAlt="New adventures, closer to home"
-        href="/pickup"
-        action="Start selling"
+        href="/contact"
+        action="Enquire Service"
       />
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-sm leading-relaxed">
           {servicesPaused
-            ? "Our pickup service is opening soon. These pages introduce the areas we plan to serve; no pickup is confirmed while bookings are paused."
-            : "Pickup availability is confirmed by our team for your exact address and preferred slot."}
+            ? "Service enquiries are temporarily paused. You can still explore our service categories and neighbourhood pages."
+            : "Service availability depends on the category, provider and your requirements. Enquire about your area before making plans."}
         </div>
         <h2 className="text-2xl font-bold">Choose your area</h2>
         <p className="mt-3 text-muted-foreground">
-          Each neighbourhood has its own selling and pickup guide.
+          Explore services and send an enquiry for your neighbourhood.
         </p>
         <nav
           aria-label="All service areas"
@@ -81,11 +79,11 @@ export default function AreasPage() {
           <Link href="/contact" className="font-semibold text-primary underline underline-offset-4">
             Check with our team
           </Link>{" "}
-          before making pickup plans.
+          before making service plans.
         </p>
       </section>
-      <SellerBenefits href="/pickup" />
-      <SellerQuestionBanner href="/pickup" subject="kids items in Bangalore" />
+
+      <HomeCollectionSupport />
     </>
   );
 }

@@ -143,7 +143,7 @@ export function organizationSchema(path = "/") {
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
-        name: "Pre-loved kids item selling in Bangalore",
+        name: "Kids and family services in Bangalore",
       },
     },
   };
@@ -184,15 +184,15 @@ export function serviceSchema(path: string, area?: ServiceArea, serviceName?: st
   const name =
     serviceName ??
     (area
-      ? `Sell pre-loved kids items in ${area.name}, Bangalore`
-      : "Pre-loved kids item selling in Bangalore");
+      ? `Kids and family services in ${area.name}, Bangalore`
+      : "Kids and family services in Bangalore");
 
   return {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${absoluteUrl(path)}#service`,
     name,
-    serviceType: "Pre-loved kids item selling with doorstep pickup",
+    serviceType: serviceName ?? "Kids and family service enquiries",
     provider: { "@id": `${siteUrl}/#organization` },
     areaServed: {
       "@type": "Place",
@@ -266,41 +266,6 @@ export function blogPostingSchema(input: {
         url: `${siteUrl}/favicon.png`,
       },
     },
-  };
-}
-
-export function howToSchema(input: {
-  path: string;
-  name: string;
-  description: string;
-  totalTime?: string;
-  steps: Array<{ name: string; text: string }>;
-}) {
-  const url = absoluteUrl(input.path);
-  return {
-    "@context": "https://schema.org",
-    "@type": "HowTo",
-    "@id": `${url}#howto`,
-    name: input.name,
-    description: input.description,
-    ...(input.totalTime ? { totalTime: input.totalTime } : {}),
-    estimatedCost: {
-      "@type": "MonetaryAmount",
-      currency: "INR",
-      value: "0",
-    },
-    supply: [
-      { "@type": "HowToSupply", name: "Pre-loved kids item in good condition" },
-      { "@type": "HowToSupply", name: "Clear photos of the item" },
-    ],
-    tool: [{ "@type": "HowToTool", name: "Zapiboo marketplace app" }],
-    step: input.steps.map((step, index) => ({
-      "@type": "HowToStep",
-      position: index + 1,
-      name: step.name,
-      text: step.text,
-      url: `${url}#step-${index + 1}`,
-    })),
   };
 }
 

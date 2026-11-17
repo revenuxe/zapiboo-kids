@@ -1,24 +1,22 @@
-import { getPublicSellingCategories } from "@/lib/selling-catalog-server";
 import type { MetadataRoute } from "next";
 import { serviceAreas, absoluteUrl } from "@/lib/seo";
-import { categoryImage } from "@/lib/selling-categories";
-
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const sellingCategories = await getPublicSellingCategories();
-  const pages = ["/", "/areas", "/pickup", "/about", "/contact", "/privacy", "/terms"];
+import { familyServices } from "@/lib/family-service-catalog";
+export const revalidate = 3600;
+export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    ...pages.map((path) => ({ url: absoluteUrl(path) })),
-    ...sellingCategories.map((category) => ({
-      url: absoluteUrl(`/sell/${category.id}`),
-      images: [
-        category.image_url?.startsWith("https://")
-          ? category.image_url
-          : absoluteUrl(category.image_url || categoryImage(category.id)),
-      ],
-    })),
-    ...serviceAreas.map((area) => ({
-      url: absoluteUrl(`/areas/${area.slug}`),
-      images: [absoluteUrl("/sell-categories/toys.webp")],
-    })),
-  ];
+    "/",
+    "/areas",
+    "/about",
+    "/contact",
+    "/privacy",
+    "/terms",
+    ...serviceAreas.map((a) => `/areas/${a.slug}`),
+  ]
+    .map((path) => ({ url: absoluteUrl(path) }))
+    .concat(
+      familyServices.map((service) => ({
+        url: absoluteUrl(`/services/${service.id}`),
+        images: [absoluteUrl(service.image_url)],
+      })),
+    );
 }

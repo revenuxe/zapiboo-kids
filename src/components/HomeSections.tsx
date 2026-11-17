@@ -1,62 +1,58 @@
-import type { SellingCategory } from "@/lib/selling-categories";
+import type { FamilyService } from "@/lib/family-service-catalog";
 import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowUpRight,
   BookOpen,
-  Camera,
+  ClipboardCheck,
   Check,
   Heart,
   Layers3,
   MessageCircle,
-  PackageCheck,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { servicesPaused } from "@/lib/launch-status";
 
 const moments = [
   {
-    category: "toys",
-    label: "THE PLAYROOM RESET",
-    title: "Less on the shelf.\nMore room to play.",
-    text: "The puzzles they mastered. The blocks they moved on from. Let the next adventure begin.",
-    image: "toys",
+    category: "play-entertainment",
+    label: "MAKE TIME FOR PLAY",
+    title: "Big adventures.\nLittle happy faces.",
+    text: "Play zones, family workshops and new adventures for curious little explorers.",
     className: "moment-play",
   },
   {
-    category: "books",
-    label: "THE NEXT PAGE",
-    title: "Some stories deserve\nto be read again.",
-    text: "Pass on picture books, first reads and well-loved collections.",
-    image: "books",
+    category: "classes-activities",
+    label: "FOLLOW THEIR CURIOSITY",
+    title: "A new interest.\nA world of possibility.",
+    text: "Discover art, music, dance, sports and hands-on learning beyond the classroom.",
     className: "moment-books",
   },
   {
-    category: "gear",
-    label: "THEY GROW. SO FAST.",
-    title: "Little milestones.\nBig things to pass on.",
-    text: "Make space when strollers, high chairs and baby essentials are outgrown.",
-    image: "gear",
+    category: "preschool-daycare",
+    label: "A CONFIDENT FIRST STEP",
+    title: "Little milestones.\nA caring place to grow.",
+    text: "Explore early learning and daycare around your child’s age and your daily routine.",
     className: "moment-gear",
   },
 ];
 
-export function HomeMoments({ categories }: { categories: readonly SellingCategory[] }) {
+export function HomeMoments({ categories }: { categories: readonly FamilyService[] }) {
   return (
     <section className="home-shell home-section" aria-labelledby="home-moments-title">
       <div className="home-section-heading">
         <div>
           <span className="home-eyebrow">SOUND A LITTLE FAMILIAR?</span>
           <h2 id="home-moments-title">
-            They moved on.
+            They wonder.
             <br />
-            Their favourites can, too.
+            Let them discover.
           </h2>
         </div>
         <p>
-          A shelf, a cupboard, a corner of the room.
+          A new skill, a caring space, a day out.
           <br />
-          Your fresh start can begin anywhere.
+          Find a starting point that feels like them.
         </p>
       </div>
       <div className="home-moments-grid">
@@ -65,7 +61,7 @@ export function HomeMoments({ categories }: { categories: readonly SellingCatego
           .map((moment) => (
             <Link
               key={moment.category}
-              href={`/pickup?category=${moment.category}`}
+              href={`/services/${moment.category}`}
               className={`home-moment ${moment.className}`}
             >
               <span className="home-eyebrow">{moment.label}</span>
@@ -82,7 +78,7 @@ export function HomeMoments({ categories }: { categories: readonly SellingCatego
                 <Image
                   src={
                     categories.find((category) => category.id === moment.category)?.image_url ||
-                    `/sell-categories/${moment.image}.webp`
+                    `/services/${moment.category}.webp`
                   }
                   alt=""
                   fill
@@ -90,11 +86,11 @@ export function HomeMoments({ categories }: { categories: readonly SellingCatego
                 />
               </div>
               <span className="home-moment-link">
-                {moment.category === "toys"
-                  ? "Give playtime a new home"
-                  : moment.category === "books"
-                    ? "Pass on their books"
-                    : "Sell baby gear"}
+                {moment.category === "play-entertainment"
+                  ? "Discover places to play"
+                  : moment.category === "classes-activities"
+                    ? "Explore classes & activities"
+                    : "Explore preschool & daycare"}
                 <ArrowUpRight size={19} />
               </span>
             </Link>
@@ -110,31 +106,31 @@ export function HomePreparation() {
       <div className="home-shell home-preparation-grid">
         <div className="home-prep-board">
           <div className="home-prep-board-top">
-            <span className="home-eyebrow">THE READY-TO-RELOVE LIST</span>
+            <span className="home-eyebrow">YOUR FAMILY SERVICE CHECKLIST</span>
             <span>
               <Heart size={16} />
             </span>
           </div>
           <h3>
-            A little care.
-            <br />A lovely next chapter.
+            A few good questions.
+            <br />A confident next step.
           </h3>
           <div className="home-prep-tasks">
             {[
               {
                 icon: Sparkles,
-                title: "Clean & ready",
-                text: "A quick clean, with all the parts together.",
+                title: "The right fit",
+                text: "Check age suitability, location and timings.",
               },
               {
-                icon: PackageCheck,
-                title: "Safe & working",
-                text: "Check for wear, damage or missing pieces.",
+                icon: ShieldCheck,
+                title: "Care & experience",
+                text: "Discuss supervision, training and references.",
               },
               {
-                icon: Camera,
-                title: "Clearly described",
-                text: "Honest condition details. A photo, if you like.",
+                icon: ClipboardCheck,
+                title: "Clear arrangements",
+                text: "Ask about fees, inclusions and cancellation terms.",
               },
             ].map(({ icon: Icon, title, text }) => (
               <div key={title}>
@@ -150,28 +146,29 @@ export function HomePreparation() {
             ))}
           </div>
           <span className="home-prep-board-note">
-            <BookOpen size={15} /> Every item has a story. Tell us yours.
+            <BookOpen size={15} /> Every family is different. Start with yours.
           </span>
         </div>
         <div className="home-prep-copy">
           <span className="home-eyebrow">A GOOD START MAKES ALL THE DIFFERENCE</span>
           <h2>
-            Ready for
-            <br />a little re-loving?
+            Ready to find
+            <br />
+            your family’s fit?
           </h2>
           <p>
-            You don&apos;t need a perfect listing. Just tell us what you have, the condition
-            it&apos;s in, and anything the next family should know.
+            Start with your child’s age, your area and what you need. Add preferred timings and a
+            budget so the conversation begins with what matters to you.
           </p>
           <div className="home-prep-tip">
             <span>GOOD TO KNOW</span>
             <p>
-              Bundles are welcome. Keep related items together and use the notes to tell us
-              what&apos;s included.
+              Visit a preschool, ask about a class trial or meet a caregiver before committing.
+              Confirm availability and fees directly with the provider.
             </p>
           </div>
-          <Link href="/pickup" className="home-text-link">
-            Tell us about your items
+          <Link href="/contact" className="home-text-link">
+            Tell us what your family needs
             <ArrowUpRight size={19} />
           </Link>
         </div>
@@ -188,20 +185,20 @@ export function HomeCollectionSupport() {
           <Layers3 size={32} strokeWidth={1.5} />
         </div>
         <div>
-          <span className="home-eyebrow">SOME COLLECTIONS NEED A LITTLE MORE HELP</span>
+          <span className="home-eyebrow">SOME PLANS NEED A LITTLE MORE HELP</span>
           <h2>
-            A whole playroom?
+            A birthday coming up?
             <br />
             Let&apos;s talk.
           </h2>
           <p>
-            A family clear-out, a school collection or a daycare refresh. Tell our team what you
-            have, and we&apos;ll help explain the next steps.
+            A birthday party, a new childcare routine or a question about a milestone. Tell us what
+            you have in mind and ask about the next steps.
           </p>
         </div>
         <Link href="/contact" className="home-collection-link">
           <MessageCircle size={18} />
-          Talk about your collection
+          Talk about your plans
           <ArrowUpRight size={18} />
         </Link>
       </div>
@@ -216,23 +213,23 @@ export function HomeFinalCta() {
         <div className="home-grand-copy">
           <span className="home-eyebrow">
             <span />
-            THE NEXT CHAPTER IS A LITTLE LIGHTER
+            THEIR NEXT CHAPTER STARTS WITH YOU
           </span>
           <h2 id="home-cta-title">
-            Big memories.
+            Little discoveries.
             <br />
-            Little things.
+            Happy memories.
             <br />
             <span>New beginnings.</span>
           </h2>
           <p>
-            Keep the memories. Pass on the things.
+            Find the care, learning and play they need.
             <br />
-            Make room for whatever comes next.
+            Make space for whatever comes next.
           </p>
           <div className="home-grand-actions">
-            <Link href="/pickup" className="home-grand-button">
-              Start with one item
+            <Link href="/contact" className="home-grand-button">
+              Explore family services
               <ArrowUpRight size={22} />
             </Link>
             <Link href="/contact">
@@ -241,9 +238,7 @@ export function HomeFinalCta() {
             </Link>
           </div>
           <span className="home-grand-note">
-            {servicesPaused
-              ? "Explore now. Doorstep pickup is opening soon."
-              : "Pickup availability and sale details confirmed with you."}
+            Availability and fees are confirmed before you book.
           </span>
         </div>
         <div className="home-grand-art" aria-hidden="true">
@@ -251,26 +246,26 @@ export function HomeFinalCta() {
           <div className="home-grand-toys">
             <span>READY FOR MORE PLAY</span>
             <Image
-              src="/sell-categories/toys.webp"
+              src="/services/play-entertainment.webp"
               alt=""
               width={340}
               height={270}
               sizes="(max-width: 639px) 230px, 340px"
             />
             <strong>
-              So much happy left to give.
+              So many ways to grow.
               <Heart size={18} />
             </strong>
           </div>
           <div className="home-grand-books">
             <Image
-              src="/sell-categories/books.webp"
+              src="/services/classes-activities-art.webp"
               alt=""
               width={200}
               height={160}
               sizes="180px"
             />
-            <span>One more story.</span>
+            <span>A new discovery.</span>
           </div>
           <span className="home-grand-stamp">
             <Sparkles size={22} />
@@ -284,44 +279,40 @@ export function HomeFinalCta() {
   );
 }
 
-export function HomeQuickStart({ categories }: { categories: readonly SellingCategory[] }) {
+export function HomeQuickStart({ categories }: { categories: readonly FamilyService[] }) {
   return (
     <section className="home-shell home-quickstart-wrap">
       <div className="home-quickstart">
         <div>
-          <span className="home-eyebrow">ONE ITEM OR A WHOLE LITTLE COLLECTION</span>
+          <span className="home-eyebrow">EVERYDAY NEEDS. SPECIAL OCCASIONS.</span>
           <h2>
-            Found a few things?
+            Looking for something?
             <br />
             <span>Let&apos;s make a start.</span>
           </h2>
           <p>
-            Choose a category and share the condition. Add a note or a photo if you like. Your fresh
-            start is a few details away.
+            Choose a service and tell us your area, your child’s age and what you are looking for.
+            Your next step begins with a conversation.
           </p>
           <div className="home-quickstart-actions">
-            <Link href="/pickup" className="home-button">
-              Start selling my items
+            <Link href="/contact" className="home-button">
+              Send a service enquiry
               <ArrowUpRight size={20} />
             </Link>
             <Link href="/contact" className="home-text-link">
-              Have a bundle? Let&apos;s talk
+              Need guidance? Let&apos;s talk
               <ArrowUpRight size={17} />
             </Link>
           </div>
-          <small>
-            {servicesPaused
-              ? "Save your details now. Pickup service is opening soon."
-              : "Our team confirms pickup and sale details before handover."}
-          </small>
+          <small>An enquiry is a starting point; it does not confirm a booking.</small>
         </div>
         <div className="home-quickstart-options">
           <span className="home-eyebrow">PICK YOUR STARTING POINT</span>
           {categories
             .slice(0, 4)
-            .map((category) => ({ id: category.id, label: category.tagline || category.name }))
+            .map((category) => ({ id: category.id, label: category.name }))
             .map((item) => (
-              <Link key={item.id} href={`/pickup?category=${item.id}`}>
+              <Link key={item.id} href={`/services/${item.id}`}>
                 <span>
                   <Check size={14} />
                 </span>

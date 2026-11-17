@@ -1,0 +1,31 @@
+Keyword,Target page,Intent,Volume status
+preschools in Bangalore,/services/preschool-daycare,Local service enquiry,Not measured
+daycare in Bangalore,/services/preschool-daycare,Local service enquiry,Not measured
+preschool near me,/services/preschool-daycare,Nearby service,Not measured
+daycare near me,/services/preschool-daycare,Nearby service,Not measured
+Montessori schools Bangalore,/services/preschool-daycare,Learning approach,Not measured
+full day daycare Bangalore,/services/preschool-daycare,Care schedule,Not measured
+kids classes Bangalore,/services/classes-activities,Local class enquiry,Not measured
+kids activities Bangalore,/services/classes-activities,Activity discovery,Not measured
+dance classes for kids Bangalore,/services/classes-activities,Specific activity,Not measured
+art classes for kids Bangalore,/services/classes-activities,Specific activity,Not measured
+swimming classes for kids Bangalore,/services/classes-activities,Specific activity,Not measured
+coding classes for kids Bangalore,/services/classes-activities,Specific activity,Not measured
+kids indoor play area Bangalore,/services/play-entertainment,Family outing,Not measured
+kids play area near me,/services/play-entertainment,Nearby outing,Not measured
+toddler activities Bangalore,/services/play-entertainment,Age-specific activity,Not measured
+kids birthday party venues Bangalore,/services/birthday-events,Event enquiry,Not measured
+birthday party packages Bangalore,/services/birthday-events,Package enquiry,Not measured
+kids birthday decorations Bangalore,/services/birthday-events,Event service,Not measured
+nanny services Bangalore,/services/babysitting-nannies,Childcare enquiry,Not measured
+babysitting services Bangalore,/services/babysitting-nannies,Childcare enquiry,Not measured
+part time nanny Bangalore,/services/babysitting-nannies,Care schedule,Not measured
+child development centre Bangalore,/services/health-development,Professional service enquiry,Not measured
+speech therapy for children Bangalore,/services/health-development,Professional service enquiry,Not measured
+occupational therapy for children Bangalore,/services/health-development,Professional service enquiry,Not measured
+preschool in Whitefield,/areas/whitefield,Neighbourhood service,Not measured
+daycare in HSR Layout,/areas/hsr-layout,Neighbourhood service,Not measured
+kids activities in Hebbal,/areas/hebbal,Neighbourhood activity,Not measured
+preschool in Nagawara,/areas/nagawara,Neighbourhood service,Not measured
+daycare in Koramangala,/areas/koramangala,Neighbourhood service,Not measured
+kids classes in Indiranagar,/areas/indiranagar,Neighbourhood activity,Not measured
