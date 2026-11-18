@@ -1007,7 +1007,7 @@
 .mp-google-button { min-height:49px; border-color:#bdcfe1; box-shadow:0 3px 10px #12325308; font-size:13px!important; }
 @media(max-width:639px) { .mp-selected-category {flex-wrap:wrap;gap:12px;padding:15px}.mp-selected-category>img {width:105px;height:72px}.mp-selected-category strong {font-size:17px}.mp-selected-category>button {width:100%;text-align:right;min-height:32px}.mp-selected-category span {font-size:9px} }
 /* Private marketplace messaging. */
-.site-chats-link { display:inline-flex; position:relative; align-items:center; justify-content:center; gap:7px; padding:9px 13px; border:1px solid #d1e3f4; border-radius:999px; background:#fff9; color:#174166; font-size:12px; font-weight:700; margin:0 12px 0 auto; white-space:nowrap; }
+.site-chats-link { display:inline-flex; position:relative; align-items:center; justify-content:center; gap:7px; padding:9px 13px; border:1px solid #d1e3f4; border-radius:999px; background:#fff9; color:#174166; font-size:12px; font-weight:700; margin:0; white-space:nowrap; }
 .site-chats-link:hover,.site-chats-link.is-active { background:#dceeff; color:#0075ce; border-color:#b6d7f1; }
 .site-chats-link>b { display:grid; place-items:center; min-width:18px; height:18px; padding-inline:4px; background:#0075ce; color:white; border-radius:20px; font-size:9px; }
 .chat-page { background:#f6f8fb; color:#173753; min-height:calc(100dvh - 64px); padding:26px 0 24px; }
