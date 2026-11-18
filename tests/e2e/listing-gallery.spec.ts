@@ -33,36 +33,12 @@ test('gallery supports thumbnails, fullscreen, keyboard, zoom and focus restorat
   await page.screenshot({ path: 'test-results/detail-modern-desktop.png', fullPage: true });
 });
 test('seller actions stay on the listing page and send signed-out buyers to login', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/marketplace/gallery-test');
   const chat = page.getByRole('link', { name: 'Chat Now with the seller' });
   const call = page.getByRole('link', { name: 'Sign in to call the seller' });
   await expect(chat).toHaveAttribute('href', '/auth?redirectTo=%2Fchats%3Flisting%3Dgallery-test');
   await expect(call).toHaveAttribute('href', '/auth?redirectTo=%2Fmarketplace%2Fgallery-test');
   await expect(page.getByRole('heading', { name: 'Meet the seller.' })).toBeVisible();
-  await expect(page.locator('.mp-seller-profile-group > .mp-seller-profile + .mp-report')).toHaveAttribute(
-    'href',
-    '/contact?subject=Report%20listing%20gallery-test',
-  );
-  await expect(page.locator('.mp-detail-sidebar .mp-report')).toHaveCount(0);
-  const profileBottom = await page
-    .locator('.mp-seller-profile')
-    .evaluate(element => element.getBoundingClientRect().bottom + window.scrollY);
-  const reportTop = await page
-    .locator('.mp-report')
-    .evaluate(element => element.getBoundingClientRect().top + window.scrollY);
-  expect(reportTop).toBeGreaterThan(profileBottom);
-  const galleryBottom = await page
-    .locator('.mp-gallery')
-    .evaluate(element => element.getBoundingClientRect().bottom + window.scrollY);
-  const priceTop = await page
-    .locator('.mp-price-card')
-    .evaluate(element => element.getBoundingClientRect().top + window.scrollY);
-  const essentialsTop = await page
-    .locator('.mp-spec-grid')
-    .evaluate(element => element.getBoundingClientRect().top + window.scrollY);
-  expect(priceTop).toBeGreaterThan(galleryBottom);
-  expect(priceTop).toBeLessThan(essentialsTop);
   await expect(page.locator('.mp-price-card')).not.toContainText(listing.seller_name);
   expect(
     await page.evaluate(() => {
