@@ -167,57 +167,59 @@ export function ListingDetail({ id }: { id: string }) {
               <h2>About this vehicle.</h2>
               <p className="mp-description">{listing.description}</p>
             </section>
-            <section className="mp-detail-section mp-seller-profile">
-              <span className="mp-eyebrow">SELLER PROFILE</span>
-              <h2>Meet the seller.</h2>
-              <div className="mp-seller">
-                <span>
-                  {listing.seller_name
-                    .split(" ")
-                    .map((name) => name[0])
-                    .slice(0, 2)
-                    .join("")}
-                </span>
-                <div>
-                  <strong>{listing.seller_name}</strong>
-                  <small>{listing.demo ? "Example seller" : "Vehicle listed by this seller"}</small>
+            <div className="mp-seller-profile-group">
+              <section className="mp-detail-section mp-seller-profile">
+                <span className="mp-eyebrow">SELLER PROFILE</span>
+                <h2>Meet the seller.</h2>
+                <div className="mp-seller">
+                  <span>
+                    {listing.seller_name
+                      .split(" ")
+                      .map((name) => name[0])
+                      .slice(0, 2)
+                      .join("")}
+                  </span>
+                  <div>
+                    <strong>{listing.seller_name}</strong>
+                    <small>{listing.demo ? "Example seller" : "Vehicle listed by this seller"}</small>
+                  </div>
                 </div>
-              </div>
-              {listing.demo ? (
-                <div className="mp-demo-contact">
-                  This is a preview. In-app chat is available on real, active listings.
-                </div>
-              ) : listing.user_id === user?.id ? (
-                <Link href="/marketplace/my-listings" className="mp-btn">
-                  Manage my listing <ArrowRight size={16} />
-                </Link>
-              ) : (
-                <button
-                  className="mp-btn"
-                  onClick={contact}
-                  disabled={pending || listing.status !== "active"}
-                >
-                  {pending ? (
-                    <Loader2 size={17} className="animate-spin" />
-                  ) : (
-                    <MessageCircle size={17} />
-                  )}{" "}
-                  Chat with seller
-                </button>
-              )}
-              {!listing.demo && listing.user_id !== user?.id && (
-                <small className="mp-contact-note">
-                  Chat privately in Zapiboo. Signed-in buyers can call if you have enabled calls.
-                </small>
-              )}
-            </section>
-            <Link
-              className="mp-report"
-              href={"/contact?subject=" + encodeURIComponent("Report listing " + id)}
-            >
-              <Flag size={13} />
-              Report this listing
-            </Link>
+                {listing.demo ? (
+                  <div className="mp-demo-contact">
+                    This is a preview. In-app chat is available on real, active listings.
+                  </div>
+                ) : listing.user_id === user?.id ? (
+                  <Link href="/marketplace/my-listings" className="mp-btn">
+                    Manage my listing <ArrowRight size={16} />
+                  </Link>
+                ) : (
+                  <button
+                    className="mp-btn"
+                    onClick={contact}
+                    disabled={pending || listing.status !== "active"}
+                  >
+                    {pending ? (
+                      <Loader2 size={17} className="animate-spin" />
+                    ) : (
+                      <MessageCircle size={17} />
+                    )}{" "}
+                    Chat with seller
+                  </button>
+                )}
+                {!listing.demo && listing.user_id !== user?.id && (
+                  <small className="mp-contact-note">
+                    Chat privately in Zapiboo. Signed-in buyers can call if you have enabled calls.
+                  </small>
+                )}
+              </section>
+              <Link
+                className="mp-report"
+                href={"/contact?subject=" + encodeURIComponent("Report listing " + id)}
+              >
+                <Flag size={13} />
+                Report this listing
+              </Link>
+            </div>
             <section className="mp-detail-section mp-detail-safety">
               <ShieldCheck size={29} />
               <div>
