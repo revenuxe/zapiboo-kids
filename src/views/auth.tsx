@@ -116,7 +116,7 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
             <div className="min-w-0">
               <p className="text-sm font-extrabold leading-tight">Zapiboo</p>
               <p className="truncate text-xs text-navy-foreground/65">
-                Kids & family services | Bangalore
+                Used Vehicle Selling | Bangalore
               </p>
             </div>
           </Link>

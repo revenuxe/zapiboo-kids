@@ -19,9 +19,11 @@ import { isSpamLead } from "@/lib/spam-filter";
 export default function Contact({
   serviceName = "",
   areaName = "",
+  subjectText = "",
 }: {
   serviceName?: string;
   areaName?: string;
+  subjectText?: string;
 }) {
   const [sending, setSending] = useState(false);
 
@@ -86,10 +88,10 @@ export default function Contact({
         eyebrow="Contact"
         title={
           <>
-            Kids’ services. <span className="text-gradient">Let’s talk.</span>
+            Vehicle sales. <span className="text-gradient">Let’s talk.</span>
           </>
         }
-        subtitle="Looking for care, learning, play or a special celebration? Share what your family needs and ask our team about the next steps."
+        subtitle="Looking to sell a used car, bike, scooter or another vehicle? Share the details and ask our team about the next steps."
       />
 
       <section className="bg-background py-16 md:py-24">
@@ -151,9 +153,9 @@ export default function Contact({
             <aside className="rounded-3xl border border-primary/20 bg-primary/5 p-6 sm:p-8">
               <h2 className="text-xl font-bold">Serving Nagawara and all of Bangalore</h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">
-                Zapiboo is based on Nagawara Main Road. Explore family services across Bangalore and
-                contact us about your preferred category and neighbourhood. Provider availability is
-                confirmed before booking.
+                Zapiboo is based on Nagawara Main Road. Send your vehicle details and Bangalore
+                neighbourhood to discuss selling options. Inspection, offers and arrangements are
+                confirmed after review.
               </p>
             </aside>
           </div>
@@ -202,11 +204,13 @@ export default function Contact({
                   id="csubject"
                   name="subject"
                   defaultValue={
-                    serviceName
-                      ? `Enquiry: ${serviceName}${areaName ? ` in ${areaName}` : ""}`
-                      : areaName
-                        ? `Service enquiry in ${areaName}`
-                        : ""
+                    subjectText
+                      ? subjectText
+                      : serviceName
+                        ? `Enquiry: ${serviceName}${areaName ? ` in ${areaName}` : ""}`
+                        : areaName
+                          ? `Service enquiry in ${areaName}`
+                          : ""
                   }
                   maxLength={200}
                   required
@@ -220,13 +224,13 @@ export default function Contact({
                   name="message"
                   defaultValue={
                     areaName
-                      ? `Area: ${areaName}\nChild’s age: \nPreferred dates or timings: \nBudget: `
+                      ? `Area: ${areaName}\nVehicle make, model and year: \nKilometres driven: \nCondition: \nPreferred timing: `
                       : ""
                   }
                   maxLength={5000}
                   required
                   rows={5}
-                  placeholder="Tell us your area, child's age, service, preferred dates and budget. Please avoid sharing sensitive medical details here."
+                  placeholder="Tell us your area, vehicle make, model, year, kilometres driven, condition and preferred timing."
                 />
               </div>
             </div>

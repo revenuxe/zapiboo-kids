@@ -40,7 +40,7 @@ export function LandingHero({
           {href && (
             <div className="home-hero-actions">
               <Link href={href} className="home-button">
-                {action || "Enquire Service"}
+                {action || "Start selling"}
                 <ArrowUpRight size={19} />
               </Link>
               <a
@@ -66,7 +66,7 @@ export function LandingHero({
             </span>
             <span>
               <Heart size={14} />
-              Care, learning and happy moments.
+              Your vehicle. Your next chapter.
             </span>
           </div>
         </div>
@@ -92,7 +92,7 @@ export function LandingHero({
             <span className="landing-art-sticker">
               LEARN.
               <br />
-              PLAY. GROW.
+              PLAY. DRIVE.
             </span>
           </div>
         ) : (

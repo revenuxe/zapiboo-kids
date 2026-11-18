@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ChatsLink } from "@/components/chats/ChatsLink";
 import { Logo } from "@/components/Logo";
 import { headerNavLinks as navLinks } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
@@ -79,6 +80,7 @@ export function SiteHeader() {
           )}
         </nav>
 
+        <ChatsLink />
         <div className="hidden items-center gap-3 lg:flex">
           {user ? (
             <DropdownMenu>
@@ -121,8 +123,8 @@ export function SiteHeader() {
             </Button>
           )}
           <Button asChild variant="hero" size="sm">
-            <Link href="/#sell-categories">
-              Explore services
+            <Link href="/marketplace/sell">
+              Sell your vehicle
               <ArrowRight />
             </Link>
           </Button>
@@ -176,8 +178,8 @@ export function SiteHeader() {
 
             <div className="mt-6 flex flex-col gap-3">
               <Button asChild variant="hero" size="lg" onClick={() => setOpen(false)}>
-                <Link href="/#sell-categories">
-                  Explore services
+                <Link href="/marketplace/sell">
+                  Sell your vehicle
                   <ArrowRight />
                 </Link>
               </Button>

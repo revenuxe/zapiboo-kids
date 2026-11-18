@@ -1,56 +1,37 @@
 import { familyServices, familySteps, familyFaqs } from "@/lib/family-service-catalog";
-import { HomeServiceGuide } from "@/components/HomeServiceGuide";
-import {
-  HomeMoments,
-  HomePreparation,
-  HomeCollectionSupport,
-  HomeFinalCta,
-  HomeQuickStart,
-} from "@/components/HomeSections";
-import Link from "next/link";
-import Image from "next/image";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Check,
-  ChevronDown,
-  Heart,
-  MapPin,
-  Sprout,
-  Sparkles,
-} from "lucide-react";
 import { HomeHero } from "@/components/HomeHero";
-import { CalendarClock } from "lucide-react";
+import { HomeServiceGuide } from "@/components/HomeServiceGuide";
+import { HomePreparation, HomeFinalCta } from "@/components/HomeSections";
 import { serviceAreas } from "@/lib/seo";
-
-export default async function Home() {
-  const categories = familyServices;
-  const areas = serviceAreas;
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight, ChevronDown, Car, Check } from "lucide-react";
+export default function Home() {
   return (
     <div className="modern-home">
-      <HomeHero categories={categories} />
-      <section id="sell-categories" className="home-section home-shell">
+      <HomeHero />
+      <section id="sell-categories" className="home-shell home-section">
         <div className="home-section-heading">
           <div>
-            <span className="home-eyebrow">FOR EVERY STAGE OF CHILDHOOD</span>
+            <span className="home-eyebrow">WHAT ARE YOU SELLING?</span>
             <h2>
-              Care, learning & play.
-              <br className="sm:hidden" /> For every stage.
+              Every vehicle.
+              <br />A new possibility.
             </h2>
           </div>
           <p>
-            From preschool to after-school activities.
+            From your first bike to the family car.
             <br />
-            Explore six services for families in Bangalore.
+            Choose your vehicle to get started.
           </p>
         </div>
         <div className="home-category-grid">
-          {categories.map((category, i) => (
+          {familyServices.map((c, i) => (
             <Link
-              key={category.id}
-              href={`/services/${category.id}`}
+              key={c.id}
+              href={"/marketplace?category=" + c.id}
               className="home-category-card"
-              style={{ backgroundColor: category.accent_color }}
+              style={{ backgroundColor: c.accent_color }}
             >
               <div className="home-category-top">
                 <span>0{i + 1}</span>
@@ -59,187 +40,129 @@ export default async function Home() {
                 </span>
               </div>
               <div className="home-category-image">
-                <Image
-                  src={category.image_url}
-                  alt=""
-                  fill
-                  sizes="(min-width: 1024px) 350px, (min-width: 640px) 45vw, 46vw"
-                />
+                <Image src={c.image_url} alt={c.name} fill sizes="(min-width:1024px) 350px, 46vw" />
               </div>
               <div className="home-category-caption">
-                <h3>{category.name}</h3>
-                <p>{category.tagline}</p>
+                <h3>{c.name}</h3>
+                <p>{c.tagline}</p>
               </div>
             </Link>
           ))}
         </div>
         <div className="home-category-foot">
-          <Heart size={16} />
-          <p>Learning, care and happy memories.</p>
-          <span>Thoughtful choices for your family.</span>
+          <Car size={16} />
+          <p>One place for your next move.</p>
+          <span>Cars, bikes, scooters and more.</span>
         </div>
       </section>
-
       <HomeServiceGuide />
-
-      <HomeMoments categories={categories} />
-
-      <HomeQuickStart categories={categories} />
-
       <section id="how-it-works" className="home-process">
         <div className="home-shell home-section">
           <div className="home-section-heading">
             <div>
-              <span className="home-eyebrow">LESS TO DO. MORE TO LOOK FORWARD TO.</span>
+              <span className="home-eyebrow">THREE SIMPLE STEPS</span>
               <h2>
-                Your next step.
+                Your vehicle sale.
                 <br />
-                Made simpler.
+                Made clearer.
               </h2>
             </div>
-            <Link href="/contact" className="home-text-link">
-              Let’s get started <ArrowUpRight size={20} />
+            <Link href="/marketplace/sell" className="home-text-link">
+              Get started <ArrowUpRight size={20} />
             </Link>
           </div>
           <div className="home-step-grid">
-            {familySteps.map((step, i) => (
-              <article key={step.title} className="home-step">
+            {familySteps.map((s, i) => (
+              <article key={s.title} className="home-step">
                 <div className="home-step-top">
                   <span className="home-step-number">0{i + 1}</span>
-                  <CalendarClock size={25} strokeWidth={1.5} />
+                  <Car size={25} />
                 </div>
-                <h3>{step.title}</h3>
-                <p>{step.text}</p>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
               </article>
             ))}
           </div>
         </div>
       </section>
-
       <section className="home-shell home-section">
         <div className="home-pickup-grid">
           <div className="home-pickup-photo">
             <Image
-              src="/services/babysitting-nannies.webp"
-              alt="A caring nanny reading with young children"
+              src="/vehicles/used-suvs-cutout.webp"
+              alt="Used SUV ready for its next owner"
               fill
-              sizes="(min-width: 1024px) 550px, 90vw"
+              sizes="(min-width:1024px) 550px, 90vw"
               className="object-contain"
             />
-            <span className="home-photo-label">
-              <MapPin size={15} /> Local choices. Personal conversations.
-            </span>
           </div>
           <div className="home-pickup-copy">
-            <span className="home-eyebrow">FIND WHAT FITS YOUR FAMILY</span>
+            <span className="home-eyebrow">MOVE ON WITH CONFIDENCE</span>
             <h2>
-              Your routine.
+              Your old vehicle.
               <br />
-              Their next adventure.
+              Your next opportunity.
             </h2>
             <p>
-              From weekday care to weekend plans, start with your child’s age, interests and your
-              neighbourhood. Ask the questions that matter before choosing a service.
+              Upgrading, changing your commute or making room for something new? Start with your
+              vehicle details and get a clear understanding of the selling process.
             </p>
             <ul>
               {[
-                "Age, timing and location that work for you",
-                "Useful questions for visits and trial sessions",
-                "Fees and availability confirmed before booking",
-              ].map((text) => (
-                <li key={text}>
+                "Share the make, model, year and kilometres driven",
+                "Discuss condition, service history and inspection",
+                "Confirm the offer, payment and ownership transfer",
+              ].map((t) => (
+                <li key={t}>
                   <Check size={17} />
-                  {text}
+                  {t}
                 </li>
               ))}
             </ul>
-            <Link href="/contact" className="home-button">
-              Share your requirements <ArrowUpRight size={19} />
+            <Link href="/marketplace/sell" className="home-button">
+              Tell us about your vehicle <ArrowUpRight size={19} />
             </Link>
           </div>
         </div>
       </section>
-
       <HomePreparation />
-
-      <section className="home-shell">
-        <div className="home-purpose">
-          <div className="home-purpose-icon">
-            <Sprout size={38} strokeWidth={1.4} />
-          </div>
-          <div>
-            <span className="home-eyebrow">A LITTLE SUPPORT GOES A LONG WAY</span>
-            <h2>
-              Every child deserves
-              <br />
-              room to flourish.
-            </h2>
-            <p>
-              New interests. Caring support. Moments to remember.
-              <br />
-              Find the next step that feels right for your family.
-            </p>
-            <Link href="/contact" className="home-text-link home-purpose-cta">
-              Find support for your family
-              <ArrowUpRight size={18} />
-            </Link>
-          </div>
-          <Sparkles className="home-purpose-sparkle" size={62} strokeWidth={1} />
-        </div>
-      </section>
-
       <section className="home-shell home-section">
         <div className="home-section-heading">
           <div>
-            <span className="home-eyebrow">
-              <MapPin size={14} /> IN YOUR NEIGHBOURHOOD
-            </span>
-            <h2>Kids services in your Bangalore neighbourhood.</h2>
+            <span className="home-eyebrow">IN YOUR NEIGHBOURHOOD</span>
+            <h2>Sell your vehicle in Bangalore.</h2>
           </div>
-          <p>
-            We’re keeping it local.
-            <br />
-            Ask about services near your home.
-          </p>
+          <p>Find your area and start a conversation.</p>
         </div>
         <div className="home-area-list home-area-list-full">
-          {areas.map((area) => (
-            <Link key={area.slug} href={`/areas/${area.slug}`}>
-              {area.name}
+          {serviceAreas.map((a) => (
+            <Link key={a.slug} href={"/areas/" + a.slug}>
+              {a.name}
               <ArrowUpRight size={15} />
             </Link>
           ))}
-          <Link href="/areas" className="home-area-explore">
-            Explore all service areas <ArrowRight size={17} />
-          </Link>
         </div>
       </section>
-
-      <HomeCollectionSupport />
-
       <section className="home-faq-section">
         <div className="home-shell home-faq-grid">
           <div>
             <span className="home-eyebrow">GOOD QUESTIONS</span>
             <h2>
               A little clarity.
-              <br />A lot less guesswork.
+              <br />A smoother sale.
             </h2>
             <p>
-              Need a hand?{" "}
-              <Link href="/contact">
-                Let’s talk <ArrowUpRight size={14} />
-              </Link>
+              Need help? <Link href="/contact">Talk to our team</Link>
             </p>
           </div>
           <div className="home-faq-list">
-            {familyFaqs.map(([question, answer]) => (
-              <details key={question}>
+            {familyFaqs.map(([q, a]) => (
+              <details key={q}>
                 <summary>
-                  {question}
+                  {q}
                   <ChevronDown size={19} />
                 </summary>
-                <p>{answer}</p>
+                <p>{a}</p>
               </details>
             ))}
           </div>

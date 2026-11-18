@@ -1,1 +1,5 @@
-export { retiredPageResponse as GET, retiredPageResponse as HEAD } from "@/lib/retired-page-response";
+import { NextResponse } from "next/server";
+export function GET(request: Request) {
+  return NextResponse.redirect(new URL("/marketplace?category=used-bikes", request.url), 308);
+}
+export const HEAD = GET;

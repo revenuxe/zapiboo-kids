@@ -1,16 +1,16 @@
 {
-  "name": "Zapiboo Kids",
+  "name": "Zapiboo - Sell Your Used Vehicle",
   "short_name": "Zapiboo",
-  "description": "Explore preschool, daycare, activities, play, events, childcare and development support in Bangalore.",
+  "description": "Sell used cars, bikes, scooters, SUVs, commercial and electric vehicles in Bangalore.",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png?v=4fdb249e4599",
+      "src": "/android-chrome-192x192.png?v=vehicle2026",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/android-chrome-512x512.png?v=4fdb249e4599",
+      "src": "/android-chrome-512x512.png?v=vehicle2026",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"

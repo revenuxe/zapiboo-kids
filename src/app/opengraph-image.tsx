@@ -1,6 +1,6 @@
 ﻿import { ImageResponse } from "next/og";
 
-export const alt = "Zapiboo - Kids and family services in Bangalore";
+export const alt = "Zapiboo - Used vehicle selling services in Bangalore";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -22,7 +22,7 @@ export default function OpenGraphImage() {
         Zapiboo<span style={{ color: "#0075ce" }}>.</span>
       </div>
       <div style={{ display: "flex", fontSize: 19, marginTop: 22, color: "#52657d" }}>
-        KIDS & FAMILY SERVICES / BANGALORE
+        SELL YOUR USED VEHICLE / BANGALORE
       </div>
       <div
         style={{
@@ -35,18 +35,18 @@ export default function OpenGraphImage() {
           letterSpacing: "-4px",
         }}
       >
-        <span>Care. Learning.</span>
-        <span style={{ color: "#0075ce" }}>Play in Bangalore.</span>
+        <span>Sell your vehicle.</span>
+        <span style={{ color: "#0075ce" }}>Move forward.</span>
       </div>
       <div style={{ display: "flex", gap: 13, marginTop: 35, fontSize: 20 }}>
         <span style={{ background: "#ffd365", borderRadius: 18, padding: "15px 24px" }}>
-          Care & learning
+          Used cars
         </span>
         <span style={{ background: "#ffe7ed", borderRadius: 18, padding: "15px 24px" }}>
-          Play & activities
+          Bikes & scooters
         </span>
         <span style={{ background: "#fff", borderRadius: 18, padding: "15px 24px" }}>
-          Family support
+          Vehicle selling
         </span>
       </div>
       <div
@@ -66,7 +66,7 @@ export default function OpenGraphImage() {
           transform: "rotate(12deg)",
         }}
       >
-        GROW.
+        DRIVE.
       </div>
       <div
         style={{

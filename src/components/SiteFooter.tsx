@@ -10,7 +10,7 @@ const columns = [
   {
     title: "Explore",
     links: [
-      { label: "Explore services", to: "/#sell-categories" },
+      { label: "Marketplace", to: "/marketplace" },
       { label: "How it works", to: "/#how-it-works" },
       { label: "About us", to: "/about" },
       { label: "Service areas", to: "/areas" },
@@ -20,7 +20,7 @@ const columns = [
   {
     title: "Categories",
     links: [
-      ...familyServices.map((service) => ({ label: service.name, to: `/services/${service.id}` })),
+      ...familyServices.map((service) => ({ label: service.name, to: `/marketplace?category=${service.id}` })),
     ],
   },
   {
@@ -41,7 +41,7 @@ export function SiteFooter() {
       column.title === "Categories"
         ? categories.map((category) => ({
             label: category.name,
-            to: `/services/${category.id}`,
+            to: `/marketplace?category=${category.id}`,
           }))
         : column.links,
   }));
@@ -52,8 +52,8 @@ export function SiteFooter() {
           <div className="max-w-md">
             <Logo imageClassName="h-12 md:h-14" />
             <p className="mt-7 text-base leading-relaxed text-muted-foreground">
-              Explore preschool, daycare, classes, play, celebrations, childcare and development
-              support for your family in Bangalore.
+              Sell your used car, bike, scooter, SUV, commercial or electric vehicle in Bangalore.
+              Start with your vehicle details.
             </p>
             <ContactActions />
             <div className="mt-6 flex items-center gap-4">

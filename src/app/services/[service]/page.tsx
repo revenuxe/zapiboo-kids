@@ -51,7 +51,7 @@ export default async function ServicePage({ params, searchParams }: Props) {
         ]}
       />
       <LandingHero
-        eyebrow="FOR YOUR FAMILY IN BANGALORE"
+        eyebrow="SELL YOUR VEHICLE IN BANGALORE"
         title={
           <>
             {serviceHeadings[category.id].lead} <span>{serviceHeadings[category.id].accent}</span>
@@ -61,7 +61,7 @@ export default async function ServicePage({ params, searchParams }: Props) {
         image={category.image_url}
         imageAlt={`${category.name} illustration`}
         href={href}
-        action="Enquire Service"
+        action="Start selling"
       />
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold">Find your starting point</h2>
@@ -75,7 +75,7 @@ export default async function ServicePage({ params, searchParams }: Props) {
                 href={href}
                 className="mt-5 inline-flex items-center gap-2 font-semibold text-primary"
               >
-                Enquire Service <ArrowUpRight size={17} />
+                Start selling <ArrowUpRight size={17} />
               </Link>
             </article>
           ))}
@@ -88,21 +88,22 @@ export default async function ServicePage({ params, searchParams }: Props) {
             {category.preparation}
           </p>
           <p className="mt-5 max-w-3xl leading-relaxed text-muted-foreground">
-            Share your area, your child&apos;s age, preferred dates and budget. An enquiry does not
-            confirm a booking. Confirm provider details, fees and terms before proceeding.
+            Share your area, vehicle model, year, kilometres driven and condition. An enquiry does
+            not confirm an offer or sale. Confirm inspection, payment and ownership transfer
+            arrangements before proceeding.
           </p>
         </div>
       </section>
       <ServiceFaqs title={`${category.name}: your questions answered`} items={content.faqs} />
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold">Let&apos;s talk about your family&apos;s needs</h2>
+        <h2 className="text-3xl font-bold">Let&apos;s talk about your vehicle</h2>
         <p className="mt-4 text-muted-foreground">
           {area
-            ? `Tell us what your family needs in ${area.name}. Your area will be included in the enquiry.`
-            : "Share your Bangalore neighbourhood, child’s age and preferred schedule. Ask about fees and availability before booking."}
+            ? `Tell us what you want to sell in ${area.name}. Your area will be included in the enquiry.`
+            : "Share your Bangalore neighbourhood, vehicle model and year and preferred schedule. Ask about fees and availability before booking."}
         </p>
         <Link href={href} className="home-button mt-7">
-          Enquire Service <ArrowUpRight size={19} />
+          Start selling <ArrowUpRight size={19} />
         </Link>
       </section>
     </>

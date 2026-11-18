@@ -54,12 +54,17 @@ function SiteShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen flex-col">
         {!chromeless && <SiteHeader />}
         <main
-          className={`flex-1 ${!chromeless && pathname !== "/" && pathname !== "/pickup" ? "editorial-pages" : ""}`}
+          className={`flex-1 ${!chromeless && pathname !== "/" && pathname !== "/pickup" && !pathname.startsWith("/marketplace") && pathname !== "/chats" ? "editorial-pages" : ""}`}
         >
           {children}
         </main>
-        {!chromeless && pathname !== "/repair" && <ServiceExplorer />}
-        {!chromeless && <SiteFooter />}
+        {!chromeless &&
+          pathname !== "/repair" &&
+          !pathname.startsWith("/marketplace") &&
+          pathname !== "/chats" && <ServiceExplorer />}
+        {!chromeless && !pathname.startsWith("/marketplace/sell") && pathname !== "/chats" && (
+          <SiteFooter />
+        )}
       </div>
       <ServiceAvailability />
       <NavigationLoader />

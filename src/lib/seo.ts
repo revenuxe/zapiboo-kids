@@ -143,7 +143,7 @@ export function organizationSchema(path = "/") {
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
-        name: "Kids and family services in Bangalore",
+        name: "Used vehicle selling services in Bangalore",
       },
     },
   };
@@ -184,15 +184,15 @@ export function serviceSchema(path: string, area?: ServiceArea, serviceName?: st
   const name =
     serviceName ??
     (area
-      ? `Kids and family services in ${area.name}, Bangalore`
-      : "Kids and family services in Bangalore");
+      ? `Used vehicle selling services in ${area.name}, Bangalore`
+      : "Used vehicle selling services in Bangalore");
 
   return {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${absoluteUrl(path)}#service`,
     name,
-    serviceType: serviceName ?? "Kids and family service enquiries",
+    serviceType: serviceName ?? "Used vehicle selling enquiries",
     provider: { "@id": `${siteUrl}/#organization` },
     areaServed: {
       "@type": "Place",

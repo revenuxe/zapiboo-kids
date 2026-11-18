@@ -5,7 +5,7 @@ import { breadcrumbSchema } from "@/lib/seo";
 export const metadata = pageMetadata(
   "/terms",
   "Terms of service | Zapiboo",
-  "The terms for Zapiboo's kids and family service enquiries.",
+  "The terms for Zapiboo's used vehicle selling enquiries.",
 );
 export default function Page() {
   return (

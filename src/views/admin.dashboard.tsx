@@ -133,7 +133,7 @@ export default function AdminDashboard() {
               </HeadingText>
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Manage family service enquiries, customer details and historical requests.
+              Manage vehicle selling enquiries, customer details and historical requests.
             </p>
           </div>
           <Button

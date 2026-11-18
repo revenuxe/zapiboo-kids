@@ -4,8 +4,20 @@ import { businessContact } from "@/lib/seo";
 
 const sections = [
   [
+    "Private marketplace chats",
+    "Marketplace chat access is restricted to the buyer and seller in the application. Authorised operators may access records for support and report review. We store messages and conversation state to operate the inbox, read receipts and reporting features. Do not include phone numbers, email addresses or off-platform contact details; messages are checked before they are saved. Reports are stored for review by authorised operators.",
+  ],
+  [
+    "Public marketplace information",
+    "When you publish a vehicle, its title, description, specifications, asking price, photos, your seller name and neighbourhood become public. Do not include your exact home address, identity documents or bank details. Your mobile number is private and is not shown to buyers or sellers. Marketplace communication takes place in Zapiboo Chats.",
+  ],
+  [
+    "Drafts and saved vehicles",
+    "Listing drafts, including any details and compressed photos you add, are saved locally in this browser. Saved vehicles are also stored on this device. Unsent chat drafts are kept in the current tab and scoped to your account. They do not sync between devices. Avoid entering private information on shared devices, and clear the browser data when needed.",
+  ],
+  [
     "Information we collect",
-    "When you create an account or send a service enquiry, we may collect your name, email, phone number, chosen service and message. You may include your neighbourhood, preferred dates, budget and your child’s age to explain your requirements.",
+    "When you create an account or send a service enquiry, we may collect your name, email, phone number, chosen service and message. You may include your neighbourhood, preferred dates, budget and your vehicle model and year to explain your requirements.",
   ],
   [
     "How we use your information",
@@ -13,7 +25,7 @@ const sections = [
   ],
   [
     "Enquiry details",
-    "Use the general enquiry form for service requirements. Avoid including children’s photographs, personal documents, detailed health records or unrelated private information. Share sensitive health information directly with your chosen professional through an appropriate channel.",
+    "Use the enquiry form for vehicle details. Avoid including identity documents, bank details or unrelated private information. Ask our team how to share any required documents securely.",
   ],
   [
     "Service providers",
@@ -43,13 +55,13 @@ export default function Privacy() {
       <PageHeader
         eyebrow="Privacy"
         title="Privacy policy"
-        subtitle="How Zapiboo collects, uses and protects information when you use our kids and family services."
+        subtitle="How Zapiboo collects, uses and protects information when you use our used vehicle selling services."
       />
       <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
         <p className="rounded-2xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">
           This policy applies to Zapiboo&apos;s website, service enquiries and related
-          communications. It explains the information we handle when you explore family services or
-          send an enquiry.
+          communications. It explains the information we handle when you explore vehicle selling
+          services or send an enquiry.
         </p>
         <div className="mt-10 space-y-10">
           {sections.map(([title, text]) => (

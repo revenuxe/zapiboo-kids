@@ -5,7 +5,7 @@ import { breadcrumbSchema } from "@/lib/seo";
 export const metadata = pageMetadata(
   "/privacy",
   "Privacy policy | Zapiboo",
-  "How Zapiboo handles your information when you explore family services and send enquiries.",
+  "How Zapiboo handles your information when you explore vehicle selling services and send enquiries.",
 );
 export default function Page() {
   return (

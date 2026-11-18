@@ -5,8 +5,8 @@ import { breadcrumbSchema } from "@/lib/seo";
 
 export const metadata = pageMetadata(
   "/about",
-  "About Zapiboo | Kids & Family Services in Bangalore",
-  "Learn how Zapiboo helps families explore early learning, childcare, activities, celebrations and development support in Bangalore.",
+  "About Zapiboo | Sell Your Used Vehicle in Bangalore",
+  "Learn how Zapiboo helps owners in Bangalore start selling used cars, bikes, scooters, SUVs, commercial and electric vehicles.",
 );
 
 export default function Page() {

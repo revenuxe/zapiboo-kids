@@ -9,8 +9,8 @@ import { JsonLd } from "@/components/JsonLd";
 
 export const metadata = pageMetadata(
   "/areas",
-  "Kids Services Near You in Bangalore | Zapiboo Areas",
-  "Find preschool, daycare, kids classes, play areas and childcare by Bangalore neighbourhood. Explore Whitefield, HSR Layout, Hebbal, Nagawara and more.",
+  "Used Vehicle Selling Near You in Bangalore | Zapiboo Areas",
+  "Sell your used car, bike, scooter or other vehicle in Bangalore. Explore Whitefield, HSR Layout, Hebbal, Nagawara and more.",
 );
 
 export default function AreasPage() {
@@ -33,14 +33,14 @@ export default function AreasPage() {
         eyebrow="IN YOUR NEIGHBOURHOOD"
         title={
           <>
-            Kids’ services. <span>Near you.</span>
+            Vehicle sales. <span>Near you.</span>
           </>
         }
-        description="Looking for preschool, daycare or kids activities near you? Choose your Bangalore neighbourhood to explore learning, play, birthdays, babysitting and development support."
-        image="/services/classes-activities-art.webp"
+        description="Ready to sell your used vehicle? Choose your Bangalore neighbourhood and share your car, bike, scooter or commercial vehicle details."
+        image="/vehicles/used-bikes-cutout.webp"
         imageAlt="New adventures, closer to home"
         href="/contact"
-        action="Enquire Service"
+        action="Start selling"
       />
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -51,7 +51,7 @@ export default function AreasPage() {
         </div>
         <h2 className="text-2xl font-bold">Choose your area</h2>
         <p className="mt-3 text-muted-foreground">
-          Explore services and send an enquiry for your neighbourhood.
+          Sell your vehicle and send an enquiry for your neighbourhood.
         </p>
         <nav
           aria-label="All service areas"

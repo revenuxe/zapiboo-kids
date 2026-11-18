@@ -37,7 +37,7 @@ export function pageMetadata(
           url: image,
           width: 1200,
           height: 630,
-          alt: "Zapiboo — Kids & Family Services in Bangalore",
+          alt: "Zapiboo — Sell Your Used Vehicle in Bangalore",
         },
       ],
     },

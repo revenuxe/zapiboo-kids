@@ -1,0 +1,56 @@
+[
+  {
+    "category": "used-cars",
+    "bytes": 39068,
+    "kB": 39.1,
+    "previousBytes": 65470,
+    "width": 640,
+    "height": 420,
+    "alpha": true
+  },
+  {
+    "category": "used-bikes",
+    "bytes": 37486,
+    "kB": 37.5,
+    "previousBytes": 289492,
+    "width": 560,
+    "height": 368,
+    "alpha": true
+  },
+  {
+    "category": "used-scooters",
+    "bytes": 41356,
+    "kB": 41.4,
+    "previousBytes": 294440,
+    "width": 640,
+    "height": 420,
+    "alpha": true
+  },
+  {
+    "category": "used-suvs",
+    "bytes": 43828,
+    "kB": 43.8,
+    "previousBytes": 81604,
+    "width": 640,
+    "height": 420,
+    "alpha": true
+  },
+  {
+    "category": "commercial-vehicles",
+    "bytes": 43520,
+    "kB": 43.5,
+    "previousBytes": 108578,
+    "width": 640,
+    "height": 420,
+    "alpha": true
+  },
+  {
+    "category": "electric-vehicles",
+    "bytes": 41450,
+    "kB": 41.5,
+    "previousBytes": 33058,
+    "width": 640,
+    "height": 420,
+    "alpha": true
+  }
+]

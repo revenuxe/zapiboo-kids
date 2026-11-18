@@ -15,7 +15,7 @@ export function OpeningSoonMessage({ saved = false }: { saved?: boolean }) {
       </p>
       <h2 className="text-2xl font-bold tracking-tight">Sorry, we’re not open just yet</h2>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        We’re preparing our family services. Enquiries and customer support are temporarily
+        We’re preparing our vehicle selling services. Enquiries and customer support are temporarily
         unavailable. You can still explore the service categories.
       </p>
       {saved && (
@@ -65,8 +65,8 @@ export function ServiceAvailability() {
       >
         <DialogTitle className="sr-only">Services opening soon</DialogTitle>
         <DialogDescription className="sr-only">
-          We are preparing our family services. Services and customer support are temporarily
-          unavailable.
+          We are preparing our vehicle selling services. Services and customer support are
+          temporarily unavailable.
         </DialogDescription>
         <OpeningSoonMessage />
         <button

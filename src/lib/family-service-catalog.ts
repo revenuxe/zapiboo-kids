@@ -1,135 +1,105 @@
 export const familyServices = [
   {
-    id: "preschool-daycare",
-    name: "Preschool & Daycare",
-    tagline: "A happy start to learning",
+    id: "used-cars",
+    name: "Sell Used Cars",
+    tagline: "Your next chapter starts here",
     description:
-      "Preschool, nursery, Montessori and daycare options for your child’s first learning and care routine.",
-    image_url: "/services/preschool-daycare.webp",
+      "Hatchbacks, sedans and everyday cars. Share your car details to discuss selling options.",
     accent_color: "#fff0cf",
-    types: [
-      "Playgroups & nursery",
-      "Montessori & kindergarten",
-      "Full-day & half-day daycare",
-      "After-school care",
-    ],
+    types: ["Hatchbacks", "Sedans", "Premium cars", "Family cars"],
+    image_url: "/vehicles/used-cars-cutout.webp",
     preparation:
-      "Ask about age groups, staff-to-child ratios, settling-in visits, meals, pickup policies and the full fee breakdown.",
+      "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
   {
-    id: "classes-activities",
-    name: "Classes & Activities",
-    tagline: "Find their next favourite thing",
-    description:
-      "Art, dance, music, sports, swimming and coding classes for curious kids and growing interests.",
-    image_url: "/services/classes-activities-art.webp",
+    id: "used-bikes",
+    name: "Sell Used Bikes",
+    tagline: "Give your bike a new road",
+    description: "From daily commuters to touring motorcycles, start your bike sale with Zapiboo.",
     accent_color: "#e3efff",
-    types: ["Art & craft", "Music & dance", "Sports & swimming", "STEM, coding & holiday camps"],
+    types: ["Commuter bikes", "Sports bikes", "Cruisers", "Touring bikes"],
+    image_url: "/vehicles/used-bikes-cutout.webp",
     preparation:
-      "Share your child's age, interests and preferred schedule. Ask about trial sessions, group sizes, equipment and term fees.",
+      "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
   {
-    id: "play-entertainment",
-    name: "Play & Entertainment",
-    tagline: "Little adventures, big smiles",
-    description:
-      "Indoor play areas, toddler activities, family workshops and weekend outings for time together.",
-    image_url: "/services/play-entertainment.webp",
+    id: "used-scooters",
+    name: "Sell Used Scooters",
+    tagline: "A simpler way to move on",
+    description: "Sell your petrol or electric scooter. Tell us its model, age and condition.",
     accent_color: "#ffe7ed",
-    types: [
-      "Indoor play zones",
-      "Outdoor adventures",
-      "Parent-child sessions",
-      "Family workshops & shows",
-    ],
+    types: ["Petrol scooters", "Electric scooters", "City scooters", "Maxi scooters"],
+    image_url: "/vehicles/used-scooters-cutout.webp",
     preparation:
-      "Check age and height guidance, supervision, accessibility, session length and entry terms before visiting.",
+      "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
   {
-    id: "birthday-events",
-    name: "Birthday & Events",
-    tagline: "Make their day feel special",
-    description:
-      "Kids birthday venues, party decorations, entertainers and celebration services for their special day.",
-    image_url: "/services/birthday-events.webp",
+    id: "used-suvs",
+    name: "Sell Used SUVs",
+    tagline: "Ready for the next adventure",
+    description: "Explore selling your compact SUV, crossover or full-size SUV in Bangalore.",
     accent_color: "#e9e8ff",
-    types: [
-      "Party venues",
-      "Themes & decorations",
-      "Entertainers & party activities",
-      "Cakes, catering & photography",
-    ],
+    types: ["Compact SUVs", "Mid-size SUVs", "Full-size SUVs", "Crossovers"],
+    image_url: "/vehicles/used-suvs-cutout.webp",
     preparation:
-      "Share the date, area, guest count and budget. Confirm package inclusions, setup times, food requirements and cancellation terms.",
+      "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
   {
-    id: "babysitting-nannies",
-    name: "Babysitting & Nannies",
-    tagline: "Care that fits your routine",
-    description:
-      "Babysitting, regular nanny support and after-school childcare to fit your family’s routine.",
-    image_url: "/services/babysitting-nannies.webp",
+    id: "commercial-vehicles",
+    name: "Sell Commercial Vehicles",
+    tagline: "Keep your business moving",
+    description: "Discuss selling your van, pickup or other commercial vehicle with our team.",
     accent_color: "#e3f4ff",
-    types: [
-      "Occasional babysitting",
-      "Regular nanny support",
-      "After-school supervision",
-      "Infant care support",
-    ],
+    types: ["Vans", "Pickup trucks", "Light trucks", "Passenger vehicles"],
+    image_url: "/vehicles/commercial-vehicles-cutout.webp",
     preparation:
-      "Discuss experience, references, identity checks, first-aid training, duties and hours. Meet the caregiver and agree arrangements before starting.",
+      "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
   {
-    id: "health-development",
-    name: "Health & Development",
-    tagline: "Support for every milestone",
+    id: "electric-vehicles",
+    name: "Sell Electric Vehicles",
+    tagline: "A fresh start, fully charged",
     description:
-      "Child development, speech and language support, occupational therapy and paediatric consultation enquiries.",
-    image_url: "/services/health-development.webp",
-    accent_color: "#fff0cf",
-    types: [
-      "Paediatric consultations",
-      "Speech & language support",
-      "Occupational therapy",
-      "Developmental & parenting support",
-    ],
+      "Share your electric car or two-wheeler details, including battery condition and warranty.",
+    accent_color: "#e6f3df",
+    types: ["Electric cars", "Electric bikes", "Electric scooters", "Electric commercial vehicles"],
+    image_url: "/vehicles/electric-vehicles-cutout.webp",
     preparation:
-      "Confirm the professional's qualifications, approach, fees and appointment availability directly. Share sensitive health information only with the chosen professional.",
+      "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
 ] as const;
-
 export type FamilyService = (typeof familyServices)[number];
 export const serviceEnquiryHref = (id: string, area?: string) =>
-  `/contact?${new URLSearchParams({ service: id, ...(area ? { area } : {}) })}`;
+  "/marketplace/sell?" + new URLSearchParams({ category: id, ...(area ? { area } : {}) });
 export const familySteps = [
   {
-    title: "Choose what your family needs",
-    text: "Explore six service categories, from early learning and play to childcare and development.",
+    title: "Create your vehicle listing",
+    text: "Choose a category and share the make, model, year, kilometres driven and condition.",
   },
   {
-    title: "Share your preferences",
-    text: "Tell us your area, child's age, preferred timing and budget through a service enquiry.",
+    title: "Add photos and set your price",
+    text: "Upload clear photos, write an honest description and choose your asking price. Review your listing before publishing.",
   },
   {
-    title: "Confirm the right fit",
-    text: "Discuss availability, fees and arrangements with the provider before making a commitment.",
+    title: "Agree and move forward",
+    text: "Connect directly with interested buyers. Arrange a viewing and agree payment and ownership transfer before completing a sale.",
   },
 ];
 export const familyFaqs = [
   [
-    "What can I explore on Zapiboo?",
-    "Preschool and daycare, classes and activities, play and entertainment, birthdays and events, babysitting and nannies, and health and development support in Bangalore.",
+    "What vehicles can I sell?",
+    "Explore used cars, bikes, scooters, SUVs, commercial vehicles and electric vehicles. Contact our team to confirm eligibility for your vehicle.",
   ],
   [
-    "How do I enquire about a service?",
-    "Choose a category and send an enquiry with your area, child's age, preferred dates and budget. Our team can clarify the next steps; submitting an enquiry does not confirm a booking.",
+    "How do I start selling?",
+    "Choose your category, add vehicle details and photos, then set a price and location. Review your listing and sign in to publish it.",
   ],
   [
-    "How do I know a service is right for my child?",
-    "Ask about age suitability, experience, qualifications, supervision and fees. Arrange a visit, introductory conversation or trial where available, and check references for childcare.",
+    "What determines my vehicle value?",
+    "The make, model, age, mileage, condition, service history, ownership and current demand all affect an offer. A final offer requires review of your vehicle.",
   ],
   [
-    "Are prices and availability guaranteed?",
-    "Availability, fees and service terms depend on the provider and your requirements. Confirm these directly before booking or paying. Health services are provided by the relevant professionals.",
+    "What documents should I prepare?",
+    "Keep your registration certificate, insurance and service records ready. Tell our team about any outstanding loan and confirm the documents and transfer process for your sale.",
   ],
 ] as const;

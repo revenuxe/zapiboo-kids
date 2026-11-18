@@ -4,12 +4,24 @@ import { businessContact } from "@/lib/seo";
 
 const sections = [
   [
+    "Marketplace listings",
+    "List only a vehicle you own or are authorised to sell. Provide accurate specifications, an honest description, a genuine asking price and photos you have permission to publish. Example listings are labelled and are not offers for sale.",
+  ],
+  [
+    "Connecting with buyers",
+    "Published listings, photos, seller names and neighbourhoods are public. Mobile numbers stay private. Use Zapiboo Chats to speak with buyers and sellers; do not share phone numbers, email addresses, social handles or off-platform links. Buyers and sellers agree inspection, payment and ownership transfer directly. Publishing does not guarantee a buyer or sale.",
+  ],
+  [
+    "Managing a listing",
+    "Use My listings to mark a vehicle as sold, archive it or relist it. Archived and sold listings are removed from public marketplace results. For corrections or removal of stored records, contact the Zapiboo team.",
+  ],
+  [
     "Using the service",
-    "Zapiboo helps parents in Bangalore explore kids and family service categories and send enquiries. Please use the service as an adult parent, guardian or authorised representative and provide accurate contact details.",
+    "Zapiboo helps vehicle owners in Bangalore explore used vehicle categories and send selling enquiries. Use the service as an adult vehicle owner or authorised representative and provide accurate details.",
   ],
   [
     "Your requirements",
-    "Describe your requirements clearly, including the service, area, preferred dates and any relevant preferences. Avoid sharing sensitive information about your child through the general enquiry form.",
+    "Describe your requirements clearly, including the service, area, preferred dates and any relevant preferences. Include accurate vehicle details; provide ownership documents only through an agreed secure process.",
   ],
   [
     "Review and acceptance",
@@ -51,7 +63,7 @@ export default function Terms() {
       <PageHeader
         eyebrow="Legal"
         title="Terms of service"
-        subtitle="The terms that apply when you use Zapiboo's kids and family service enquiries."
+        subtitle="The terms that apply when you use Zapiboo's used vehicle selling enquiries."
       />
       <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16">
         <p className="rounded-2xl border border-border bg-card p-5 text-sm leading-relaxed text-muted-foreground">

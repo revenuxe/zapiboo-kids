@@ -20,14 +20,14 @@ export const metadata: Metadata = {
   authors: [{ name: "Zapiboo" }],
   icons: {
     icon: [
-      { url: "/favicon.ico?v=4fdb249e4599", type: "image/x-icon", sizes: "16x16 32x32 48x48" },
-      { url: "/favicon-32x32.png?v=4fdb249e4599", type: "image/png", sizes: "32x32" },
-      { url: "/favicon-16x16.png?v=4fdb249e4599", type: "image/png", sizes: "16x16" },
+      { url: "/favicon.ico?v=vehicle2026", type: "image/x-icon", sizes: "16x16 32x32 48x48" },
+      { url: "/favicon-32x32.png?v=vehicle2026", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-16x16.png?v=vehicle2026", type: "image/png", sizes: "16x16" },
     ],
-    shortcut: "/favicon.ico?v=4fdb249e4599",
-    apple: [{ url: "/apple-touch-icon.png?v=4fdb249e4599", sizes: "180x180", type: "image/png" }],
+    shortcut: "/favicon.ico?v=vehicle2026",
+    apple: [{ url: "/apple-touch-icon.png?v=vehicle2026", sizes: "180x180", type: "image/png" }],
   },
-  manifest: "/site.webmanifest?v=4fdb249e4599",
+  manifest: "/site.webmanifest?v=vehicle2026",
   verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
     ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
     : undefined,

@@ -159,7 +159,7 @@ export default function OrdersPage() {
             <ClipboardList className="mx-auto size-10 text-primary" />
             <h2 className="mt-4 text-xl font-bold">No pickup orders yet</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              Share the kids items you want to sell and request a pickup to see it here.
+              Share the vehicle you want to sell and request a pickup to see it here.
             </p>
             <Button asChild className="mt-6">
               <a href="/pickup">Book a pickup</a>

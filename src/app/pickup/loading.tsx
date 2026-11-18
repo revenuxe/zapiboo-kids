@@ -7,7 +7,7 @@ export default function Loading() {
     <section className="pickup-studio">
       <div className="pickup-studio-shell">
         <h1 className="pickup-kicker">
-          <HeadingText>Sell your kids items</HeadingText>
+          <HeadingText>Sell your vehicle</HeadingText>
         </h1>
         <div className="pickup-route-loader">
           <PageLoader label="Preparing your selling form" full={false} />

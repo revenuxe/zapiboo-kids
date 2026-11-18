@@ -43,17 +43,17 @@ export default async function AreaPage({ params }: Props) {
         eyebrow="IN YOUR NEIGHBOURHOOD"
         title={
           <>
-            Kids services in <span>{area.name}.</span>
+            Vehicle selling services in <span>{area.name}.</span>
           </>
         }
         description={content.intro}
-        image="/services/preschool-daycare.webp"
-        imageAlt="Learning and play for your child"
+        image="/vehicles/used-cars-cutout.webp"
+        imageAlt="Sell your used car in Bangalore"
         href={`/contact?area=${area.slug}`}
-        action="Enquire Service"
+        action="Start selling"
       />
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold">Explore kids services in {area.name}</h2>
+        <h2 className="text-3xl font-bold">Explore vehicle selling services in {area.name}</h2>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {familyServices.map((service) => (
             <Link
@@ -85,7 +85,10 @@ export default async function AreaPage({ params }: Props) {
           </p>
         </div>
       </section>
-      <ServiceFaqs title={`Questions about kids services in ${area.name}`} items={content.faqs} />
+      <ServiceFaqs
+        title={`Questions about vehicle selling services in ${area.name}`}
+        items={content.faqs}
+      />
       <HomeCollectionSupport />
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-bold">Explore nearby neighbourhoods</h2>

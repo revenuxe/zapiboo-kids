@@ -4,7 +4,7 @@ export function CategoriesPanel() {
   return (
     <div className="space-y-5">
       <section className="rounded-2xl border border-border bg-card p-4">
-        <h2 className="font-bold">Family service categories</h2>
+        <h2 className="font-bold">Vehicle categories</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           The six services shown across the website. Customer enquiries include the selected service
           in their subject.

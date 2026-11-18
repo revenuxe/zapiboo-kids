@@ -10,8 +10,8 @@ export default function NotFound() {
           <HeadingText>We could not find that page.</HeadingText>
         </h1>
         <p className="mx-auto mt-4 max-w-lg leading-relaxed text-muted-foreground">
-          The link may be out of date, or the page may have moved. You can explore kids and family
-          services, learn how Zapiboo works, or contact our Bangalore team.
+          The link may be out of date, or the page may have moved. You can explore vehicle
+          categories, learn how Zapiboo works, or contact our Bangalore team.
         </p>
         <nav aria-label="Helpful pages" className="mt-8 grid gap-3 sm:grid-cols-2">
           <Link
@@ -42,7 +42,7 @@ export default function NotFound() {
         <p className="mt-7 text-sm text-muted-foreground">
           Looking for support?{" "}
           <Link href="/contact" className="font-semibold text-primary underline underline-offset-4">
-            Tell us what your family needs
+            Tell us what you want to sell
           </Link>
           .
         </p>

@@ -128,7 +128,7 @@ export default function AdminLogin({ initialMode }: { initialMode: "signin" | "s
           <p className="mt-1 text-sm text-navy-foreground/70">
             {mode === "setup"
               ? "First time here - set up your admin login."
-              : "Manage kids-item pickups, seller details and enquiries."}
+              : "Manage vehicle selling enquiries, seller details and enquiries."}
           </p>
         </div>
 

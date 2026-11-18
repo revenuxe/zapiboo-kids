@@ -7,14 +7,14 @@ import { getAreaBySlug } from "@/lib/seo";
 export const metadata = pageMetadata(
   "/contact",
   "Contact Zapiboo - Talk to Our Team",
-  "Questions about preschool, childcare, classes, play, events or development support? Contact the Zapiboo team - we usually reply within one business day.",
+  "Looking to sell your used car, bike, scooter or another vehicle? Contact the Zapiboo team - we usually reply within one business day.",
 );
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ service?: string; area?: string }>;
+  searchParams: Promise<{ service?: string; area?: string; subject?: string }>;
 }) {
-  const { service: id, area: areaSlug } = await searchParams;
+  const { service: id, area: areaSlug, subject } = await searchParams;
   const area = getAreaBySlug(areaSlug ?? "");
   const service = familyServices.find((item) => item.id === id);
   return (
@@ -29,7 +29,8 @@ export default async function Page({
         ]}
       />
       <Contact
-        key={`${service?.id ?? "general"}-${area?.slug ?? "city"}`}
+        key={`${service?.id ?? "general"}-${area?.slug ?? "city"}-${subject ?? ""}`}
+        subjectText={subject?.slice(0, 200)}
         serviceName={service?.name}
         areaName={area?.name}
       />

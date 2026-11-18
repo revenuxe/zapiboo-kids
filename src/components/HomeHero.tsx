@@ -1,143 +1,129 @@
-import { familyServices } from "@/lib/family-service-catalog";
-import type { FamilyService } from "@/lib/family-service-catalog";
-import { WhatsAppIcon } from "@/components/WhatsAppIcon";
+import { familyServices, type FamilyService } from "@/lib/family-service-catalog";
 import { businessContact } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Heart, MapPin, Sparkles, CalendarDays } from "lucide-react";
-
+import { ArrowUpRight, MapPin, Car, ShieldCheck } from "lucide-react";
 export function HomeHero({
   categories = familyServices,
 }: {
   categories?: readonly FamilyService[];
 }) {
-  const featured =
-    categories.find((category) => category.id === "play-entertainment") || categories[0];
-  const secondary =
-    categories.find(
-      (category) => category.id === "preschool-daycare" && category.id !== featured?.id,
-    ) || categories.find((category) => category.id !== featured?.id);
   return (
     <section
-      id="sell-kids-items"
+      id="sell-vehicle"
       className="home-hero"
-      aria-label="Kids and family services in Bangalore"
+      aria-label="Sell your used vehicle in Bangalore"
     >
       <div className="home-shell home-hero-grid">
         <div className="home-hero-copy">
           <span className="home-eyebrow">
-            <span className="home-status-dot" /> PRESCHOOL, DAYCARE & KIDS ACTIVITIES
+            <span className="home-status-dot" />
+            CARS, BIKES, SCOOTERS & MORE
           </span>
           <h1>
-            Kids services.
+            Sell your used
             <br />
-            In{" "}
             <span className="home-loved">
-              Bangalore.
+              vehicle.
               <svg viewBox="0 0 400 20" aria-hidden="true">
                 <path d="M4 14 Q180 -5 394 10" />
               </svg>
             </span>
           </h1>
           <p>
-            Find a starting point for preschool, daycare, kids classes, play areas and birthday
-            celebrations in Bangalore. Explore babysitting, nanny and development support too.
+            A new journey starts with a simple step. Sell your used car, bike, scooter or commercial
+            vehicle in Bangalore. Share the details and let&apos;s talk about what comes next.
           </p>
           <div className="home-hero-actions">
             <Link href="#sell-categories" className="home-button">
-              Explore services <ArrowUpRight size={20} />
+              Sell your vehicle <ArrowUpRight size={20} />
             </Link>
             <a
-              href={`${businessContact.whatsappHref}?text=${encodeURIComponent("Hi Zapiboo, I would like to explore services for my family in Bangalore. Can you help?")}`}
+              href={
+                businessContact.whatsappHref +
+                "?text=" +
+                encodeURIComponent("Hi Zapiboo, I would like to sell my used vehicle in Bangalore.")
+              }
               target="_blank"
               rel="noreferrer"
               className="home-whatsapp-button"
             >
-              <WhatsAppIcon className="size-5" /> Chat on WhatsApp <ArrowUpRight size={18} />
+              Chat on WhatsApp <ArrowUpRight size={18} />
             </a>
           </div>
           <div className="home-hero-notes">
             <span>
-              <MapPin size={15} /> Made for Bangalore
+              <MapPin size={15} />
+              Bangalore
             </span>
             <span>
-              <CalendarDays size={16} /> Care, learning & play
+              <ShieldCheck size={16} />
+              Clear steps. Personal support.
             </span>
           </div>
         </div>
-        <div className="home-collage" aria-label="Discover learning and play for your child">
-          <span className="home-collage-orbit" aria-hidden="true" />
+        <div className="home-collage" aria-label="Used cars and bikes">
+          <span className="home-collage-orbit" />
           <div className="home-mini-note">
-            <Heart size={18} fill="currentColor" /> More play. More joy.
+            <Car size={18} />
+            Your next chapter.
           </div>
-          <Link
-            href={featured ? `/services/${featured.id}` : "/contact"}
-            className="home-display-card home-display-toys"
-          >
+          <Link href="/marketplace?category=used-cars" className="home-display-card home-display-toys">
             <div className="home-display-label">
-              <span>PLAY & ENTERTAINMENT</span>
+              <span>SELL USED CARS</span>
               <ArrowUpRight size={18} />
             </div>
             <Image
-              src={featured?.image_url || "/services/play-entertainment.webp"}
-              alt={featured?.name || "Play and entertainment"}
+              src={categories[0].image_url}
+              alt="Silver hatchback car on a transparent background"
               width={440}
               height={330}
+              sizes="(max-width: 639px) 68vw, 360px"
               preload
-              sizes="(max-width: 600px) 70vw, 360px"
             />
             <div className="home-display-bottom">
               <strong>
-                Big smiles.
+                New roads.
                 <br />
-                Endless possibilities.
+                New possibilities.
               </strong>
               <span className="home-round-arrow">
                 <ArrowUpRight size={22} />
               </span>
             </div>
           </Link>
-          <Link
-            href={secondary ? `/services/${secondary.id}` : "/contact"}
-            className="home-display-card home-display-books"
-          >
-            <span>PRESCHOOL & DAYCARE</span>
-            <Image
-              src={secondary?.image_url || "/services/preschool-daycare.webp"}
-              alt={secondary?.name || "Early learning and daycare"}
-              width={200}
-              height={170}
-              sizes="180px"
-            />
+          <Link href="/marketplace?category=used-bikes" className="home-display-card home-display-books">
+            <span>SELL USED BIKES</span>
+            <Image src={categories[1].image_url} alt="Used motorcycle" width={200} height={170} />
             <strong>
-              Start their story <ArrowUpRight size={15} />
+              Ready to move on <ArrowUpRight size={15} />
             </strong>
           </Link>
           <div className="home-circle-stamp">
-            <Sparkles size={23} />
+            <Car size={23} />
             <span>
-              LEARN.
+              SELL.
               <br />
-              PLAY. GROW.
+              MOVE FORWARD.
             </span>
           </div>
           <div className="home-pickup-note">
             <span>
-              <CalendarDays size={21} />
+              <ShieldCheck size={21} />
             </span>
             <div>
-              <strong>Your next chapter starts here</strong>
-              <small>Your family. Your kind of support.</small>
+              <strong>Your vehicle. Your decision.</strong>
+              <small>Discuss the details before you commit.</small>
             </div>
           </div>
         </div>
       </div>
       <div className="home-values-strip">
-        <span>Little discoveries, big possibilities</span>
-        <span aria-hidden="true">&#10035;</span>
-        <span>Care for every stage of childhood</span>
-        <span aria-hidden="true">&#10035;</span>
-        <span>More happy moments together</span>
+        <span>Cars, bikes & more</span>
+        <span aria-hidden="true">✳</span>
+        <span>Vehicle selling made simpler</span>
+        <span aria-hidden="true">✳</span>
+        <span>Made for Bangalore</span>
       </div>
     </section>
   );

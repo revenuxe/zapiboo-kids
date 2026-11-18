@@ -16,7 +16,7 @@ export default function Page() {
           breadcrumbSchema([{ name: "Home", path: "/" }]),
           faqSchema(familyFaqs.map(([question, answer]) => ({ question, answer }))),
           itemListSchema(
-            "Kids and family services in Bangalore",
+            "Used vehicle selling services in Bangalore",
             familyServices.map((service) => ({
               name: service.name,
               path: `/services/${service.id}`,

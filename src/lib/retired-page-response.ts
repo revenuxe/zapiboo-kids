@@ -1,4 +1,4 @@
-// These legacy pages have no replacement in the family services website.
+// These legacy pages have no replacement in the vehicle selling services website.
 // Keep them crawlable so search engines can observe the permanent removal.
 export function retiredPageResponse() {
   return new Response("This page has been permanently removed.", {
