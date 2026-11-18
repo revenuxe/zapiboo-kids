@@ -211,6 +211,13 @@ export function ListingDetail({ id }: { id: string }) {
                 </small>
               )}
             </section>
+            <Link
+              className="mp-report"
+              href={"/contact?subject=" + encodeURIComponent("Report listing " + id)}
+            >
+              <Flag size={13} />
+              Report this listing
+            </Link>
             <section className="mp-detail-section mp-detail-safety">
               <ShieldCheck size={29} />
               <div>
@@ -236,13 +243,6 @@ export function ListingDetail({ id }: { id: string }) {
                 </span>
               )}
             </div>
-            <Link
-              className="mp-report"
-              href={"/contact?subject=" + encodeURIComponent("Report listing " + id)}
-            >
-              <Flag size={13} />
-              Report this listing
-            </Link>
             <div className="mp-seller-promo">
               <span className="mp-eyebrow">GOT A VEHICLE TO SELL?</span>
               <h3>Make room for your next chapter.</h3>

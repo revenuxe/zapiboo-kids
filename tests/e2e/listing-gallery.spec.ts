@@ -39,6 +39,11 @@ test('seller actions stay on the listing page and send signed-out buyers to logi
   await expect(chat).toHaveAttribute('href', '/auth?redirectTo=%2Fchats%3Flisting%3Dgallery-test');
   await expect(call).toHaveAttribute('href', '/auth?redirectTo=%2Fmarketplace%2Fgallery-test');
   await expect(page.getByRole('heading', { name: 'Meet the seller.' })).toBeVisible();
+  await expect(page.locator('.mp-seller-profile + .mp-report')).toHaveAttribute(
+    'href',
+    '/contact?subject=Report%20listing%20gallery-test',
+  );
+  await expect(page.locator('.mp-detail-sidebar .mp-report')).toHaveCount(0);
   await expect(page.locator('.mp-price-card')).not.toContainText(listing.seller_name);
   expect(
     await page.evaluate(() => {
