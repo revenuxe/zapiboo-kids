@@ -1,13 +1,20 @@
+"use client";
+
 import { familyServices, type FamilyService } from "@/lib/family-service-catalog";
-import { businessContact } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, MapPin, Car, ShieldCheck } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 export function HomeHero({
   categories = familyServices,
 }: {
   categories?: readonly FamilyService[];
 }) {
+  const { user } = useAuth();
+  const sellHref = user
+    ? "/marketplace/sell"
+    : "/auth?redirectTo=%2Fmarketplace%2Fsell";
+
   return (
     <section
       id="sell-vehicle"
@@ -35,21 +42,12 @@ export function HomeHero({
             vehicle in Bangalore. Share the details and let&apos;s talk about what comes next.
           </p>
           <div className="home-hero-actions">
-            <Link href="#sell-categories" className="home-button">
+            <Link href={sellHref} className="home-button">
               Sell your vehicle <ArrowUpRight size={20} />
             </Link>
-            <a
-              href={
-                businessContact.whatsappHref +
-                "?text=" +
-                encodeURIComponent("Hi Zapiboo, I would like to sell my used vehicle in Bangalore.")
-              }
-              target="_blank"
-              rel="noreferrer"
-              className="home-whatsapp-button"
-            >
-              Chat on WhatsApp <ArrowUpRight size={18} />
-            </a>
+            <Link href="/marketplace" className="home-whatsapp-button">
+              Browse listings <ArrowUpRight size={18} />
+            </Link>
           </div>
           <div className="home-hero-notes">
             <span>

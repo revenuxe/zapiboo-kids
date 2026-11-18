@@ -3,8 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Heart, MapPin } from "lucide-react";
 import type { ReactNode } from "react";
-import { WhatsAppIcon } from "@/components/WhatsAppIcon";
-import { businessContact } from "@/lib/seo";
 
 export function LandingHero({
   eyebrow,
@@ -43,20 +41,9 @@ export function LandingHero({
                 {action || "Start selling"}
                 <ArrowUpRight size={19} />
               </Link>
-              <a
-                href={
-                  businessContact.whatsappHref +
-                  "?text=" +
-                  encodeURIComponent(
-                    "Hi Zapiboo, I would like to find services for my family. Can you help?",
-                  )
-                }
-                target="_blank"
-                rel="noreferrer"
-                className="home-whatsapp-button"
-              >
-                <WhatsAppIcon className="size-5" /> Chat on WhatsApp <ArrowUpRight size={18} />
-              </a>
+              <Link href="/marketplace" className="home-whatsapp-button">
+                Browse listings <ArrowUpRight size={18} />
+              </Link>
             </div>
           )}
           <div className="landing-hero-notes">
