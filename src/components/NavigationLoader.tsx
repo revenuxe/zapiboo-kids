@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 /** Shows immediately after an internal navigation begins, before the new route streams. */
 export function NavigationLoader() {
   const pathname = usePathname();
+  const search = useSearchParams().toString();
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => { setLoading(false); }, [pathname]);
+  useEffect(() => { setLoading(false); }, [pathname, search]);
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

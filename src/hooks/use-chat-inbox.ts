@@ -11,7 +11,7 @@ export function useChatInbox(realtime = false) {
     user ? "/api/chats" : null,
     chatFetch,
     {
-      refreshInterval: 10000,
+      refreshInterval: 30000,
       revalidateOnFocus: true,
       shouldRetryOnError: true,
       errorRetryCount: 3,

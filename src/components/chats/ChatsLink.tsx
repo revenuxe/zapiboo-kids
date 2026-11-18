@@ -4,8 +4,9 @@ import { MessageCircle } from "lucide-react";
 import { useChatInbox } from "@/hooks/use-chat-inbox";
 import { usePathname } from "next/navigation";
 export function ChatsLink() {
-  const { unread } = useChatInbox(true);
   const active = usePathname() === "/chats";
+  // The Chats screen already owns its realtime subscription.
+  const { unread } = useChatInbox(!active);
   return (
     <Link
       href="/chats"

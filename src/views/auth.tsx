@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GoogleIcon } from "@/components/GoogleIcon";
+import { listingAuthReturn } from "@/lib/listing-auth";
 import logoAsset from "@/assets/zapiboo-brand.webp";
 const logo = logoAsset.src;
 
@@ -20,8 +21,16 @@ const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 const passwordSchema = z.string().min(6, "Password must be at least 6 characters").max(72);
 const nameSchema = z.string().trim().min(2, "Enter your name").max(80);
 
-export default function AuthPage({ redirectPath }: { redirectPath: string }) {
+export default function AuthPage({
+  redirectPath,
+  explicitRedirect = false,
+}: {
+  redirectPath: string;
+  explicitRedirect?: boolean;
+}) {
   const router = useRouter();
+  const [destination, setDestination] = useState(redirectPath);
+  const [notice, setNotice] = useState("");
   const [tab, setTab] = useState<"signin" | "signup">("signin");
   const [busy, setBusy] = useState(false);
 
@@ -31,15 +40,17 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
   const [phone, setPhone] = useState("");
   const redirectTo =
     typeof window !== "undefined"
-      ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`
+      ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(destination)}`
       : undefined;
 
   useEffect(() => {
     if (!getSupabaseConfig()) return;
+    const target = explicitRedirect ? redirectPath : listingAuthReturn() || redirectPath;
+    setDestination(target);
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.push(redirectPath);
+      if (data.session) router.replace(target);
     });
-  }, [router, redirectPath]);
+  }, [router, redirectPath, explicitRedirect]);
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,11 +64,13 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Welcome back!");
-    router.push(redirectPath);
+    router.replace(explicitRedirect ? destination : listingAuthReturn() || destination);
   };
 
   const signUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!getSupabaseConfig())
+      return toast.error("Sign-in is temporarily unavailable. Please try again later.");
     const em = emailSchema.safeParse(email);
     if (!em.success) return toast.error(em.error.issues[0].message);
     const nm = nameSchema.safeParse(name);
@@ -65,7 +78,7 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
     const pw = passwordSchema.safeParse(password);
     if (!pw.success) return toast.error(pw.error.issues[0].message);
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: em.data,
       password: pw.data,
       options: {
@@ -75,8 +88,12 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
     });
     setBusy(false);
     if (error) return toast.error(error.message);
+    if (!data.session) {
+      setNotice("Check your email to confirm your account. Open the link in this browser to continue your saved listing.");
+      return;
+    }
     toast.success("Account created! You're all set.");
-    router.push(redirectPath);
+    router.replace(explicitRedirect ? destination : listingAuthReturn() || destination);
   };
 
   const signInWithGoogle = async () => {
@@ -100,8 +117,18 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
   const googleLabel = tab === "signin" ? "Sign in with Google" : "Sign up with Google";
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-navy px-3 py-3 text-navy-foreground sm:px-6">
-      <div className="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-md flex-col">
+    <div className="auth-page">
+      <aside className="auth-story">
+        <span className="auth-eyebrow">YOUR NEXT CHAPTER STARTS HERE</span>
+        <h1>Good vehicles.<br />Great connections.<br /><em>Your next move.</em></h1>
+        <p>A simpler way to buy and sell pre-owned vehicles in Bangalore. Make it happen with Zapiboo.</p>
+        <div className="auth-story-points">
+          {["List your vehicle in a few simple steps", "Keep your favourites in one place", "Talk to buyers directly in Chats"].map(text => <span key={text}><Check size={17} />{text}</span>)}
+        </div>
+        <img className="auth-vehicle" src="/vehicles/used-cars-cutout.webp" alt="" />
+        <span className="auth-story-caption">A NEW ROAD AHEAD.</span>
+      </aside>
+      <div className="auth-panel">
         <div className="mb-2 flex items-center justify-between gap-3">
           <Link href="/" className="flex min-w-0 items-center gap-3">
             <img
@@ -118,8 +145,8 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
               </p>
             </div>
           </Link>
-          <Button asChild variant="outlineLight" size="sm" className="shrink-0">
-            <Link href="/">
+          <Button asChild variant="ghost" size="sm" className="shrink-0">
+            <Link href={destination.startsWith("/marketplace/sell") ? destination : "/marketplace"}>
               <ArrowLeft /> Back
             </Link>
           </Button>
@@ -130,19 +157,19 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="w-full rounded-2xl border border-white/15 bg-background p-3 text-foreground shadow-elevated sm:p-5"
+            className="auth-card"
           >
             <div className="mb-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-                Customer account
+                {destination.startsWith("/marketplace/sell") ? "YOUR LISTING IS SAVED" : "WELCOME TO ZAPIBOO"}
               </p>
               <h1 className="mt-0.5 whitespace-nowrap text-[22px] font-extrabold leading-tight sm:text-2xl">
                 {tab === "signin" ? "Welcome back" : "Create your account"}
               </h1>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {tab === "signin"
-                  ? "Sign in to manage your Zapiboo account."
-                  : "Create an account for your next chapter with Zapiboo."}
+                  ? destination.startsWith("/marketplace/sell") ? "Sign in, confirm your contact details, then publish." : "Your account. Your vehicles. Your next chapter."
+                  : "Make your next move with Zapiboo."}
               </p>
             </div>
 
@@ -310,8 +337,10 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
               </TabsContent>
             </Tabs>
 
-            <p className="mt-2 text-center text-[10px] text-muted-foreground">
-              By continuing you agree to Zapiboo's terms of service.
+            {notice && <p className="mp-auth-notice" role="status">{notice}</p>}
+            <div className="auth-privacy"><ShieldCheck size={17} />Your mobile stays private. Connect through Chats.</div>
+            <p className="auth-terms">
+              By continuing you agree to our <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.
             </p>
           </motion.div>
         </div>

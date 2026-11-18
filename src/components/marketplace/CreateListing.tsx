@@ -28,7 +28,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ListingSignIn } from "./ListingSignIn";
+import { compressPhoto } from "@/lib/listing-photo-client";
 import { containsContactDetails } from "@/lib/chat";
+import { clearListingAuth, rememberListingAuth } from "@/lib/listing-auth";
 type Draft = {
   id: string;
   seller_user_id: string;
@@ -47,6 +49,7 @@ type Draft = {
   location: string;
   seller_name: string;
   phone: string;
+  buyer_call_enabled: boolean;
   consent: boolean;
   photos: string[];
 };
@@ -56,7 +59,7 @@ const stepNames = [
   "Photos & story",
   "Price & location",
   "Your details",
-  "Review & publish",
+  "Review & submit",
 ];
 const empty: Draft = {
   id: "",
@@ -76,39 +79,10 @@ const empty: Draft = {
   location: "",
   seller_name: "",
   phone: "",
+  buyer_call_enabled: false,
   consent: false,
   photos: [],
 };
-async function compressPhoto(file: File) {
-  if (
-    !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
-    file.size > 10 * 1024 * 1024
-  )
-    throw new Error("Choose a JPG, PNG or WebP photo under 10 MB.");
-  const image = await createImageBitmap(file);
-  try {
-    const scale = Math.min(1, 1280 / Math.max(image.width, image.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.round(image.width * scale);
-    canvas.height = Math.round(image.height * scale);
-    const context = canvas.getContext("2d");
-    if (!context) throw new Error("Your browser couldn't process the photo.");
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-    let quality = 0.78;
-    let url = canvas.toDataURL("image/webp", quality);
-    while (url.length > 260000 && quality > 0.4) {
-      quality -= 0.08;
-      url = canvas.toDataURL("image/webp", quality);
-    }
-    if (!url.startsWith("data:image/webp"))
-      throw new Error(
-        "This browser doesn't support WebP conversion. Please use a current browser.",
-      );
-    return url;
-  } finally {
-    image.close();
-  }
-}
 export function CreateListing({ initialCategory }: { initialCategory?: string }) {
   const [showAllCategories, setShowAllCategories] = useState(
     !vehicleCategories.some((c) => c.id === initialCategory),
@@ -176,6 +150,7 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
       if (step >= 4) setStep(3);
       return;
     }
+    clearListingAuth();
     let active = true;
     const identityChanged = !!draft.seller_user_id && draft.seller_user_id !== user.id;
     if (identityChanged && step >= 3) setStep(3);
@@ -184,14 +159,20 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
       const digits = String(value ?? "").replace(/\D/g, "");
       return digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits;
     };
-    const prefill = (name: string, phone: string) => {
+    const initialName = identityChanged ? "" : draft.seller_name;
+    const initialPhone = identityChanged ? "" : draft.phone;
+    const prefill = (name: string, phone: string, fromProfile = false) => {
       if (!active) return;
       setDraft((d) => ({
         ...d,
         seller_user_id: user.id,
         seller_name:
-          d.seller_user_id && d.seller_user_id !== user.id ? name : d.seller_name || name,
-        phone: d.seller_user_id && d.seller_user_id !== user.id ? phone : d.phone || phone,
+          d.seller_user_id && d.seller_user_id !== user.id ? name :
+            fromProfile && !initialName && d.seller_name === String(metadata.full_name ?? metadata.name ?? "") ? name : d.seller_name || name,
+        phone: d.seller_user_id && d.seller_user_id !== user.id ? phone :
+          fromProfile && !initialPhone && d.phone === normalizePhone(metadata.phone ?? user.phone) ? phone : d.phone || phone,
+        buyer_call_enabled:
+          d.seller_user_id && d.seller_user_id !== user.id ? false : d.buyer_call_enabled,
         consent: d.seller_user_id && d.seller_user_id !== user.id ? false : d.consent,
       }));
     };
@@ -211,6 +192,7 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
           prefill(
             data.full_name ?? String(metadata.full_name ?? metadata.name ?? ""),
             normalizePhone(data.whatsapp ?? metadata.phone ?? user.phone),
+            true,
           );
       })
       .catch(() => {});
@@ -221,6 +203,7 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
   function saveBeforeSignIn() {
     try {
       localStorage.setItem(draftKey, JSON.stringify({ ...draft, step: 3 }));
+      rememberListingAuth(draft.category);
       setDraftSaved(true);
       return true;
     } catch {
@@ -318,8 +301,8 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
       const body = await response.json();
       if (!response.ok) throw new Error(body.error ?? "Couldn't publish your listing.");
       localStorage.removeItem(draftKey);
-      toast.success("Your vehicle is listed. Here's to the next chapter!");
-      router.push("/marketplace/" + body.id);
+      toast.success("Listing submitted for approval. You can track it in My Listings.");
+      router.push("/marketplace/my-listings");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Couldn't publish. Please try again.");
     } finally {
@@ -345,7 +328,7 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
     ],
     [
       "A real person behind every listing.",
-      "Sign in first, then confirm your name and mobile number. Your mobile number stays private. Buyers and sellers talk through Zapiboo Chats.",
+      "Sign in first, then confirm your name and mobile number. You can choose whether signed-in buyers may call you; Chats is always available.",
     ],
     [
       "One last look. Then a new road.",
@@ -420,7 +403,7 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
                       "Give buyers the full picture.",
                       "The deal starts here.",
                       "How can buyers reach you?",
-                      "Looking good. Ready to go?",
+                      "Ready to send for approval?",
                     ][step]
                   }
                 </h2>
@@ -431,7 +414,7 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
                       "Actual photos and an honest story make a stronger listing.",
                       "Set your price and tell buyers where to find you.",
                       "Confirm your name and mobile number before continuing.",
-                      "This is how your vehicle will appear to buyers.",
+                      "An admin will review your listing before it becomes visible to buyers.",
                     ][step]
                   }
                 </p>
@@ -789,6 +772,14 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
                         />
                       </div>
                     </label>
+                    <label className="mp-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={draft.buyer_call_enabled}
+                        onChange={(e) => field("buyer_call_enabled", e.target.checked)}
+                      />
+                      <span>Allow signed-in buyers to see my number and call me.</span>
+                    </label>
                   </div>
                   <label className="mp-checkbox mp-consent">
                     <input
@@ -806,8 +797,8 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
                       <Link href="/privacy" target="_blank">
                         privacy policy
                       </Link>
-                      . My listing and photos will be public. My mobile number stays private, and
-                      buyers will contact me through Zapiboo Chats.
+                      . My listing and photos will be public. My number stays private unless I
+                      opt in above; buyers can always contact me through Zapiboo Chats.
                     </span>
                   </label>
                 </div>
@@ -899,7 +890,7 @@ export function CreateListing({ initialCategory }: { initialCategory?: string })
                     </>
                   ) : step === 4 ? (
                     <>
-                      Publish my listing
+                      Submit for approval
                       <ArrowRight size={17} />
                     </>
                   ) : (

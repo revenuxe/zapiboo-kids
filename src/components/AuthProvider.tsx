@@ -4,11 +4,27 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { getSupabaseConfig } from "@/integrations/supabase/config";
+import { clearListingAuth, listingAuthReturn } from "@/lib/listing-auth";
 
 const postAuthRedirectKey = "zapiboo-post-auth-redirect";
 
 function resumePostAuthRedirect() {
   if (typeof window === "undefined") return;
+  const explicitRedirect =
+    window.location.pathname === "/auth" &&
+    new URLSearchParams(window.location.search).has("redirectTo");
+  if (explicitRedirect) clearListingAuth();
+  const listing = explicitRedirect ? null : listingAuthReturn();
+  if (listing) {
+    if (window.location.pathname === "/marketplace/sell") {
+      clearListingAuth();
+      return;
+    }
+    if (["/", "/auth", "/account"].includes(window.location.pathname)) {
+      window.location.replace(listing);
+      return;
+    }
+  }
   const target = window.sessionStorage.getItem(postAuthRedirectKey);
   if (!target || !target.startsWith("/pickup?bookingAuth=1")) return;
   if (`${window.location.pathname}${window.location.search}` === target) {

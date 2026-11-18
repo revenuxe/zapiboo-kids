@@ -9,7 +9,7 @@ const sections = [
   ],
   [
     "Public marketplace information",
-    "When you publish a vehicle, its title, description, specifications, asking price, photos, your seller name and neighbourhood become public. Do not include your exact home address, identity documents or bank details. Your mobile number is private and is not shown to buyers or sellers. Marketplace communication takes place in Zapiboo Chats.",
+    "When you publish a vehicle, its title, description, specifications, asking price, photos, your seller name and neighbourhood become public. Do not include your exact home address, identity documents or bank details. Your mobile number remains private unless you opt in to show it to signed-in buyers on an active listing. Marketplace Chats do not reveal phone numbers.",
   ],
   [
     "Drafts and saved vehicles",

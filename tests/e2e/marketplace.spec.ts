@@ -147,6 +147,7 @@ test("server validation rejects malformed listing fields", () => {
 
 test("write endpoints reject cross-origin requests and require a signed-in seller", async ({
   request,
+  baseURL,
 }) => {
   const cross = await request.post("/api/marketplace", {
     headers: { Origin: "https://unrelated.example" },
@@ -154,7 +155,7 @@ test("write endpoints reject cross-origin requests and require a signed-in selle
   });
   expect(cross.status()).toBe(403);
   const same = await request.post("/api/marketplace", {
-    headers: { Origin: "http://127.0.0.1:3000" },
+    headers: { Origin: new URL(baseURL!).origin },
     data: {},
   });
   expect(same.status()).toBe(401);
@@ -303,4 +304,60 @@ test("Google button starts OAuth and preserves the selected category and draft",
   expect(
     await page.evaluate(() => JSON.parse(localStorage.getItem("zapiboo-vehicle-draft-v1")!).price),
   ).toBe("525000");
+});
+
+test("signing in resumes the listing and prefills saved seller details before publishing", async ({ page }) => {
+  const user = {
+    id: "11111111-1111-4111-8111-111111111111",
+    aud: "authenticated", role: "authenticated", email: "seller@example.com",
+    app_metadata: { provider: "email" },
+    user_metadata: { full_name: "Google Account Name", phone: "" },
+    created_at: new Date().toISOString(),
+  };
+  await page.route("**/auth/v1/token**", r => r.fulfill({ json: {
+    access_token: "test-access-token", refresh_token: "test-refresh-token",
+    token_type: "bearer", expires_in: 3600, user,
+  } }));
+  await page.route("**/auth/v1/user", r => r.fulfill({ json: user }));
+  await page.route("**/rest/v1/user_profiles**", r => r.fulfill({ json:
+    r.request().method() === "GET" ? { full_name: "Saved Seller", whatsapp: "919876543210" } : null,
+  }));
+  await page.goto("/marketplace/sell?category=used-cars");
+  await expect(page.getByText("Draft saved on this device", { exact: true })).toBeVisible();
+  await page.evaluate(() => localStorage.setItem("zapiboo-vehicle-draft-v1", JSON.stringify({
+    step: 3, category: "used-cars", price: "525000", location: "Indiranagar",
+  })));
+  await page.reload();
+  await page.getByLabel("Email address", { exact: true }).fill("seller@example.com");
+  await page.getByLabel("Password", { exact: true }).fill("secure-password");
+  await page.getByRole("button", { name: "Sign in & continue", exact: true }).click();
+  await expect(page).toHaveURL(/marketplace\/sell/);
+  await expect(page.getByLabel("Your name", { exact: false })).toHaveValue("Saved Seller");
+  await expect(page.getByLabel(/Mobile number/)).toHaveValue("9876543210");
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("zapiboo-vehicle-draft-v1")!).price)).toBe("525000");
+});
+
+test("account screen remains readable on mobile and keeps a pending listing destination", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/auth");
+  await expect(page.getByRole("heading", { name: "Welcome back", exact: true })).toBeVisible();
+  await page.getByRole("tab", { name: "Create account", exact: true }).click();
+  await expect(page.getByLabel("Full name", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
+  await page.screenshot({ path: "test-results/auth-mobile.png", fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.screenshot({ path: "test-results/auth-desktop.png", fullPage: true });
+  await page.evaluate(() => localStorage.setItem("zapiboo-listing-auth-return", JSON.stringify({
+    path: "/marketplace/sell?category=used-bikes", created: Date.now(),
+  })));
+  await page.reload();
+  await expect(page.getByText("YOUR LISTING IS SAVED", { exact: true })).toBeVisible();
+  let target = "";
+  await page.route("**/auth/v1/authorize**", async r => {
+    target = new URL(r.request().url()).searchParams.get("redirect_to") || "";
+    await r.fulfill({ contentType: "text/html", body: "<h1>Google handoff</h1>" });
+  });
+  await page.getByRole("button", { name: /Sign in with Google/ }).click();
+  await expect(page.getByRole("heading", { name: "Google handoff" })).toBeVisible();
+  expect(new URL(target).searchParams.get("next")).toBe("/marketplace/sell?category=used-bikes");
 });

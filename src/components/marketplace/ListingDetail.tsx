@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import useSWR from "swr";
 import {
   ArrowLeft,
@@ -11,8 +10,6 @@ import {
   MapPin,
   ShieldCheck,
   MessageCircle,
-  ChevronLeft,
-  ChevronRight,
   Loader2,
   CalendarDays,
   Gauge,
@@ -26,6 +23,8 @@ import { sampleListings, money, categoryLabel, type VehicleListing } from "@/lib
 import { useSavedVehicles } from "@/hooks/use-saved-vehicles";
 import { useAuth } from "@/hooks/use-auth";
 import { ListingCard } from "./ListingCard";
+import { ListingGallery } from "./ListingGallery";
+import { FloatingContactActions } from "@/components/FloatingContactActions";
 import { toast } from "sonner";
 export function ListingDetail({ id }: { id: string }) {
   const example = sampleListings.find((l) => l.id === id);
@@ -40,7 +39,6 @@ export function ListingDetail({ id }: { id: string }) {
     { revalidateOnFocus: false, shouldRetryOnError: false },
   );
   const listing = example ?? data;
-  const [photo, setPhoto] = useState(0);
   const [pending, setPending] = useState(false);
   const { user } = useAuth();
   const { saved, toggle } = useSavedVehicles();
@@ -60,7 +58,10 @@ export function ListingDetail({ id }: { id: string }) {
   function contact() {
     if (!listing || listing.demo) return;
     setPending(true);
-    window.location.assign("/chats?listing=" + encodeURIComponent(id));
+    const destination = "/chats?listing=" + encodeURIComponent(id);
+    window.location.assign(
+      user ? destination : "/auth?redirectTo=" + encodeURIComponent(destination),
+    );
   }
   if (isLoading)
     return (
@@ -124,60 +125,20 @@ export function ListingDetail({ id }: { id: string }) {
         )}
         {listing.status !== "active" && (
           <div className="mp-preview-notice">
-            This vehicle is {listing.status === "sold" ? "sold" : "no longer available"}.
+            {listing.status === "pending" ? "This listing is awaiting admin approval and is hidden from buyers." : listing.status === "rejected" ? "This listing needs changes. Check the admin feedback in My Listings." : listing.status === "sold" ? "This vehicle is sold." : "This vehicle is no longer available."}
             <Link href="/marketplace">
               Find another vehicle <ArrowRight size={14} />
             </Link>
           </div>
         )}
+        <header className="mp-detail-heading">
+          <span className="mp-detail-category">{categoryLabel(listing.category)}<span />{listing.demo ? "Example listing" : listing.status === "active" ? "Available for sale" : listing.status === "sold" ? "Sold" : listing.status === "pending" ? "Awaiting approval" : listing.status === "rejected" ? "Changes requested" : "Archived"}</span>
+          <h1>{listing.title}</h1>
+          <div className="mp-detail-summary"><span><MapPin size={16} />{listing.location}, Bangalore</span><span>{listing.year}</span><span>{listing.mileage.toLocaleString("en-IN")} km</span><span>{listing.fuel}</span></div>
+        </header>
         <div className="mp-detail-grid">
           <div>
-            <div className={`mp-gallery ${listing.demo ? "mp-demo-photo" : ""}`}>
-              <Image
-                src={listing.photos[photo]}
-                alt={`${listing.title}, photo ${photo + 1}`}
-                fill
-                sizes="(max-width: 767px) 94vw, 65vw"
-                preload
-              />
-              {listing.photos.length > 1 && (
-                <>
-                  <button
-                    className="mp-gallery-prev"
-                    aria-label="Previous photo"
-                    onClick={() =>
-                      setPhoto((photo + listing.photos.length - 1) % listing.photos.length)
-                    }
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-                  <button
-                    className="mp-gallery-next"
-                    aria-label="Next photo"
-                    onClick={() => setPhoto((photo + 1) % listing.photos.length)}
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                </>
-              )}
-              <span className="mp-photo-count">
-                {photo + 1} / {listing.photos.length}
-              </span>
-            </div>
-            {listing.photos.length > 1 && (
-              <div className="mp-gallery-thumbs">
-                {listing.photos.map((p, i) => (
-                  <button
-                    key={p}
-                    onClick={() => setPhoto(i)}
-                    aria-label={`Show photo ${i + 1}`}
-                    aria-pressed={photo === i}
-                  >
-                    <Image src={p} alt="" width={86} height={65} />
-                  </button>
-                ))}
-              </div>
-            )}
+            <ListingGallery photos={listing.photos} title={listing.title} demo={listing.demo} />
             <section className="mp-detail-section">
               <span className="mp-eyebrow">THE ESSENTIALS</span>
               <h2>A closer look.</h2>
@@ -206,6 +167,50 @@ export function ListingDetail({ id }: { id: string }) {
               <h2>About this vehicle.</h2>
               <p className="mp-description">{listing.description}</p>
             </section>
+            <section className="mp-detail-section mp-seller-profile">
+              <span className="mp-eyebrow">SELLER PROFILE</span>
+              <h2>Meet the seller.</h2>
+              <div className="mp-seller">
+                <span>
+                  {listing.seller_name
+                    .split(" ")
+                    .map((name) => name[0])
+                    .slice(0, 2)
+                    .join("")}
+                </span>
+                <div>
+                  <strong>{listing.seller_name}</strong>
+                  <small>{listing.demo ? "Example seller" : "Vehicle listed by this seller"}</small>
+                </div>
+              </div>
+              {listing.demo ? (
+                <div className="mp-demo-contact">
+                  This is a preview. In-app chat is available on real, active listings.
+                </div>
+              ) : listing.user_id === user?.id ? (
+                <Link href="/marketplace/my-listings" className="mp-btn">
+                  Manage my listing <ArrowRight size={16} />
+                </Link>
+              ) : (
+                <button
+                  className="mp-btn"
+                  onClick={contact}
+                  disabled={pending || listing.status !== "active"}
+                >
+                  {pending ? (
+                    <Loader2 size={17} className="animate-spin" />
+                  ) : (
+                    <MessageCircle size={17} />
+                  )}{" "}
+                  Chat with seller
+                </button>
+              )}
+              {!listing.demo && listing.user_id !== user?.id && (
+                <small className="mp-contact-note">
+                  Chat privately in Zapiboo. Signed-in buyers can call if you have enabled calls.
+                </small>
+              )}
+            </section>
             <section className="mp-detail-section mp-detail-safety">
               <ShieldCheck size={29} />
               <div>
@@ -230,53 +235,6 @@ export function ListingDetail({ id }: { id: string }) {
                   Open to reasonable offers
                 </span>
               )}
-              <h1>{listing.title}</h1>
-              <p>
-                {listing.year} · {listing.mileage.toLocaleString("en-IN")} km · {listing.fuel}
-              </p>
-              <span className="mp-detail-location">
-                <MapPin size={15} />
-                {listing.location}, Bangalore
-              </span>
-              <hr />
-              <div className="mp-seller">
-                <span>
-                  {listing.seller_name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .slice(0, 2)
-                    .join("")}
-                </span>
-                <div>
-                  <strong>{listing.seller_name}</strong>
-                  <small>{listing.demo ? "Example seller" : "Vehicle listed by this seller"}</small>
-                </div>
-              </div>
-              {listing.demo ? (
-                <div className="mp-demo-contact">
-                  This is a preview. In-app chat is available on real, active listings.
-                </div>
-              ) : listing.user_id === user?.id ? (
-                <Link href="/marketplace?view=mine" className="mp-btn">
-                  Manage my listing <ArrowRight size={16} />
-                </Link>
-              ) : (
-                <button
-                  className="mp-btn"
-                  onClick={contact}
-                  disabled={pending || listing.status !== "active"}
-                >
-                  {pending ? (
-                    <Loader2 size={17} className="animate-spin" />
-                  ) : (
-                    <MessageCircle size={17} />
-                  )}{" "}
-                  Chat with seller
-                </button>
-              )}
-              <small className="mp-contact-note">
-                Chat in Zapiboo. Your mobile number is never shown to the other person.
-              </small>
             </div>
             <Link
               className="mp-report"
@@ -311,6 +269,9 @@ export function ListingDetail({ id }: { id: string }) {
               ))}
             </div>
           </section>
+        )}
+        {!listing.demo && listing.status === "active" && listing.user_id !== user?.id && (
+          <FloatingContactActions listingId={id} buyerCallEnabled={listing.buyer_call_enabled} />
         )}
       </div>
     </div>

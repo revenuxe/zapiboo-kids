@@ -24,7 +24,7 @@ test("starting a chat while signed out keeps its vehicle through sign-in", async
   await expect(page).toHaveURL(/redirectTo=%2Fchats%3Flisting%3D11111111/);
 });
 
-test("private chat APIs require login and the phone-number endpoint is closed", async ({
+test("private chat APIs and seller phone details require sign-in", async ({
   request,
 }) => {
   const id = "11111111-1111-4111-8111-111111111111";
@@ -36,9 +36,9 @@ test("private chat APIs require login and the phone-number endpoint is closed", 
   });
   expect(cross.status()).toBe(403);
   expect((await request.post("/api/chats", { data: { listingId: id } })).status()).toBe(401);
-  const closed = await request.get("/api/marketplace/" + id + "/contact");
-  expect(closed.status()).toBe(410);
-  expect(await closed.json()).not.toHaveProperty("phone");
+  const contact = await request.get("/api/marketplace/" + id + "/contact");
+  expect(contact.status()).toBe(401);
+  expect(await contact.json()).not.toHaveProperty("phone");
 });
 
 test("contact guard catches common phone and off-platform sharing without blocking vehicle details", () => {

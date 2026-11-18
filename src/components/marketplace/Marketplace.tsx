@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import useSWR from "swr";
 import {
   ArrowRight,
@@ -44,6 +45,8 @@ export function Marketplace({
   initialView?: string;
 }) {
   const { user, loading: authLoading } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
   const [category, setCategory] = useState(initialCategory);
   const [view, setView] = useState(initialView);
   const [query, setQuery] = useState("");
@@ -109,8 +112,10 @@ export function Marketplace({
     else params.delete("category");
     if (view !== "browse") params.set("view", view);
     else params.delete("view");
-    window.history.replaceState(null, "", `/marketplace${params.size ? `?${params}` : ""}`);
-  }, [category, view]);
+    const base = pathname === "/marketplace/saved" && view === "saved" ? pathname : "/marketplace";
+    if (base === "/marketplace/saved") params.delete("view");
+    window.history.replaceState(null, "", `${base}${params.size ? `?${params}` : ""}`);
+  }, [category, view, pathname]);
   useEffect(() => {
     if (data && !data.available && view !== "mine") setShowPreview(true);
   }, [data, view]);
@@ -186,7 +191,7 @@ export function Marketplace({
     setLocation("");
     setQuery("");
   }
-  async function updateStatus(id: string, status: "active" | "sold" | "archived") {
+  async function updateStatus(id: string, status: "pending" | "sold" | "archived") {
     try {
       const r = await fetch(`/api/marketplace/${id}`, {
         method: "PATCH",
@@ -204,10 +209,10 @@ export function Marketplace({
   return (
     <div className="marketplace">
       <div className="mp-shell">
-        <h1 className="sr-only">
+        <h1 className="sr-only" hidden={view === "saved"}>
           {category ? categoryLabel(category) + " marketplace" : "Vehicle marketplace"}
         </h1>
-        <section className="mp-intro" aria-label="List your vehicle">
+        {view === "saved" ? <header className="mp-manage-heading"><div><span className="mp-eyebrow">YOUR SHORTLIST</span><h1>Saved vehicles</h1><p>Your favourites, saved on this browser. Compare them and pick your next ride.</p></div><Link className="mp-btn-secondary" href="/marketplace/my-listings">My Listings<ArrowRight size={16}/></Link></header> : <section className="mp-intro" aria-label="List your vehicle">
           <div className="mp-sell-banner">
             <div>
               <span className="mp-eyebrow">TIME FOR SOMETHING NEW?</span>
@@ -232,7 +237,7 @@ export function Marketplace({
               sizes="(max-width: 767px) 150px, 250px"
             />
           </div>
-        </section>
+        </section>}
         <div className="mp-search">
           <Search size={22} />
           <input
@@ -301,6 +306,7 @@ export function Marketplace({
                 key={id}
                 className={view === id ? "is-active" : ""}
                 onClick={() => {
+                  if (id === "mine") { router.push("/marketplace/my-listings"); return; }
                   setView(id);
                   setShowPreview(false);
                 }}
@@ -531,7 +537,7 @@ export function Marketplace({
                 </button>
               </div>
             )}
-            {(isLoading || authLoading) && !preview ? (
+            {(isLoading || (view === "mine" && authLoading)) && !preview ? (
               <div className="mp-skeleton-grid" aria-label="Loading vehicles">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div className="mp-skeleton" key={i} />
@@ -562,7 +568,7 @@ export function Marketplace({
                           <span className={`mp-status mp-status-${l.status}`}>{l.status}</span>
                           <button
                             onClick={() =>
-                              updateStatus(l.id, l.status === "active" ? "sold" : "active")
+                              updateStatus(l.id, l.status === "active" ? "sold" : "pending")
                             }
                           >
                             {l.status === "active" ? "Mark as sold" : "Relist"}

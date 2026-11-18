@@ -46,6 +46,7 @@ export const listingSchema = z
       .trim()
       .regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number."),
     negotiable: z.boolean(),
+    buyer_call_enabled: z.boolean().default(false),
     consent: z.literal(true),
   })
   .superRefine((listing, context) => {
@@ -70,7 +71,10 @@ export type ListingInput = z.infer<typeof listingSchema>;
 export type VehicleListing = Omit<ListingInput, "phone" | "consent"> & {
   photos: string[];
   user_id: string;
-  status: "active" | "sold" | "archived";
+  buyer_call_enabled: boolean;
+  status: "pending" | "active" | "rejected" | "sold" | "archived";
+  rejection_reason?: string | null;
+  updated_at?: string;
   created_at: string;
   demo?: boolean;
 };
@@ -84,6 +88,19 @@ export const categoryImage = (id: string) =>
   vehicleCategories.find((c) => c.id === id)?.image_url ?? vehicleCategories[0].image_url;
 export const categoryLabel = (id: string) =>
   vehicleCategories.find((c) => c.id === id)?.label ?? "Vehicles";
+export function listingPath(listing: { id: string; title: string }) {
+  const slug = listing.title
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `/marketplace/${slug || "vehicle"}--${listing.id}`;
+}
+export function listingIdFromPath(pathId: string) {
+  const separator = pathId.lastIndexOf("--");
+  return separator === -1 ? pathId : pathId.slice(separator + 2);
+}
 export const sampleListings: VehicleListing[] = [
   [
     "used-cars",
@@ -144,6 +161,7 @@ export const sampleListings: VehicleListing[] = [
   seller_name: "Example seller",
   user_id: "preview",
   status: "active",
+  buyer_call_enabled: false,
   created_at: new Date(Date.UTC(2026, 10, 18, 10 - i)).toISOString(),
   demo: true,
 })) as VehicleListing[];

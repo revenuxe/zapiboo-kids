@@ -200,8 +200,8 @@ export function ListingSignIn({
             <ShieldCheck size={20} />
             <p>
               Your phone number is not needed to sign in. After signing in, confirm your name and
-              mobile number for your account. Buyers will contact you in Chats; your number stays
-              private.
+              mobile number for your account. Buyers can message you in Chats; you can also opt in
+              to share your number with signed-in buyers who choose Call Now.
             </p>
           </div>
         </div>

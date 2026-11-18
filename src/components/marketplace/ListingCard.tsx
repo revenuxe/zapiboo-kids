@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Heart, MapPin, ArrowUpRight } from "lucide-react";
-import { money, type VehicleListing } from "@/lib/marketplace";
+import { Heart, MapPin, ArrowUpRight, Images } from "lucide-react";
+import { listingPath, money, type VehicleListing } from "@/lib/marketplace";
 
 export function ListingCard({
   listing,
@@ -19,7 +19,7 @@ export function ListingCard({
     <article className={`mp-card ${compact ? "mp-card-row" : ""}`}>
       <div className={`mp-card-photo ${listing.demo ? "mp-demo-photo" : ""}`}>
         <Link
-          href={`/marketplace/${listing.id}`}
+          href={listingPath(listing)}
           aria-label={`View ${listing.title}`}
           tabIndex={-1}
         >
@@ -33,6 +33,7 @@ export function ListingCard({
         <span className={`mp-badge ${listing.demo ? "mp-badge-example" : ""}`}>
           {listing.demo ? "Preview listing" : listing.status === "sold" ? "Sold" : "For sale"}
         </span>
+        <span className="mp-card-photo-count"><Images size={13} />{listing.photos.length}</span>
         <button
           className={`mp-save ${saved ? "is-saved" : ""}`}
           aria-label={`${saved ? "Unsave" : "Save"} ${listing.title}`}
@@ -42,7 +43,7 @@ export function ListingCard({
           <Heart size={17} fill={saved ? "currentColor" : "none"} />
         </button>
       </div>
-      <Link href={`/marketplace/${listing.id}`} className="mp-card-info">
+      <Link href={listingPath(listing)} className="mp-card-info">
         <div className="mp-card-price">
           {money(listing.price)}
           <ArrowUpRight size={18} />

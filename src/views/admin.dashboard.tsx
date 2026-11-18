@@ -1,9 +1,12 @@
 "use client";
 import { HeadingText } from "@/components/HeadingText";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+import { useSWRConfig } from "swr";
+import { ListingsPanel } from "@/components/admin/ListingsPanel";
 import { useDataCache } from "@/hooks/use-data-cache";
 import {
   LogOut,
@@ -18,83 +21,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Logo } from "@/components/Logo";
-import { PageLoader } from "@/components/PageLoader";
-import { LeadsPanel } from "@/components/admin/LeadsPanel";
-import { UsersPanel } from "@/components/admin/UsersPanel";
+
+const LeadsPanel = dynamic(() => import("@/components/admin/LeadsPanel").then(module => module.LeadsPanel));
+const UsersPanel = dynamic(() => import("@/components/admin/UsersPanel").then(module => module.UsersPanel));
 import { servicesPaused } from "@/lib/launch-status";
-import { SellingOverview } from "@/components/admin/SellingOverview";
-import { CategoriesPanel } from "@/components/admin/CategoriesPanel";
+
+const CategoriesPanel = dynamic(() => import("@/components/admin/CategoriesPanel").then(module => module.CategoriesPanel));
 
 export default function AdminDashboard() {
   const router = useRouter();
   const qc = useDataCache();
   const [refreshing, setRefreshing] = useState(false);
-  const [checking, setChecking] = useState(true);
-  const [authError, setAuthError] = useState(false);
-  const [authAttempt, setAuthAttempt] = useState(0);
-
-  useEffect(() => {
-    let active = true;
-    setAuthError(false);
-    setChecking(true);
-    (async () => {
-      try {
-        const { data: userData, error: userError } = await supabase.auth.getUser();
-        if (userError) throw userError;
-        if (!userData.user) {
-          router.replace("/admin/login");
-          return;
-        }
-        const { data: role, error } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", userData.user.id)
-          .eq("role", "admin")
-          .maybeSingle();
-        if (error) throw error;
-        if (!role) {
-          await supabase.auth.signOut();
-          router.replace("/admin/login");
-          return;
-        }
-        if (active) setChecking(false);
-      } catch {
-        if (active) {
-          setAuthError(true);
-          setChecking(false);
-        }
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [router, authAttempt]);
+  const { mutate } = useSWRConfig();
   const signOut = async () => {
     await qc.clear();
     await supabase.auth.signOut();
     router.replace("/admin/login");
   };
-
-  if (authError)
-    return (
-      <main className="mx-auto max-w-lg px-4 py-20 text-center">
-        <h1 className="text-2xl font-bold">
-          <HeadingText>Could not verify admin access</HeadingText>
-        </h1>
-        <p className="mt-3 text-muted-foreground">Check your connection and try again.</p>
-        <Button className="mt-6" onClick={() => setAuthAttempt((value) => value + 1)}>
-          Try again
-        </Button>
-      </main>
-    );
-
-  if (checking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <PageLoader label="Opening dashboard" />
-      </div>
-    );
-  }
 
   return (
     <div className="admin-studio min-h-screen">
@@ -128,12 +71,12 @@ export default function AdminDashboard() {
             </span>
             <h1>
               <HeadingText>
-                Every request.
+                Every listing.
                 <br className="sm:hidden" /> One clear view.
               </HeadingText>
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Manage vehicle selling enquiries, customer details and historical requests.
+              Approve marketplace listings, review photos and help sellers get live.
             </p>
           </div>
           <Button
@@ -142,7 +85,7 @@ export default function AdminDashboard() {
             onClick={async () => {
               setRefreshing(true);
               try {
-                await qc.refresh(["admin"]);
+                await Promise.all([qc.refresh(["admin"]), mutate(key => typeof key === "string" && key.startsWith("/api/admin/listings"))]);
               } finally {
                 setRefreshing(false);
               }
@@ -156,9 +99,10 @@ export default function AdminDashboard() {
         <p className="mb-5 mt-3 w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
           {servicesPaused ? "Service enquiries paused" : "Service enquiries open"}
         </p>
-        <SellingOverview />
-        <Tabs defaultValue="bookings" className="admin-tabs mt-6">
+
+        <Tabs defaultValue="listings" className="admin-tabs mt-6">
           <TabsList className="flex w-full max-w-full flex-nowrap justify-start gap-1 overflow-x-auto p-1 sm:w-auto">
+            <TabsTrigger value="listings" className="gap-1.5"><ShieldCheck className="size-4"/>Listings & approvals</TabsTrigger>
             <TabsTrigger value="bookings" className="gap-1.5">
               <LayoutDashboard className="size-4" /> <span>Past requests</span>
             </TabsTrigger>
@@ -172,6 +116,7 @@ export default function AdminDashboard() {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="listings" className="mt-5"><ListingsPanel/></TabsContent>
           <TabsContent value="bookings" className="mt-5">
             <LeadsPanel scope="bookings" />
           </TabsContent>

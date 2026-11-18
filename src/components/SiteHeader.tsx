@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, ArrowRight, User as UserIcon, LogOut, ClipboardList } from "lucide-react";
+import { Menu, ArrowRight, User as UserIcon, LogOut, ClipboardList, Heart } from "lucide-react";
 import { useDataCache } from "@/hooks/use-data-cache";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -65,17 +65,18 @@ export function SiteHeader() {
               </Link>
             );
           })}
+          <Link href="/marketplace/saved" className="rounded-full px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary/60">Saved</Link>
           {user && (
             <Link
-              href="/orders"
+              href="/marketplace/my-listings"
               className={cn(
                 "rounded-full px-3 py-2 text-sm font-medium transition-colors",
-                pathname === "/orders"
+                pathname === "/marketplace/my-listings"
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground",
               )}
             >
-              My orders
+              My Listings
             </Link>
           )}
         </nav>
@@ -105,10 +106,11 @@ export function SiteHeader() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/orders">
-                      <ClipboardList className="size-4" /> My orders
+                    <Link href="/marketplace/my-listings">
+                      <ClipboardList className="size-4" /> My Listings
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild><Link href="/marketplace/saved"><Heart className="size-4"/>Saved vehicles</Link></DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={signOut}
@@ -168,13 +170,14 @@ export function SiteHeader() {
                 ))}
                 {user && (
                   <Link
-                    href="/orders"
+                    href="/marketplace/my-listings"
                     onClick={() => setOpen(false)}
                     className="flex items-center gap-2 rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-secondary"
                   >
-                    <ClipboardList className="size-4" /> My orders
+                    <ClipboardList className="size-4" /> My Listings
                   </Link>
                 )}
+                <Link href="/marketplace/saved" onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-lg px-3 py-3 text-base font-medium text-foreground hover:bg-secondary"><Heart className="size-4"/>Saved</Link>
               </nav>
 
               <div className="mt-6 flex flex-col gap-3">

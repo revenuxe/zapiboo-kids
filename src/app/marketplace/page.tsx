@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { Marketplace } from "@/components/marketplace/Marketplace";
 import { pageMetadata } from "@/lib/metadata";
 import { vehicleCategories } from "@/lib/marketplace";
@@ -12,6 +13,7 @@ export default async function Page({
   searchParams: Promise<{ category?: string; view?: string }>;
 }) {
   const { category, view } = await searchParams;
+  if (view === "mine") redirect("/marketplace/my-listings");
   return (
     <Marketplace
       initialCategory={vehicleCategories.some((c) => c.id === category) ? category : ""}

@@ -13,5 +13,10 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const search = await searchParams;
-  return <AuthPage redirectPath={safeRedirect(search.redirectTo)} />;
+  return (
+    <AuthPage
+      redirectPath={safeRedirect(search.redirectTo)}
+      explicitRedirect={typeof search.redirectTo === "string"}
+    />
+  );
 }

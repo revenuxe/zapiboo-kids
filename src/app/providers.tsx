@@ -67,7 +67,7 @@ function SiteShell({ children }: { children: ReactNode }) {
         )}
       </div>
       <ServiceAvailability />
-      <NavigationLoader />
+      <Suspense fallback={null}><NavigationLoader /></Suspense>
       <Toaster position="top-center" richColors />
     </>
   );

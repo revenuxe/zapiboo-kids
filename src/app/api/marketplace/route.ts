@@ -1,6 +1,6 @@
 import { marketplaceDb, publicListingColumns, sameOrigin } from "@/lib/marketplace-server";
 import { listingSchema } from "@/lib/marketplace";
-import sharp from "sharp";
+import { optimizeListingPhoto } from "@/lib/listing-photo";
 
 export async function GET(request: Request) {
   try {
@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const query = new URL(request.url).searchParams;
     let listings = db
       .from("vehicle_listings")
-      .select(publicListingColumns)
+      .select(query.get("mine") === "true" ? publicListingColumns + ",rejection_reason,updated_at" : publicListingColumns)
       .order("created_at", { ascending: false })
       .limit(500);
     if (query.get("mine") === "true") {
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       });
     return Response.json(
       { listings: data, available: true },
-      { headers: { "Cache-Control": "no-store" } },
+      { headers: { "Cache-Control": query.get("mine") === "true" ? "private, no-store" : "public, max-age=0, s-maxage=15, stale-while-revalidate=30" } },
     );
   } catch {
     return Response.json({
@@ -98,17 +98,11 @@ export async function POST(request: Request) {
       );
     const urls: string[] = [];
     for (const [i, photo] of photos.entries()) {
-      const buffer = await sharp(Buffer.from(await photo.arrayBuffer()), {
-        limitInputPixels: 40000000,
-      })
-        .rotate()
-        .resize(1280, 960, { fit: "inside", withoutEnlargement: true })
-        .webp({ quality: 76, effort: 4 })
-        .toBuffer();
+      const buffer = await optimizeListingPhoto(Buffer.from(await photo.arrayBuffer()));
       const path = `${user.id}/${parsed.data.id}/${i}.webp`;
       const { error } = await db.storage
         .from("vehicle-listing-photos")
-        .upload(path, buffer, { contentType: "image/webp", upsert: true });
+        .upload(path, buffer, { contentType: "image/webp", cacheControl: "31536000", upsert: true });
       if (error)
         throw new Error("We couldn't upload your photos. Your draft is safe; please try again.");
       uploaded.push(path);
@@ -121,7 +115,7 @@ export async function POST(request: Request) {
     if (contactError) throw new Error("Couldn't save your contact details. Please try again.");
     const { error } = await db
       .from("vehicle_listings")
-      .insert({ ...listing, user_id: user.id, photos: urls });
+      .insert({ ...listing, user_id: user.id, photos: urls, status: "pending" });
     if (error) {
       await db
         .from("vehicle_listing_contacts")

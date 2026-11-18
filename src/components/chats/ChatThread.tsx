@@ -27,7 +27,7 @@ import {
   type ChatConversation,
   type ChatMessage,
 } from "@/lib/chat";
-import { money } from "@/lib/marketplace";
+import { listingPath, money } from "@/lib/marketplace";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 type ThreadData = { conversation: ChatConversation; messages: ChatMessage[]; hasMore: boolean };
@@ -339,7 +339,7 @@ export function ChatThread({
           </button>
         </div>
       </header>
-      <Link href={"/marketplace/" + thread.listing_id} className="chat-vehicle-strip">
+      <Link href={listingPath({ id: thread.listing_id, title: thread.listing_title })} className="chat-vehicle-strip">
         <div>
           <Image src={thread.listing_photo} alt="" fill sizes="65px" />
         </div>
