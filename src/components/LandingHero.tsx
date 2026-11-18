@@ -1,3 +1,6 @@
+"use client";
+
+import { useAuth } from "@/hooks/use-auth";
 import { HeadingText } from "@/components/HeadingText";
 import Image from "next/image";
 import Link from "next/link";
@@ -23,6 +26,11 @@ export function LandingHero({
   imageAlt?: string;
   children?: ReactNode;
 }) {
+  const { user } = useAuth();
+  const sellHref = user
+    ? "/marketplace/sell"
+    : "/auth?redirectTo=%2Fmarketplace%2Fsell";
+
   return (
     <section className="landing-hero">
       <div className="home-shell landing-hero-grid">
@@ -37,8 +45,8 @@ export function LandingHero({
           <p>{description}</p>
           {href && (
             <div className="home-hero-actions">
-              <Link href={href} className="home-button">
-                {action || "Start selling"}
+              <Link href={sellHref} className="home-button">
+                {action || "Sell your vehicle"}
                 <ArrowUpRight size={19} />
               </Link>
               <Link href="/marketplace" className="home-whatsapp-button">

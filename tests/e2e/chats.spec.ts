@@ -10,14 +10,9 @@ test("Chats is visible in the mobile header and opens the private inbox entry", 
   const chats = page.locator("header").getByRole("link", { name: "Chats", exact: true });
   await expect(chats).toBeVisible();
   await chats.click();
-  await expect(page).toHaveURL(/\/chats$/);
-  await expect(
-    page.getByRole("heading", { name: "A new conversation starts here." }),
-  ).toBeVisible();
-  await expect(page.getByRole("link", { name: "Sign in to open Chats" })).toHaveAttribute(
-    "href",
-    "/auth?redirectTo=%2Fchats",
-  );
+  await expect(page).toHaveURL(/\/auth\?redirectTo=%2Fchats$/);
+  await expect(page.getByRole("heading", { name: "Welcome back" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sign in with Google" })).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
   ).toBeTruthy();
@@ -26,7 +21,6 @@ test("Chats is visible in the mobile header and opens the private inbox entry", 
 test("starting a chat while signed out keeps its vehicle through sign-in", async ({ page }) => {
   const id = "11111111-1111-4111-8111-111111111111";
   await page.goto("/chats?listing=" + id);
-  await page.getByRole("link", { name: "Sign in to open Chats" }).click();
   await expect(page).toHaveURL(/redirectTo=%2Fchats%3Flisting%3D11111111/);
 });
 

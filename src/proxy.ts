@@ -5,6 +5,15 @@ import { getSupabaseConfig } from "@/integrations/supabase/config";
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   const config = getSupabaseConfig();
+  if (request.nextUrl.pathname === "/chats") {
+    if (!config) {
+      const returnPath =
+        "/chats" + (request.nextUrl.search ? request.nextUrl.search : "");
+      return NextResponse.redirect(
+        new URL("/auth?redirectTo=" + encodeURIComponent(returnPath), request.url),
+      );
+    }
+  }
   if (!config) return response;
   const { url, key } = config;
   const supabase = createServerClient(url, key, {
@@ -18,7 +27,14 @@ export async function proxy(request: NextRequest) {
     },
   });
   // Validate with the auth service; never trust a decoded cookie session.
-  await supabase.auth.getUser();
+  const { data } = await supabase.auth.getUser();
+  if (request.nextUrl.pathname === "/chats" && !data.user) {
+    const returnPath =
+      "/chats" + (request.nextUrl.search ? request.nextUrl.search : "");
+    return NextResponse.redirect(
+      new URL("/auth?redirectTo=" + encodeURIComponent(returnPath), request.url),
+    );
+  }
   return response;
 }
 

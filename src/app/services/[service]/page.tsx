@@ -61,7 +61,7 @@ export default async function ServicePage({ params, searchParams }: Props) {
         image={category.image_url}
         imageAlt={`${category.name} illustration`}
         href={href}
-        action="Start selling"
+        action="Sell your vehicle"
       />
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold">Find your starting point</h2>

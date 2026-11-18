@@ -50,7 +50,7 @@ export default async function AreaPage({ params }: Props) {
         image="/vehicles/used-cars-cutout.webp"
         imageAlt="Sell your used car in Bangalore"
         href={`/contact?area=${area.slug}`}
-        action="Start selling"
+        action="Sell your vehicle"
       />
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold">Explore vehicle selling services in {area.name}</h2>

@@ -40,7 +40,7 @@ export default function AreasPage() {
         image="/vehicles/used-bikes-cutout.webp"
         imageAlt="New adventures, closer to home"
         href="/contact"
-        action="Start selling"
+        action="Sell your vehicle"
       />
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

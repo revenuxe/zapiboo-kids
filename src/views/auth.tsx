@@ -1,6 +1,4 @@
 "use client";
-import { HeadingText } from "@/components/HeadingText";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -102,9 +100,9 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
   const googleLabel = tab === "signin" ? "Sign in with Google" : "Sign up with Google";
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-navy px-4 py-4 text-navy-foreground sm:px-6">
-      <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-md flex-col">
-        <div className="mb-4 flex items-center justify-between gap-4">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-navy px-3 py-3 text-navy-foreground sm:px-6">
+      <div className="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-md flex-col">
+        <div className="mb-2 flex items-center justify-between gap-3">
           <Link href="/" className="flex min-w-0 items-center gap-3">
             <img
               src={logo}
@@ -132,18 +130,16 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="w-full rounded-3xl border border-white/15 bg-background p-4 text-foreground shadow-elevated sm:p-5"
+            className="w-full rounded-2xl border border-white/15 bg-background p-3 text-foreground shadow-elevated sm:p-5"
           >
-            <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-primary">
+            <div className="mb-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                 Customer account
               </p>
-              <h1 className="mt-1 text-2xl font-extrabold leading-tight">
-                <HeadingText>
-                  {tab === "signin" ? "Welcome back" : "Create your account"}
-                </HeadingText>
+              <h1 className="mt-0.5 whitespace-nowrap text-[22px] font-extrabold leading-tight sm:text-2xl">
+                {tab === "signin" ? "Welcome back" : "Create your account"}
               </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 {tab === "signin"
                   ? "Sign in to manage your Zapiboo account."
                   : "Create an account for your next chapter with Zapiboo."}
@@ -160,12 +156,12 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="signin" className="mt-5">
+              <TabsContent value="signin" className="mt-3">
                 <Button
                   type="button"
                   variant="google"
                   size="lg"
-                  className="mb-3 h-12 w-full justify-start rounded-xl px-3 text-sm"
+                  className="mb-2 h-11 w-full justify-start rounded-xl px-3 text-sm"
                   disabled={busy}
                   onClick={signInWithGoogle}
                 >
@@ -183,13 +179,13 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                     </span>
                   )}
                 </Button>
-                <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="mb-2 flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="h-px flex-1 bg-border" />
                   or
                   <span className="h-px flex-1 bg-border" />
                 </div>
-                <form onSubmit={signIn} className="space-y-3">
-                  <div className="space-y-1.5">
+                <form onSubmit={signIn} className="space-y-2">
+                  <div className="space-y-1">
                     <Label htmlFor="si-email">Email</Label>
                     <Input
                       id="si-email"
@@ -198,10 +194,10 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="h-11 rounded-xl bg-background px-3"
+                      className="h-10 rounded-xl bg-background px-3"
                     />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Label htmlFor="si-pw">Password</Label>
                     <Input
                       id="si-pw"
@@ -210,14 +206,14 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Password"
-                      className="h-11 rounded-xl bg-background px-3"
+                      className="h-10 rounded-xl bg-background px-3"
                     />
                   </div>
                   <Button
                     type="submit"
                     variant="hero"
                     size="lg"
-                    className="h-11 w-full rounded-xl text-sm"
+                    className="h-10 w-full rounded-xl text-sm"
                     disabled={busy}
                   >
                     {busy ? <Loader2 className="size-4 animate-spin" /> : "Sign in"}
@@ -225,12 +221,12 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                 </form>
               </TabsContent>
 
-              <TabsContent value="signup" className="mt-5">
+              <TabsContent value="signup" className="mt-3">
                 <Button
                   type="button"
                   variant="google"
                   size="lg"
-                  className="mb-3 h-12 w-full justify-start rounded-xl px-3 text-sm"
+                  className="mb-2 h-11 w-full justify-start rounded-xl px-3 text-sm"
                   disabled={busy}
                   onClick={signInWithGoogle}
                 >
@@ -248,23 +244,23 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                     </span>
                   )}
                 </Button>
-                <div className="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="mb-2 flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="h-px flex-1 bg-border" />
                   or
                   <span className="h-px flex-1 bg-border" />
                 </div>
-                <form onSubmit={signUp} className="space-y-3">
-                  <div className="space-y-1.5">
+                <form onSubmit={signUp} className="space-y-2">
+                  <div className="space-y-1">
                     <Label htmlFor="su-name">Full name</Label>
                     <Input
                       id="su-name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Your name"
-                      className="h-11 rounded-xl bg-background px-3"
+                      className="h-10 rounded-xl bg-background px-3"
                     />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Label htmlFor="su-phone">Phone (WhatsApp)</Label>
                     <Input
                       id="su-phone"
@@ -274,10 +270,10 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
                       placeholder="10-digit mobile"
                       maxLength={10}
-                      className="h-11 rounded-xl bg-background px-3"
+                      className="h-10 rounded-xl bg-background px-3"
                     />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Label htmlFor="su-email">Email</Label>
                     <Input
                       id="su-email"
@@ -286,10 +282,10 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="h-11 rounded-xl bg-background px-3"
+                      className="h-10 rounded-xl bg-background px-3"
                     />
                   </div>
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Label htmlFor="su-pw">Password</Label>
                     <Input
                       id="su-pw"
@@ -298,14 +294,14 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="At least 6 characters"
-                      className="h-11 rounded-xl bg-background px-3"
+                      className="h-10 rounded-xl bg-background px-3"
                     />
                   </div>
                   <Button
                     type="submit"
                     variant="hero"
                     size="lg"
-                    className="h-11 w-full rounded-xl text-sm"
+                    className="h-10 w-full rounded-xl text-sm"
                     disabled={busy}
                   >
                     {busy ? <Loader2 className="size-4 animate-spin" /> : "Create account"}
@@ -314,7 +310,7 @@ export default function AuthPage({ redirectPath }: { redirectPath: string }) {
               </TabsContent>
             </Tabs>
 
-            <p className="mt-4 text-center text-xs text-muted-foreground">
+            <p className="mt-2 text-center text-[10px] text-muted-foreground">
               By continuing you agree to Zapiboo's terms of service.
             </p>
           </motion.div>

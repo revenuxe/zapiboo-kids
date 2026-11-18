@@ -90,6 +90,11 @@ export function ChatInbox({
       : selected
         ? "?conversation=" + encodeURIComponent(selected)
         : "");
+  useEffect(() => {
+    if (!loading && !user) {
+      window.location.replace("/auth?redirectTo=" + encodeURIComponent(returnPath));
+    }
+  }, [loading, user, returnPath]);
   return (
     <div className="chat-page">
       <div className="chat-shell">
@@ -107,20 +112,9 @@ export function ChatInbox({
           </span>
         </div>
         {!user && !loading ? (
-          <section className="chat-signin">
-            <div className="chat-empty-art">
-              <MessageCircle size={39} />
-              <ShieldCheck size={21} />
-            </div>
-            <h2>A new conversation starts here.</h2>
-            <p>
-              Sign in to talk to buyers and sellers, ask about vehicles and arrange a viewing. Your
-              phone number stays private.
-            </p>
-            <Link className="mp-btn" href={"/auth?redirectTo=" + encodeURIComponent(returnPath)}>
-              Sign in to open Chats <ArrowRight size={16} />
-            </Link>
-            <Link href="/marketplace">Explore the marketplace</Link>
+          <section className="chat-thread-loading" role="status">
+            <Loader2 className="animate-spin" size={24} />
+            Opening sign-in…
           </section>
         ) : (
           <div className={`chat-workspace ${selected ? "has-selection" : ""}`}>
