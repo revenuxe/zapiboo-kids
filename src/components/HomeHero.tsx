@@ -73,7 +73,7 @@ export function HomeHero({
             </div>
             <Image
               src={categories[0].image_url}
-              alt="Silver hatchback car on a transparent background"
+              alt="Silver hatchback car on a light background"
               width={440}
               height={330}
               sizes="(max-width: 639px) 68vw, 360px"

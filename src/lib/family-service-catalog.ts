@@ -7,7 +7,7 @@ export const familyServices = [
       "Hatchbacks, sedans and everyday cars. Share your car details to discuss selling options.",
     accent_color: "#fff0cf",
     types: ["Hatchbacks", "Sedans", "Premium cars", "Family cars"],
-    image_url: "/vehicles/used-cars-cutout.webp",
+    image_url: "/vehicles/used-cars-light.webp",
     preparation:
       "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
@@ -18,7 +18,7 @@ export const familyServices = [
     description: "From daily commuters to touring motorcycles, start your bike sale with Zapiboo.",
     accent_color: "#e3efff",
     types: ["Commuter bikes", "Sports bikes", "Cruisers", "Touring bikes"],
-    image_url: "/vehicles/used-bikes-cutout.webp",
+    image_url: "/vehicles/used-bikes-light.webp",
     preparation:
       "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
@@ -29,7 +29,7 @@ export const familyServices = [
     description: "Sell your petrol or electric scooter. Tell us its model, age and condition.",
     accent_color: "#ffe7ed",
     types: ["Petrol scooters", "Electric scooters", "City scooters", "Maxi scooters"],
-    image_url: "/vehicles/used-scooters-cutout.webp",
+    image_url: "/vehicles/used-scooters-light.webp",
     preparation:
       "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
@@ -40,7 +40,7 @@ export const familyServices = [
     description: "Explore selling your compact SUV, crossover or full-size SUV in Bangalore.",
     accent_color: "#e9e8ff",
     types: ["Compact SUVs", "Mid-size SUVs", "Full-size SUVs", "Crossovers"],
-    image_url: "/vehicles/used-suvs-cutout.webp",
+    image_url: "/vehicles/used-suvs-light.webp",
     preparation:
       "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
@@ -51,7 +51,7 @@ export const familyServices = [
     description: "Discuss selling your van, pickup or other commercial vehicle with our team.",
     accent_color: "#e3f4ff",
     types: ["Vans", "Pickup trucks", "Light trucks", "Passenger vehicles"],
-    image_url: "/vehicles/commercial-vehicles-cutout.webp",
+    image_url: "/vehicles/commercial-vehicles-light.webp",
     preparation:
       "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },
@@ -63,7 +63,7 @@ export const familyServices = [
       "Share your electric car or two-wheeler details, including battery condition and warranty.",
     accent_color: "#e6f3df",
     types: ["Electric cars", "Electric bikes", "Electric scooters", "Electric commercial vehicles"],
-    image_url: "/vehicles/electric-vehicles-cutout.webp",
+    image_url: "/vehicles/electric-vehicles-light.webp",
     preparation:
       "Keep your registration certificate, service history, insurance details and loan status ready. Share the model, year, kilometres driven and any known damage. Final offers and arrangements are subject to review.",
   },

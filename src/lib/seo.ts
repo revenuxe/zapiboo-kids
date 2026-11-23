@@ -4,17 +4,8 @@ export const siteUrl = "https://www.zapiboo.com";
 
 export const businessContact = {
   name: "Zapiboo",
-  phone: "+91 9886579923",
-  phoneHref: "tel:+919886579923",
-  whatsappHref: "https://wa.me/919886579923",
   email: "zapiboo.com@gmail.com",
   emailHref: "mailto:zapiboo.com@gmail.com",
-  address: "No 6, 1st Cross, Umar Nagar, Nagawara Main Road, Bangalore 560045",
-  locality: "Nagawara",
-  city: "Bangalore",
-  region: "Karnataka",
-  postalCode: "560045",
-  country: "IN",
 };
 
 export type ServiceArea = {
@@ -118,18 +109,8 @@ export function organizationSchema(path = "/") {
     url: siteUrl,
     logo: `${siteUrl}/zapiboo-logo.webp`,
     email: businessContact.email,
-    telephone: businessContact.phoneHref.replace("tel:", ""),
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "No 6, 1st Cross, Umar Nagar, Nagawara Main Road",
-      addressLocality: businessContact.city,
-      addressRegion: businessContact.region,
-      postalCode: businessContact.postalCode,
-      addressCountry: businessContact.country,
-    },
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: businessContact.phoneHref.replace("tel:", ""),
       email: businessContact.email,
       contactType: "customer service",
       areaServed: "IN",
@@ -157,16 +138,7 @@ export function localBusinessSchema(path: string) {
     name: businessContact.name,
     url: absoluteUrl(path),
     parentOrganization: { "@id": `${siteUrl}/#organization` },
-    telephone: businessContact.phoneHref.replace("tel:", ""),
     email: businessContact.email,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "No 6, 1st Cross, Umar Nagar, Nagawara Main Road",
-      addressLocality: businessContact.city,
-      addressRegion: businessContact.region,
-      postalCode: businessContact.postalCode,
-      addressCountry: businessContact.country,
-    },
     areaServed: { "@type": "City", name: "Bangalore" },
   };
 }

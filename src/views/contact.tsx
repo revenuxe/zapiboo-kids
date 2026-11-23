@@ -5,7 +5,7 @@ import { servicesPaused, openingSoonHref, showOpeningSoon } from "@/lib/launch-s
 
 import { useState } from "react";
 
-import { Mail, Phone, MapPin, Send } from "lucide-react";
+import { Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,7 +74,7 @@ export default function Contact({
     setSending(false);
 
     if (error) {
-      toast.error("Couldn't send your message. Please call or WhatsApp us.");
+      toast.error("Couldn't send your message. Please try again or email us.");
       return;
     }
 
@@ -104,20 +104,6 @@ export default function Contact({
                 value: servicesPaused ? "Email support opening soon" : businessContact.email,
                 href: servicesPaused ? openingSoonHref : businessContact.emailHref,
               },
-              {
-                icon: Phone,
-                label: "Phone",
-                value: servicesPaused ? "Phone support opening soon" : businessContact.phone,
-                href: servicesPaused ? openingSoonHref : businessContact.phoneHref,
-              },
-              {
-                icon: MapPin,
-                label: "Visit us",
-                value: businessContact.address,
-                href: servicesPaused
-                  ? openingSoonHref
-                  : "https://www.google.com/maps/search/?api=1&query=No%206%2C%201st%20Cross%2C%20Umar%20Nagar%2C%20Nagawara%20Main%20Road%2C%20Bangalore%20560045",
-              },
             ].map((c) => (
               <div
                 key={c.label}
@@ -131,8 +117,6 @@ export default function Contact({
                   {c.href ? (
                     <a
                       href={c.href}
-                      target={c.label === "Visit us" ? "_blank" : undefined}
-                      rel={c.label === "Visit us" ? "noreferrer" : undefined}
                       className="font-semibold text-foreground hover:text-primary"
                     >
                       {c.value}
@@ -151,9 +135,9 @@ export default function Contact({
               }
             />
             <aside className="rounded-3xl border border-primary/20 bg-primary/5 p-6 sm:p-8">
-              <h2 className="text-xl font-bold">Serving Nagawara and all of Bangalore</h2>
+              <h2 className="text-xl font-bold">Serving Bangalore</h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">
-                Zapiboo is based on Nagawara Main Road. Send your vehicle details and Bangalore
+                Send your vehicle details and Bangalore
                 neighbourhood to discuss selling options. Inspection, offers and arrangements are
                 confirmed after review.
               </p>

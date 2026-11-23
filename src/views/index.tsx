@@ -89,7 +89,7 @@ export default function Home() {
         <div className="home-pickup-grid">
           <div className="home-pickup-photo">
             <Image
-              src="/vehicles/used-suvs-cutout.webp"
+              src="/vehicles/used-suvs-light.webp"
               alt="Used SUV ready for its next owner"
               fill
               sizes="(min-width:1024px) 550px, 90vw"

@@ -15,14 +15,16 @@ const { familyServices } = await import(
   `data:text/javascript;base64,${Buffer.from(outputText).toString("base64")}`
 );
 
-test("each vehicle category has a distinct, readable local illustration with transparency", async () => {
+test("each vehicle category has a distinct, readable local illustration with an opaque light background", async () => {
   assert.equal(familyServices.length, 6);
   assert.equal(new Set(familyServices.map((service) => service.image_url)).size, 6);
   for (const service of familyServices) {
     assert.ok(service.image_url.startsWith(`/vehicles/${service.id}`));
     const metadata = await sharp(`public${service.image_url}`).metadata();
     assert.equal(metadata.format, "webp");
-    assert.equal(metadata.hasAlpha, true);
+    assert.equal(metadata.hasAlpha, false);
+    const { data } = await sharp(`public${service.image_url}`).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+    assert.ok(data[0] > 235 && data[1] > 235 && data[2] > 235, "Image corner must have a baked-in light background");
     assert.ok(metadata.width >= 560, `${service.name} is too small for the listing`);
     assert.ok(metadata.width <= 1024, `${service.name} exceeds the intended image dimensions`);
     assert.ok(

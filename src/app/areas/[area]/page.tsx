@@ -47,7 +47,7 @@ export default async function AreaPage({ params }: Props) {
           </>
         }
         description={content.intro}
-        image="/vehicles/used-cars-cutout.webp"
+        image="/vehicles/used-cars-light.webp"
         imageAlt="Sell your used car in Bangalore"
         href={`/contact?area=${area.slug}`}
         action="Sell your vehicle"

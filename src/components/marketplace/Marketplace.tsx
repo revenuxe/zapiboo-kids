@@ -230,7 +230,7 @@ export function Marketplace({
               <small>Photos. A few details. Ready to go.</small>
             </div>
             <Image
-              src="/vehicles/used-cars-cutout.webp"
+              src="/vehicles/used-cars-light.webp"
               alt="Silver hatchback"
               width={270}
               height={178}

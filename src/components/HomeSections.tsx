@@ -106,11 +106,11 @@ export function HomeFinalCta() {
           <div className="home-grand-orbit" />
           <div className="home-grand-toys">
             <span>READY FOR A NEW ROAD</span>
-            <Image src="/vehicles/used-cars-cutout.webp" alt="Used car" width={340} height={270} />
+            <Image src="/vehicles/used-cars-light.webp" alt="Used car" width={340} height={270} />
             <strong>Your next chapter.</strong>
           </div>
           <div className="home-grand-books">
-            <Image src="/vehicles/used-bikes-cutout.webp" alt="Used bike" width={200} height={160} />
+            <Image src="/vehicles/used-bikes-light.webp" alt="Used bike" width={200} height={160} />
             <span>Keep moving.</span>
           </div>
         </div>

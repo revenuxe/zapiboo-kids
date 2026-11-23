@@ -87,13 +87,6 @@ export default function Terms() {
               href={businessContact.emailHref}
             >
               {businessContact.email}
-            </a>{" "}
-            or{" "}
-            <a
-              className="font-semibold text-primary underline underline-offset-4"
-              href={businessContact.phoneHref}
-            >
-              {businessContact.phone}
             </a>
             . For a service-specific question, use our{" "}
             <Link

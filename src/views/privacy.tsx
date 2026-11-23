@@ -80,13 +80,6 @@ export default function Privacy() {
               href={businessContact.emailHref}
             >
               {businessContact.email}
-            </a>{" "}
-            or call{" "}
-            <a
-              className="font-semibold text-primary underline underline-offset-4"
-              href={businessContact.phoneHref}
-            >
-              {businessContact.phone}
             </a>
             . You can also use our{" "}
             <Link

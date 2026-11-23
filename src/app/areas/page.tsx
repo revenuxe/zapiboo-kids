@@ -37,7 +37,7 @@ export default function AreasPage() {
           </>
         }
         description="Ready to sell your used vehicle? Choose your Bangalore neighbourhood and share your car, bike, scooter or commercial vehicle details."
-        image="/vehicles/used-bikes-cutout.webp"
+        image="/vehicles/used-bikes-light.webp"
         imageAlt="New adventures, closer to home"
         href="/contact"
         action="Sell your vehicle"

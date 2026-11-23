@@ -1,29 +1,22 @@
-﻿import { Phone, ArrowUpRight } from "lucide-react";
-import { WhatsAppIcon } from "@/components/WhatsAppIcon";
+import { Mail } from "lucide-react";
 import { businessContact } from "@/lib/seo";
 
 export function ContactActions({
-  message = "Hi Zapiboo, I would like help finding services for my family in Bangalore.",
+  message,
   dark = false,
 }: {
   message?: string;
   dark?: boolean;
 }) {
+  const href = message
+    ? businessContact.emailHref + "?body=" + encodeURIComponent(message)
+    : businessContact.emailHref;
+
   return (
     <div className={`contact-actions${dark ? " contact-actions-dark" : ""}`}>
-      <a
-        href={`${businessContact.whatsappHref}?text=${encodeURIComponent(message)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="contact-whatsapp"
-      >
-        <WhatsAppIcon className="size-5" />
-        <span>Chat on WhatsApp</span>
-        <ArrowUpRight size={15} />
-      </a>
-      <a href={businessContact.phoneHref} className="contact-phone">
-        <Phone size={16} />
-        <span>{businessContact.phone}</span>
+      <a href={href} className="contact-phone">
+        <Mail size={16} />
+        <span>Email us</span>
       </a>
     </div>
   );

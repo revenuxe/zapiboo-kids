@@ -125,7 +125,7 @@ export default function AuthPage({
         <div className="auth-story-points">
           {["List your vehicle in a few simple steps", "Keep your favourites in one place", "Talk to buyers directly in Chats"].map(text => <span key={text}><Check size={17} />{text}</span>)}
         </div>
-        <img className="auth-vehicle" src="/vehicles/used-cars-cutout.webp" alt="" />
+        <img className="auth-vehicle" src="/vehicles/used-cars-light.webp" alt="" />
         <span className="auth-story-caption">A NEW ROAD AHEAD.</span>
       </aside>
       <div className="auth-panel">
